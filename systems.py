@@ -21,7 +21,7 @@ class InputSystem(System):
                 self.world.end()
             else:
                 for entity in entities:
-                    binds = entity.inputcomponent.eventhandlers
+                    binds = entity.inputcomponent.key_handlers
                     keysym = self.event.key.keysym.sym
                     if keysym in binds:
                         binds[keysym]()
