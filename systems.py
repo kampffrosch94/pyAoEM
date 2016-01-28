@@ -3,10 +3,11 @@ from sdl2 import *
 from sdl2.sdlimage import *
 import ctypes
 from errors import SDL_Exception
+from components import *
 
 class InputSystem(System):
     def __init__(self,world):
-        System.__init__(self,"inputsystem",["inputcomponent"])
+        System.__init__(self,"inputsystem",[InputComponent])
         self.world = world
         self.event = SDL_Event()
 
@@ -36,7 +37,7 @@ class WaitSystem(System):
 
 class RenderSystem(System):
     def __init__(self,world):
-        System.__init__(self,"rendersystem",["graphiccomponent"])
+        System.__init__(self,"rendersystem",[MapComponent])
 
         IMG_Init(IMG_INIT_JPG)
         self.renderer = SDL_CreateRenderer(world.window,-1,
@@ -47,11 +48,18 @@ class RenderSystem(System):
 
     def process(self,entities):
         SDL_RenderClear(self.renderer)
-        for entity in entities:
-            SDL_RenderCopy(self.renderer,
-                    entity.graphiccomponent.texture,
-                    entity.graphiccomponent.src_rect,
-                    entity.graphiccomponent.dest_rect)
+        for entity in entities:#TODO splice this
+            if entity.get(MapComponent).z == 0:
+                SDL_RenderCopy(self.renderer,
+                        entity.get(MapComponent).texture,
+                        entity.get(MapComponent).src_rect,
+                        entity.get(MapComponent).dest_rect)
+        for entity in entities:#TODO splice this
+            if entity.get(MapComponent).z == 1:
+                SDL_RenderCopy(self.renderer,
+                        entity.get(MapComponent).texture,
+                        entity.get(MapComponent).src_rect,
+                        entity.get(MapComponent).dest_rect)
         SDL_RenderPresent(self.renderer)
 
     def destroy(self):

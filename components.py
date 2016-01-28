@@ -1,10 +1,13 @@
 from sdl2 import *
 
-class GraphicComponent(object):
-    def __init__(self,texture,width,height):
+class MapComponent(object):
+    def __init__(self,texture,x,y,width,height,z=0):
         self.texture = texture
+        if z < 0 or z > 1:
+            raise NotImplementedError()
+        self.z = z
         self.src_rect = SDL_Rect(0,0,width,height)
-        self.dest_rect = SDL_Rect(0,0,width,height)
+        self.dest_rect = SDL_Rect(x,y,width,height)
 
 
     def destroy(self):

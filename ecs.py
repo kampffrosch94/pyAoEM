@@ -60,6 +60,13 @@ class Entity(object):
                 (self.__class__.__name__, name))
         del self.world.components[ctype][self]
 
+    def set(self,attribute):
+        self.__setattr__(attribute.__class__.__name__.lower(),attribute)
+
+    def get(self, classobject):
+        #TODO check its really a class
+        return self.__getattr__(classobject.__name__.lower())
+
     def delete(self):
         """Removes the Entity from the world it belongs to."""
         self.world.delete(self)
@@ -73,7 +80,7 @@ class World(object):
 
         SDL_Init(SDL_INIT_VIDEO)
         IMG_Init(IMG_INIT_JPG)
-        self.window = SDL_CreateWindow(b"Test",0,0,800,600,
+        self.window = SDL_CreateWindow(b"Test",0,0,640,640,
                 SDL_SWSURFACE
                 );
 
@@ -82,10 +89,11 @@ class World(object):
     def delete(self, entity):
         """Removes an Entity from the World, including all its data."""
         for ct in self.componenttypes:
-            c = self.components[ct][entity]
-            if hasattr(c,"destroy") and hasattr(c.destroy,"__call__"):
-                c.destroy()
-            del self.components[ct][entity]
+            if entity in self.components[ct]:
+                c = self.components[ct][entity]
+                if hasattr(c,"destroy") and hasattr(c.destroy,"__call__"):
+                    c.destroy()
+                del self.components[ct][entity]
         self.entities.remove(entity)
 
     def add_system(self,system):
@@ -139,8 +147,11 @@ class System(object):
     
     if active==False then process() wont be called"""
 
-    def __init__(self,systemname,componenttypes = []):
-        self.componenttypes = componenttypes
+    def __init__(self,systemname,componentclasses = []):
+        #TODO splice this
+        self.componenttypes = []
+        for c in componentclasses:
+            self.componenttypes.append(c.__name__.lower())
         self.active = True
         self.name = systemname
 

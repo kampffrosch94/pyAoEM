@@ -18,26 +18,32 @@ def main():
     worldstepsystem = WorldStepSystem(world,[rendersystem,inputsystem])
     world.add_system(worldstepsystem)
 
-    e = Entity(world)
+    player_char = Entity(world)
     
     texture = rendersystem.load_texture("gfx/human_m.png")
-    e.graphiccomponent = GraphicComponent(texture,32,32)
+    player_char.set(MapComponent(texture,32,32,32,32,1))
 
-    e.inputcomponent = InputComponent()
+    player_char.set(InputComponent())
 
     def move_right():
-        e.graphiccomponent.x += 16
+        player_char.get(MapComponent).x += 32
     def move_left():
-        e.graphiccomponent.x -= 16
+        player_char.get(MapComponent).x -= 32
     def move_up():
-        e.graphiccomponent.y -= 16
+        player_char.get(MapComponent).y -= 32
     def move_down():
-        e.graphiccomponent.y += 16
+        player_char.get(MapComponent).y += 32
 
-    e.inputcomponent.add_key_handler(SDLK_l,move_right)
-    e.inputcomponent.add_key_handler(SDLK_h,move_left)
-    e.inputcomponent.add_key_handler(SDLK_k,move_up)
-    e.inputcomponent.add_key_handler(SDLK_j,move_down)
+    player_char.get(InputComponent).add_key_handler(SDLK_l,move_right)
+    player_char.get(InputComponent).add_key_handler(SDLK_h,move_left)
+    player_char.get(InputComponent).add_key_handler(SDLK_k,move_up)
+    player_char.get(InputComponent).add_key_handler(SDLK_j,move_down)
+
+    texture = rendersystem.load_texture("gfx/snake0.png")
+    for x in range(20):
+        for y in range(20):
+            tile = Entity(world)
+            tile.set(MapComponent(texture,32*x,32*y,32,32))
 
     while world.alive:
         world.invoke_system(worldstepsystem)
