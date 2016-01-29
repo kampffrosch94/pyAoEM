@@ -64,7 +64,6 @@ class Entity(object):
         self.__setattr__(attribute.__class__.__name__.lower(),attribute)
 
     def get(self, classobject):
-        #TODO check its really a class
         return self.__getattr__(classobject.__name__.lower())
 
     def delete(self):
@@ -148,10 +147,8 @@ class System(object):
     if active==False then process() wont be called"""
 
     def __init__(self,componentclasses = []):
-        #TODO splice this
-        self.componenttypes = []
-        for c in componentclasses:
-            self.componenttypes.append(c.__name__.lower())
+        self.componenttypes = [c.__name__.lower() 
+                               for c in componentclasses]
         self.active = True
 
     def process(self,entities):

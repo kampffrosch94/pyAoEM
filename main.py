@@ -22,8 +22,8 @@ def main():
 
     player_char = Entity(world)
     
-    texture = rendersystem.load_texture("gfx/human_m.png")
-    gc = Graphic(texture,32,32,32,32,1)
+    texturepath = ("gfx/human_m.png")
+    gc = rendersystem.load_graphic(texturepath,z=1)
     mc = MapPos(1,1)
     player_char.set(gc)
     player_char.set(mc)
@@ -44,11 +44,12 @@ def main():
     player_char.get(InputMap).add_key_handler(SDLK_k,move_up)
     player_char.get(InputMap).add_key_handler(SDLK_j,move_down)
 
-    texture = rendersystem.load_texture("gfx/cobble_blood1.png")
     for x in range(20):
         for y in range(20):
             tile = Entity(world)
-            tile.set(Graphic(texture,32*x,32*y,32,32))
+            texturepath = ("gfx/cobble_blood1.png")
+            gc = rendersystem.load_graphic(texturepath)
+            tile.set(gc)
             tile.set(MapPos(x,y))
 
     while world.alive:

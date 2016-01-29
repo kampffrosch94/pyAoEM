@@ -72,7 +72,7 @@ class RenderSystem(System):
         SDL_DestroyRenderer(self.renderer)
         IMG_Quit()
 
-    def load_texture(self,path):
+    def load_graphic(self,path,x=0,y=0,z=0):
         path = str.encode(path)
         surface = IMG_Load(path)
         if surface == None:
@@ -82,8 +82,10 @@ class RenderSystem(System):
         if texture == None:
             raise SDL_Exception
 
+        graphic = Graphic(texture,x,y,surface.contents.w,
+                                      surface.contents.h,z)
         SDL_FreeSurface(surface)
-        return texture
+        return graphic
         
 
 class WorldStepSystem(System):
