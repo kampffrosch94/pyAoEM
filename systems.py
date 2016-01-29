@@ -31,7 +31,7 @@ class InputSystem(System):
 class RenderSystem(System):
     """Renders textures to the window"""
     def __init__(self,world):
-        System.__init__(self,"rendersystem",[MapComponent])
+        System.__init__(self,"rendersystem",[GraphicComponent])
 
         IMG_Init(IMG_INIT_JPG)
         self.renderer = SDL_CreateRenderer(world.window,-1,
@@ -43,17 +43,17 @@ class RenderSystem(System):
     def process(self,entities):
         SDL_RenderClear(self.renderer)
         for entity in entities:#TODO splice this
-            if entity.get(MapComponent).z == 0:
+            if entity.get(GraphicComponent).z == 0:
                 SDL_RenderCopy(self.renderer,
-                        entity.get(MapComponent).texture,
-                        entity.get(MapComponent).src_rect,
-                        entity.get(MapComponent).dest_rect)
+                        entity.get(GraphicComponent).texture,
+                        entity.get(GraphicComponent).src_rect,
+                        entity.get(GraphicComponent).dest_rect)
         for entity in entities:#TODO splice this
-            if entity.get(MapComponent).z == 1:
+            if entity.get(GraphicComponent).z == 1:
                 SDL_RenderCopy(self.renderer,
-                        entity.get(MapComponent).texture,
-                        entity.get(MapComponent).src_rect,
-                        entity.get(MapComponent).dest_rect)
+                        entity.get(GraphicComponent).texture,
+                        entity.get(GraphicComponent).src_rect,
+                        entity.get(GraphicComponent).dest_rect)
         SDL_RenderPresent(self.renderer)
 
     def destroy(self):
