@@ -8,6 +8,9 @@ from utility import Position
 def main():
     world = World()
 
+    mapsystem = MapSystem(world)
+    world.add_system(mapsystem)
+
     mtgs = MapToGraphicSystem(world)
     world.add_system(mtgs)
 
@@ -16,11 +19,15 @@ def main():
 
     inputsystem = InputSystem(world)
     world.add_system(inputsystem)
-    worldstepsystem = WorldStepSystem(world,
-            [mtgs,rendersystem,inputsystem])
+    worldstepsystem = WorldStepSystem(world,[
+        mapsystem,
+        mtgs,
+        rendersystem,
+        inputsystem])
     world.add_system(worldstepsystem)
 
     player_char = Entity(world)
+    player_char.name = "Player Character"
     
     texturepath = ("gfx/human_m.png")
     gc = rendersystem.load_graphic(texturepath,z=1)

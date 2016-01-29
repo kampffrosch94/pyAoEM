@@ -28,6 +28,21 @@ class InputSystem(System):
                     if keysym in binds:
                         binds[keysym]()
 
+class MapSystem(System):
+    """This system manages all entities which have a position on the map."""
+    def __init__(self,world):
+        System.__init__(self, [MapPos])
+        self.map_entities = {}
+
+    def process(self,entities):
+        self.map_entities = {} #TODO dont always rebuild this
+        for entity in entities:
+            pos = entity.get(MapPos)
+            if not pos in self.map_entities:
+                self.map_entities[pos] = []
+            self.map_entities[pos].append(entity)
+    
+
 class MapToGraphicSystem(System):
     """Converts coordinates on the map to coordinates in the window."""
     def __init__(self,world):
