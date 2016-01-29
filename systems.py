@@ -4,6 +4,7 @@ from sdl2.sdlimage import *
 import ctypes
 from errors import SDL_Exception
 from components import *
+from utility import Position
 
 class InputSystem(System):
     """Takes SDL_Events and forwards them to listeners"""
@@ -44,16 +45,19 @@ class MapSystem(System):
     
 
 class MapToGraphicSystem(System):
-    """Converts coordinates on the map to coordinates in the window."""
+    """Converts coordinates on the map to coordinates in the window.
+    
+    Change root_pos to move the left upper corner of the visible map."""
     def __init__(self,world):
         System.__init__(self, [Graphic,MapPos])
+        self.root_pos = Position(0,0)
 
     def process(self,entities):
         for entity in entities:
             gc = entity.get(Graphic)
             mc = entity.get(MapPos)
-            gc.x = mc.x * 32
-            gc.y = mc.y * 32
+            (gc.x,gc.y) = ((mc.x - self.root_pos.x)* 32,
+                           (mc.y - self.root_pos.y)* 32)
 
 class RenderSystem(System):
     """Renders textures to the window"""

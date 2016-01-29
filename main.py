@@ -11,8 +11,8 @@ def main():
     mapsystem = MapSystem(world)
     world.add_system(mapsystem)
 
-    mtgs = MapToGraphicSystem(world)
-    world.add_system(mtgs)
+    maptographicsystem = MapToGraphicSystem(world)
+    world.add_system(maptographicsystem)
 
     rendersystem = RenderSystem(world)
     world.add_system(rendersystem)
@@ -21,7 +21,7 @@ def main():
     world.add_system(inputsystem)
     worldstepsystem = WorldStepSystem(world,[
         mapsystem,
-        mtgs,
+        maptographicsystem,
         rendersystem,
         inputsystem])
     world.add_system(worldstepsystem)
@@ -51,13 +51,29 @@ def main():
     player_char.get(InputMap).add_key_handler(SDLK_k,move_up)
     player_char.get(InputMap).add_key_handler(SDLK_j,move_down)
 
-    for x in range(20):
-        for y in range(20):
+    for x in range(10):
+        for y in range(10):
             tile = Entity(world)
             texturepath = ("gfx/cobble_blood1.png")
             gc = rendersystem.load_graphic(texturepath)
             tile.set(gc)
             tile.set(MapPos(x,y))
+
+    def map_left():
+        maptographicsystem.root_pos.x -= 1
+    def map_right():
+        maptographicsystem.root_pos.x += 1
+    def map_up():
+        maptographicsystem.root_pos.y -= 1
+    def map_down():
+        maptographicsystem.root_pos.y += 1
+
+    global_input = Entity(world)
+    global_input.set(InputMap())
+    global_input.get(InputMap).add_key_handler(SDLK_d,map_right)
+    global_input.get(InputMap).add_key_handler(SDLK_a,map_left)
+    global_input.get(InputMap).add_key_handler(SDLK_w,map_up)
+    global_input.get(InputMap).add_key_handler(SDLK_s,map_down)
 
     while world.alive:
         world.invoke_system(WorldStepSystem)
