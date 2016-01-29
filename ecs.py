@@ -98,9 +98,10 @@ class World(object):
     def add_system(self,system):
         if not isinstance(system,System):
             raise ValueError("Only instances of System are allowed.")
-        if system.name in self.systems.keys():
+        name = system.__class__.__name__.lower()
+        if name in self.systems.keys():
             raise KeyError("A system of this name is already registered.")
-        self.systems[system.name] = system
+        self.systems[name] = system
 
     def find_matching_entities(self,typerestriction):
         def condition(self,typerestriction,entity):
@@ -113,7 +114,7 @@ class World(object):
 
     def invoke_system(self,systemname):
         if not isinstance(systemname,str):
-            systemname = systemname.__repr__()
+            systemname = systemname.__name__.lower() #should be a class
         s = self.systems[systemname]
         if s.active:
             s.process(self.find_matching_entities(s.componenttypes))
@@ -146,16 +147,12 @@ class System(object):
     
     if active==False then process() wont be called"""
 
-    def __init__(self,systemname,componentclasses = []):
+    def __init__(self,componentclasses = []):
         #TODO splice this
         self.componenttypes = []
         for c in componentclasses:
             self.componenttypes.append(c.__name__.lower())
         self.active = True
-        self.name = systemname
-
-    def __repr__(self):
-        return self.name
 
     def process(self,entities):
         raise NotImplementedError("Must be implemented by a Subclass.")

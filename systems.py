@@ -8,7 +8,7 @@ from components import *
 class InputSystem(System):
     """Takes SDL_Events and forwards them to listeners"""
     def __init__(self,world):
-        System.__init__(self,"inputsystem",[InputMap])
+        System.__init__(self,[InputMap])
         self.world = world
         self.event = SDL_Event()
 
@@ -31,8 +31,7 @@ class InputSystem(System):
 class MapToGraphicSystem(System):
     """Converts coordinates on the map to coordinates in the window."""
     def __init__(self,world):
-        System.__init__(self,"maptographicsystem",
-                [Graphic,MapPos])
+        System.__init__(self, [Graphic,MapPos])
 
     def process(self,entities):
         for entity in entities:
@@ -44,7 +43,7 @@ class MapToGraphicSystem(System):
 class RenderSystem(System):
     """Renders textures to the window"""
     def __init__(self,world):
-        System.__init__(self,"rendersystem",[Graphic])
+        System.__init__(self,[Graphic])
 
         IMG_Init(IMG_INIT_JPG)
         self.renderer = SDL_CreateRenderer(world.window,-1,
@@ -90,11 +89,11 @@ class RenderSystem(System):
 
 class WorldStepSystem(System):
     """The System which runs the gameloop"""
-    def __init__(self,world,systemnames):
-        System.__init__(self,"worldstepsystem")
-        self.systemnames = systemnames
+    def __init__(self,world,systems):
+        System.__init__(self)
+        self.systems = systems
         self.world = world
 
     def process(self,entities):
-        for sn in self.systemnames:
-            self.world.invoke_system(sn)
+        for s in self.systems:
+            self.world.invoke_system(s.__class__.__name__.lower())

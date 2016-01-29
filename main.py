@@ -52,7 +52,7 @@ def main():
             tile.set(MapPos(x,y))
 
     while world.alive:
-        world.invoke_system(worldstepsystem)
+        world.invoke_system(WorldStepSystem)
     
     world.destroy()
 
