@@ -52,20 +52,19 @@ class RenderSystem(System):
         if self.renderer == None:
             raise SDL_Exception()
 
+    def render_entities(self, entities):
+        for entity in entities:
+            SDL_RenderCopy(self.renderer,
+                    entity.get(Graphic).texture,
+                    entity.get(Graphic).src_rect,
+                    entity.get(Graphic).dest_rect)
+
     def process(self,entities):
         SDL_RenderClear(self.renderer)
-        for entity in entities:#TODO splice this
-            if entity.get(Graphic).z == 0:
-                SDL_RenderCopy(self.renderer,
-                        entity.get(Graphic).texture,
-                        entity.get(Graphic).src_rect,
-                        entity.get(Graphic).dest_rect)
-        for entity in entities:#TODO splice this
-            if entity.get(Graphic).z == 1:
-                SDL_RenderCopy(self.renderer,
-                        entity.get(Graphic).texture,
-                        entity.get(Graphic).src_rect,
-                        entity.get(Graphic).dest_rect)
+        entitiesz0 = filter((lambda x: x.get(Graphic).z == 0),entities)
+        entitiesz1 = filter((lambda x: x.get(Graphic).z == 1),entities)
+        self.render_entities(entitiesz0)
+        self.render_entities(entitiesz1)
         SDL_RenderPresent(self.renderer)
 
     def destroy(self):
