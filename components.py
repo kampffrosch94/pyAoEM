@@ -9,7 +9,6 @@ class MapPos(utility.Position):
 
 class Graphic(object):
     """Contains a texture and the position where it should be rendered."""
-    #TODO get texture width and heigth from file
     def __init__(self,texture,x,y,width,height,z=0):
         self.texture = texture
         if z < 0 or z > 1:
