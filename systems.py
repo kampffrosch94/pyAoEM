@@ -6,6 +6,7 @@ from errors import SDL_Exception
 from components import *
 
 class InputSystem(System):
+    """Takes SDL_Events and forwards them to listeners"""
     def __init__(self,world):
         System.__init__(self,"inputsystem",[InputComponent])
         self.world = world
@@ -27,15 +28,8 @@ class InputSystem(System):
                     if keysym in binds:
                         binds[keysym]()
 
-class WaitSystem(System):
-    def __init__(self,time):
-        self.name = "waitsystem"
-        self.time = time
-
-    def process(self,entities):
-        pass
-
 class RenderSystem(System):
+    """Renders textures to the window"""
     def __init__(self,world):
         System.__init__(self,"rendersystem",[MapComponent])
 
@@ -82,6 +76,7 @@ class RenderSystem(System):
         
 
 class WorldStepSystem(System):
+    """The System which runs the gameloop"""
     def __init__(self,world,systemnames):
         System.__init__(self,"worldstepsystem")
         self.systemnames = systemnames
