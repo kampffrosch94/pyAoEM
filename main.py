@@ -5,9 +5,7 @@ from systems import *
 from components import *
 from errors import SDL_Exception
 
-
 def main():
-
     world = World()
 
     rendersystem = RenderSystem(world)
@@ -39,7 +37,7 @@ def main():
     player_char.get(InputComponent).add_key_handler(SDLK_k,move_up)
     player_char.get(InputComponent).add_key_handler(SDLK_j,move_down)
 
-    texture = rendersystem.load_texture("gfx/snake0.png")
+    texture = rendersystem.load_texture("gfx/cobble_blood1.png")
     for x in range(20):
         for y in range(20):
             tile = Entity(world)
