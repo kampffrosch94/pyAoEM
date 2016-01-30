@@ -48,7 +48,7 @@ class Entity(object):
                 self.world.componenttypes.add(name)
                 self.world.components[name] = {}
             self.world.components[name][self] = value
-            self.world.system_entity_cache_useable.clear()
+            self.world.invalidate_ct_cache(name)
 
     def __delattr__(self, name):
         """Deletes the component data related to the Entity."""
@@ -73,12 +73,15 @@ class Entity(object):
 
 class World(object):
     def __init__(self):
-        self.systems = {}
-        self.system_entity_cache = {}
-        self.system_entity_cache_useable = []
         self.entities = set()
         self.components = {}
         self.componenttypes = set()
+
+        self.systems = {}
+        self.system_entity_cache = {}
+        self.system_entity_cache_useable = set()
+        #The systems which use a certain componenttype
+        self.componenttypes_to_system = {} 
 
         SDL_Init(SDL_INIT_VIDEO)
         IMG_Init(IMG_INIT_JPG)
@@ -95,35 +98,48 @@ class World(object):
                 if hasattr(c,"destroy") and hasattr(c.destroy,"__call__"):
                     c.destroy()
                 del self.components[ct][entity]
+                self.invalidate_ct_cache(ct)
         self.entities.remove(entity)
-        self.system_entity_cache_useable.clear()
+
+    def invalidate_ct_cache(self,componenttype):
+        if not componenttype in self.componenttypes_to_system:
+            return
+        for system_key in self.componenttypes_to_system[componenttype]:
+            if system_key in self.system_entity_cache_useable:
+                self.system_entity_cache_useable.remove(system_key)
 
     def add_system(self,system):
         if not isinstance(system,System):
             raise ValueError("Only instances of System are allowed.")
-        name = system.__class__.__name__
-        if name in self.systems.keys():
+        key = system.__class__.__name__
+        if key in self.systems:
             raise KeyError("A system of this name is already registered.")
-        self.systems[name] = system
+
+        self.systems[key] = system
+        self.system_entity_cache[key] = set()
+        for ct in system.componenttypes:
+            if not ct in self.componenttypes_to_system:
+                self.componenttypes_to_system[ct] = set()
+            self.componenttypes_to_system[ct].add(key)
 
 
     def invoke_system(self,systemclass):
         def find_matching_entities(typerestriction):
             def condition(typerestriction,entity):
-                ecs = set(ec for ec in entity)
+                ecs = [ec for ec in entity]
                 return typerestriction.issubset(ecs)
-            return {e for e in self.entities 
-                    if condition(typerestriction,e)}
-        systemname = systemclass.__name__
-        s = self.systems[systemname]
+            return [e for e in self.entities 
+                    if condition(typerestriction,e)]
+        key = systemclass.__name__
+        s = self.systems[key]
         if s.active:
-            if (systemname in self.system_entity_cache_useable):
-                s.process(self.system_entity_cache[systemname])
+            if (key in self.system_entity_cache_useable):
+                s.process(self.system_entity_cache[key])
             else:
                 me = find_matching_entities(s.componenttypes)
                 s.process(me)
-                self.system_entity_cache[systemname] = me
-                self.system_entity_cache_useable.append(systemname) 
+                self.system_entity_cache[key] = me
+                self.system_entity_cache_useable.add(key) 
 
     def end(self):
         self.alive = False
