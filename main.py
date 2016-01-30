@@ -59,8 +59,8 @@ def main():
     tile.set(MapPos(11,11))
     texture = gc.texture
 
-    for x in range(100):
-        for y in range(100):
+    for x in range(1000):
+        for y in range(1000):
             tile = Entity(world)
             gc = Graphic(texture,0,0,32,32)
             tile.set(gc)
