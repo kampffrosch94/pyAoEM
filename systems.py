@@ -121,9 +121,9 @@ class WorldStepSystem(System):
     """The System which runs the gameloop"""
     def __init__(self,world,systems):
         System.__init__(self)
-        self.systems = systems
+        self.systems = [s.__class__ for s in systems]
         self.world = world
 
     def process(self,entities):
         for s in self.systems:
-            self.world.invoke_system(s.__class__.__name__.lower())
+            self.world.invoke_system(s)

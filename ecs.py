@@ -6,12 +6,12 @@ from sdl2.sdlimage import *
 
 class Entity(object):
     def __init__(self,world):
-        self.id = uuid.uuid4()
+        self.id = hash(uuid.uuid4())
         self.world = world
         world.entities.add(self)
 
     def __hash__(self):
-        return hash(self.id)
+        return self.id
 
     def __str__(self):
         result =         "Entity(id = %r" % self.id
@@ -61,10 +61,10 @@ class Entity(object):
         del self.world.components[ctype][self]
 
     def set(self,attribute):
-        self.__setattr__(attribute.__class__.__name__.lower(),attribute)
+        self.__setattr__(attribute.__class__.__name__,attribute)
 
     def get(self, classobject):
-        return self.__getattr__(classobject.__name__.lower())
+        return self.__getattr__(classobject.__name__)
 
     def delete(self):
         """Removes the Entity from the world it belongs to."""
@@ -97,7 +97,7 @@ class World(object):
     def add_system(self,system):
         if not isinstance(system,System):
             raise ValueError("Only instances of System are allowed.")
-        name = system.__class__.__name__.lower()
+        name = system.__class__.__name__
         if name in self.systems.keys():
             raise KeyError("A system of this name is already registered.")
         self.systems[name] = system
@@ -111,9 +111,8 @@ class World(object):
         return {x for x in self.entities 
                 if condition(self,typerestriction,x)}
 
-    def invoke_system(self,systemname):
-        if not isinstance(systemname,str):
-            systemname = systemname.__name__.lower() #should be a class
+    def invoke_system(self,systemclass):
+        systemname = systemclass.__name__
         s = self.systems[systemname]
         if s.active:
             s.process(self.find_matching_entities(s.componenttypes))
@@ -147,7 +146,7 @@ class System(object):
     if active==False then process() wont be called"""
 
     def __init__(self,componentclasses = []):
-        self.componenttypes = [c.__name__.lower() 
+        self.componenttypes = [c.__name__ 
                                for c in componentclasses]
         self.active = True
 
