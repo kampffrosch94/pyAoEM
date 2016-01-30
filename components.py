@@ -8,7 +8,11 @@ class MapPos(utility.Position):
     """The position of an entity on the map."""
 
 class Graphic(object):
-    """Contains a texture and the position where it should be rendered."""
+    """Contains a texture and the position where it should be rendered.
+    
+    Change x and y to change the position where the graphic will be
+    rendered from the RenderSystem.
+    """
     def __init__(self,texture,x,y,width,height,z=0):
         self.texture = texture
         if z < 0 or z > 1:
@@ -18,6 +22,7 @@ class Graphic(object):
         self.y = y
         self.src_rect = SDL_Rect(0,0,width,height)
         self._dest_rect = SDL_Rect(x,y,width,height)
+        self.active = True
 
     @property
     def dest_rect(self):

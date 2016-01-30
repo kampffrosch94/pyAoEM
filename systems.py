@@ -4,7 +4,7 @@ from sdl2.sdlimage import *
 import ctypes
 from errors import SDL_Exception
 from components import *
-from utility import Position
+from utility import Position,Rectangle
 
 class InputSystem(System):
     """Takes SDL_Events and forwards them to listeners"""
@@ -51,13 +51,20 @@ class MapToGraphicSystem(System):
     def __init__(self,world):
         System.__init__(self, [Graphic,MapPos])
         self.root_pos = Position(0,0)
+        self.map_bounds = Rectangle(0,0,640,480)
 
     def process(self,entities):
+        def in_view(gc:Graphic):
+            bounds = self.map_bounds
+            return (gc.x >= bounds.x and gc.x <= bounds.xe and
+                    gc.y >= bounds.y and gc.y <= bounds.ye)
+
         for entity in entities:
             gc = entity.get(Graphic)
             mc = entity.get(MapPos)
             (gc.x,gc.y) = ((mc.x - self.root_pos.x)* 32,
                            (mc.y - self.root_pos.y)* 32)
+            gc.active = in_view(gc)
 
 class RenderSystem(System):
     """Renders textures to the window"""
@@ -71,19 +78,21 @@ class RenderSystem(System):
         if self.renderer == None:
             raise SDL_Exception()
 
-    def render_entities(self, entities):
-        for entity in entities:
+    def render_graphics(self, graphics):
+        for graphic in graphics:
             SDL_RenderCopy(self.renderer,
-                    entity.get(Graphic).texture,
-                    entity.get(Graphic).src_rect,
-                    entity.get(Graphic).dest_rect)
+                    graphic.texture,
+                    graphic.src_rect,
+                    graphic.dest_rect)
 
     def process(self,entities):
         SDL_RenderClear(self.renderer)
-        entitiesz0 = filter((lambda x: x.get(Graphic).z == 0),entities)
-        entitiesz1 = filter((lambda x: x.get(Graphic).z == 1),entities)
-        self.render_entities(entitiesz0)
-        self.render_entities(entitiesz1)
+        graphics = [e.get(Graphic) for e in entities 
+                    if e.get(Graphic).active]
+        z0 = filter((lambda g: g.z == 0),graphics)
+        z1 = filter((lambda g: g.z == 1),graphics)
+        self.render_graphics(z0)
+        self.render_graphics(z1)
         SDL_RenderPresent(self.renderer)
 
     def destroy(self):
