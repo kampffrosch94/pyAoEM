@@ -50,12 +50,19 @@ def main():
     player_char.get(InputMap).add_key_handler(SDLK_h,move_left)
     player_char.get(InputMap).add_key_handler(SDLK_k,move_up)
     player_char.get(InputMap).add_key_handler(SDLK_j,move_down)
+  
+    
+    tile = Entity(world)
+    texturepath = ("gfx/cobble_blood1.png")
+    gc = rendersystem.load_graphic(texturepath)
+    tile.set(gc)
+    tile.set(MapPos(11,11))
+    texture = gc.texture
 
-    for x in range(10):
-        for y in range(10):
+    for x in range(100):
+        for y in range(100):
             tile = Entity(world)
-            texturepath = ("gfx/cobble_blood1.png")
-            gc = rendersystem.load_graphic(texturepath)
+            gc = Graphic(texture,0,0,32,32)
             tile.set(gc)
             tile.set(MapPos(x,y))
 
@@ -67,6 +74,8 @@ def main():
         maptographicsystem.root_pos.y -= 1
     def map_down():
         maptographicsystem.root_pos.y += 1
+    def end_world():
+        world.end()
 
     global_input = Entity(world)
     global_input.set(InputMap())
@@ -74,6 +83,7 @@ def main():
     global_input.get(InputMap).add_key_handler(SDLK_a,map_left)
     global_input.get(InputMap).add_key_handler(SDLK_w,map_up)
     global_input.get(InputMap).add_key_handler(SDLK_s,map_down)
+    global_input.get(InputMap).add_key_handler(SDLK_q,end_world)
 
     while world.alive:
         world.invoke_system(WorldStepSystem)

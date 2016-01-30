@@ -14,20 +14,21 @@ class InputSystem(System):
         self.event = SDL_Event()
 
     def process(self,entities):
-        if SDL_WaitEvent(ctypes.byref(self.event)) == 0:
-           raise SDL_Exception()
+        key_binds = {}
+        for entity in entities:
+            key_binds.update(entity.get(InputMap).key_handlers)
+        while True:
+            if SDL_WaitEvent(ctypes.byref(self.event)) == 0:
+               raise SDL_Exception()
 
-        if self.event.type == SDL_QUIT:
-            self.world.end()
-        elif self.event.type == SDL_KEYDOWN:
-            if self.event.key.keysym.sym == SDLK_q:
+            if self.event.type == SDL_QUIT:
                 self.world.end()
-            else:
-                for entity in entities:
-                    binds = entity.get(InputMap).key_handlers
-                    keysym = self.event.key.keysym.sym
-                    if keysym in binds:
-                        binds[keysym]()
+                break
+            elif self.event.type == SDL_KEYDOWN:
+                keysym = self.event.key.keysym.sym
+                if keysym in key_binds:
+                    key_binds[keysym]()
+                    break
 
 class MapSystem(System):
     """This system manages all entities which have a position on the map."""
