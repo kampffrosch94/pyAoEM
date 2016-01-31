@@ -17,11 +17,15 @@ def main():
     rendersystem = RenderSystem(world)
     world.add_system(rendersystem)
 
+    tilemapsystem = TileMapSystem(rendersystem.renderer)
+    world.add_system(tilemapsystem)
+
     inputsystem = InputSystem(world)
     world.add_system(inputsystem)
     worldstepsystem = WorldStepSystem(world,[
         mapsystem,
         maptographicsystem,
+        tilemapsystem,
         rendersystem,
         inputsystem])
     world.add_system(worldstepsystem)
@@ -50,21 +54,18 @@ def main():
     player_char.get(InputMap).add_key_handler(SDLK_h,move_left)
     player_char.get(InputMap).add_key_handler(SDLK_k,move_up)
     player_char.get(InputMap).add_key_handler(SDLK_j,move_down)
-  
     
-    tile = Entity(world)
+    battlefield = Entity(world)
     texturepath = ("gfx/cobble_blood1.png")
-    gc = rendersystem.load_graphic(texturepath)
-    tile.set(gc)
-    tile.set(MapPos(11,11))
-    texture = gc.texture
-
-    for x in range(100):
-        for y in range(100):
-            tile = Entity(world)
-            gc = Graphic(texture,0,0,32,32)
-            tile.set(gc)
-            tile.set(MapPos(x,y))
+    default_texture = rendersystem.load_graphic(texturepath).texture
+    tmap = TileMap(100,100,default_texture)
+    map_texture = SDL_CreateTexture(
+            rendersystem.renderer,
+            SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_TARGET,640,480)
+    map_graphic = Graphic(map_texture,0,0,640,480,z=0)
+    battlefield.set(map_graphic)
+    battlefield.set(tmap)
 
     def map_left():
         maptographicsystem.root_pos.x -= 1

@@ -30,7 +30,32 @@ class InputSystem(System):
                     key_binds[keysym]()
                     break
 
-class MapSystem(System):
+class TileMapSystem(System):
+    def __init__(self,renderer):
+        System.__init__(self, [Graphic,TileMap])
+        self.renderer = renderer
+
+    def process(self,entities):
+        if len(entities) != 1:
+            raise NotImplementedError()
+        tilemap_entity = entities[0]
+        tilemap_gc     = tilemap_entity.get(Graphic)
+        tilemap        = tilemap_entity.get(TileMap)
+        SDL_SetRenderTarget(self.renderer,tilemap_gc.texture)
+        SDL_RenderClear(self.renderer)
+        src_rect = SDL_Rect(0,0,32,32)
+        for x in range(tilemap.w):
+            row = tilemap.tiles[x]
+            for y in range(tilemap.h):
+                dest_rect = SDL_Rect(x*32,y*32,32,32)
+                texture = tilemap.textures[row[y]]
+                SDL_RenderCopy( self.renderer,
+                                texture,
+                                src_rect,
+                                dest_rect)
+        SDL_SetRenderTarget(self.renderer,None)
+
+class MapSystem(System): #TODO find better name
     """This system manages all entities which have a position on the map."""
     def __init__(self,world):
         System.__init__(self, [MapPos])
