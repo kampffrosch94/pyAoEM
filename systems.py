@@ -30,10 +30,23 @@ class InputSystem(System):
                     key_binds[keysym]()
                     break
 
+class TileMap(object):
+    """A map which holds tiles.
+    
+    self.textures is a list with textures
+    self.tiles is a 2D grid which contains 
+    texturenumbers for self.textures """
+    def __init__(self,w,h,defaulttexture):
+        self.w = w
+        self.h = h
+        self.tiles = [[0 for x in range(h)] for x in range(w)] 
+        self.textures = [defaulttexture]
+        self.root_pos = Position(0,0)
+
 class TileMapSystem(System):
-    def __init__(self,renderer):
+    def __init__(self,world):
         System.__init__(self, [Graphic,TileMap])
-        self.renderer = renderer
+        self.world = world
 
     def process(self,entities):
         if len(entities) != 1:
@@ -42,8 +55,8 @@ class TileMapSystem(System):
         tilemap_gc     = tilemap_entity.get(Graphic)
         tilemap        = tilemap_entity.get(TileMap)
 
-        SDL_SetRenderTarget(self.renderer,tilemap_gc.texture)
-        SDL_RenderClear(self.renderer)
+        SDL_SetRenderTarget(self.world.renderer,tilemap_gc.texture)
+        SDL_RenderClear(self.world.renderer)
 
         src_rect = SDL_Rect(0,0,32,32)
         dest_rect = SDL_Rect(0,0,32,32)
@@ -57,11 +70,11 @@ class TileMapSystem(System):
                         texture = tilemap.textures[row[y]]
                         dest_rect.x = (x-root_pos.x) * 32
                         dest_rect.y = (y-root_pos.y) * 32
-                        SDL_RenderCopy( self.renderer,
+                        SDL_RenderCopy( self.world.renderer,
                                         texture,
                                         src_rect,
                                         dest_rect)
-        SDL_SetRenderTarget(self.renderer,None)
+        SDL_SetRenderTarget(self.world.renderer,None)
 
 class MapSystem(System): #TODO find better name
     """This system manages all entities which have a position on the map."""
@@ -106,33 +119,24 @@ class RenderSystem(System):
         System.__init__(self,[Graphic])
 
         IMG_Init(IMG_INIT_JPG)
-        self.renderer = SDL_CreateRenderer(world.window,-1,
-                SDL_RENDERER_ACCELERATED)
-
-        if self.renderer == None:
-            raise SDL_Exception()
+        self.world = world
 
     def render_graphics(self, graphics):
         for graphic in graphics:
-            SDL_RenderCopy(self.renderer,
+            SDL_RenderCopy(self.world.renderer,
                     graphic.texture,
                     graphic.src_rect,
                     graphic.dest_rect)
 
     def process(self,entities):
-        SDL_RenderClear(self.renderer)
+        SDL_RenderClear(self.world.renderer)
         graphics = [e.get(Graphic) for e in entities 
                     if e.get(Graphic).active]
         z0 = filter((lambda g: g.z == 0),graphics)
         z1 = filter((lambda g: g.z == 1),graphics)
         self.render_graphics(z0)
         self.render_graphics(z1)
-        SDL_RenderPresent(self.renderer)
-
-    def destroy(self):
-        SDL_RenderClear(self.renderer)
-        SDL_DestroyRenderer(self.renderer)
-        IMG_Quit()
+        SDL_RenderPresent(self.world.renderer)
 
     def load_graphic(self,path,x=0,y=0,z=0):
         path = str.encode(path)
@@ -140,7 +144,8 @@ class RenderSystem(System):
         if surface == None:
             raise OSError("File "+path+" could not be loaded.")
 
-        texture = SDL_CreateTextureFromSurface(self.renderer,surface) 
+        texture = SDL_CreateTextureFromSurface(self.world.renderer,
+                                               surface) 
         if texture == None:
             raise SDL_Exception
 

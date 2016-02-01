@@ -17,7 +17,7 @@ def main():
     rendersystem = RenderSystem(world)
     world.add_system(rendersystem)
 
-    tilemapsystem = TileMapSystem(rendersystem.renderer)
+    tilemapsystem = TileMapSystem(world)
     world.add_system(tilemapsystem)
 
     inputsystem = InputSystem(world)
@@ -60,7 +60,7 @@ def main():
     default_texture = rendersystem.load_graphic(texturepath).texture
     tmap = TileMap(1000,1000,default_texture)
     map_texture = SDL_CreateTexture(
-            rendersystem.renderer,
+            world.renderer,
             SDL_PIXELFORMAT_RGBA8888,
             SDL_TEXTUREACCESS_TARGET,640,480)
     map_graphic = Graphic(map_texture,0,0,640,480,z=0)

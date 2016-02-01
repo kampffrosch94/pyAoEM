@@ -7,18 +7,6 @@ A component should only hold data and no functionality if possible."""
 class MapPos(Position):
     """The position of an entity on the map."""
 
-class TileMap(object):
-    """A map which holds tiles.
-    
-    self.textures is a list with textures
-    self.tiles is a 2D grid which contains 
-    texturenumbers for self.textures """
-    def __init__(self,w,h,defaulttexture):
-        self.w = w
-        self.h = h
-        self.tiles = [[0 for x in range(h)] for x in range(w)] 
-        self.textures = [defaulttexture]
-        self.root_pos = Position(0,0)
 
 class Graphic(object):
     """Contains a texture and the position where it should be rendered.

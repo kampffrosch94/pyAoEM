@@ -87,6 +87,10 @@ class World(object):
         IMG_Init(IMG_INIT_JPG)
         self.window = SDL_CreateWindow(b"Test",0,0,640,640,
                                        SDL_SWSURFACE);
+        self.renderer = SDL_CreateRenderer(self.window,-1,
+                                           SDL_RENDERER_ACCELERATED)
+        if self.renderer == None:
+            raise SDL_Exception()
 
         self.alive = True
 
@@ -155,7 +159,9 @@ class World(object):
                     system.destroy,"__call__"):
                 system.destroy()
 
+        SDL_DestroyRenderer(self.renderer)
         SDL_DestroyWindow(self.window)
+        IMG_Quit()
         SDL_Quit()
             
 class System(object):
