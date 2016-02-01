@@ -69,12 +69,16 @@ def main():
 
     def map_left():
         maptographicsystem.root_pos.x -= 1
+        tmap.root_pos.x -= 1
     def map_right():
         maptographicsystem.root_pos.x += 1
+        tmap.root_pos.x += 1
     def map_up():
         maptographicsystem.root_pos.y -= 1
+        tmap.root_pos.y -= 1
     def map_down():
         maptographicsystem.root_pos.y += 1
+        tmap.root_pos.y += 1
     def end_world():
         world.end()
 

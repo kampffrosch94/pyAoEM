@@ -44,11 +44,14 @@ class TileMapSystem(System):
         SDL_SetRenderTarget(self.renderer,tilemap_gc.texture)
         SDL_RenderClear(self.renderer)
         src_rect = SDL_Rect(0,0,32,32)
+        dest_rect = SDL_Rect(0,0,32,32)
+        #TODO only loop in visible part
         for x in range(tilemap.w):
             row = tilemap.tiles[x]
             for y in range(tilemap.h):
-                dest_rect = SDL_Rect(x*32,y*32,32,32)
                 texture = tilemap.textures[row[y]]
+                dest_rect.x = (x-tilemap.root_pos.x) * 32
+                dest_rect.y = (y-tilemap.root_pos.y) * 32
                 SDL_RenderCopy( self.renderer,
                                 texture,
                                 src_rect,

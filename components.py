@@ -1,10 +1,10 @@
 from sdl2 import *
-import utility
+from utility import Position
 __doc__ = """This File holds the various components of the ecs.
 
 A component should only hold data and no functionality if possible."""
 
-class MapPos(utility.Position):
+class MapPos(Position):
     """The position of an entity on the map."""
 
 class TileMap(object):
@@ -18,6 +18,7 @@ class TileMap(object):
         self.h = h
         self.tiles = [[0 for x in range(h)] for x in range(w)] 
         self.textures = [defaulttexture]
+        self.root_pos = Position(0,0)
 
 class Graphic(object):
     """Contains a texture and the position where it should be rendered.
