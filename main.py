@@ -58,7 +58,7 @@ def main():
     battlefield = Entity(world)
     texturepath = ("gfx/cobble_blood1.png")
     default_texture = rendersystem.load_graphic(texturepath).texture
-    tmap = TileMap(100,100,default_texture)
+    tmap = TileMap(1000,1000,default_texture)
     map_texture = SDL_CreateTexture(
             rendersystem.renderer,
             SDL_PIXELFORMAT_RGBA8888,

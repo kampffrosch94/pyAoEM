@@ -41,21 +41,26 @@ class TileMapSystem(System):
         tilemap_entity = entities[0]
         tilemap_gc     = tilemap_entity.get(Graphic)
         tilemap        = tilemap_entity.get(TileMap)
+
         SDL_SetRenderTarget(self.renderer,tilemap_gc.texture)
         SDL_RenderClear(self.renderer)
+
         src_rect = SDL_Rect(0,0,32,32)
         dest_rect = SDL_Rect(0,0,32,32)
-        #TODO only loop in visible part
-        for x in range(tilemap.w):
-            row = tilemap.tiles[x]
-            for y in range(tilemap.h):
-                texture = tilemap.textures[row[y]]
-                dest_rect.x = (x-tilemap.root_pos.x) * 32
-                dest_rect.y = (y-tilemap.root_pos.y) * 32
-                SDL_RenderCopy( self.renderer,
-                                texture,
-                                src_rect,
-                                dest_rect)
+        root_pos = tilemap.root_pos
+
+        for x in range(root_pos.x,root_pos.x + 20):
+            if x >= 0 and x < tilemap.w:
+                row = tilemap.tiles[x]
+                for y in range(root_pos.y,root_pos.y + 15):
+                    if y >= 0 and y < tilemap.h:
+                        texture = tilemap.textures[row[y]]
+                        dest_rect.x = (x-root_pos.x) * 32
+                        dest_rect.y = (y-root_pos.y) * 32
+                        SDL_RenderCopy( self.renderer,
+                                        texture,
+                                        src_rect,
+                                        dest_rect)
         SDL_SetRenderTarget(self.renderer,None)
 
 class MapSystem(System): #TODO find better name
@@ -85,8 +90,8 @@ class MapToGraphicSystem(System):
     def process(self,entities):
         def in_view(gc:Graphic):
             bounds = self.map_bounds
-            return (gc.x >= bounds.x and gc.x <= bounds.xe and
-                    gc.y >= bounds.y and gc.y <= bounds.ye)
+            return (gc.x >= bounds.x and gc.x < bounds.xe and
+                    gc.y >= bounds.y and gc.y < bounds.ye)
 
         for entity in entities:
             gc = entity.get(Graphic)
