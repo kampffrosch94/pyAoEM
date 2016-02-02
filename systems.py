@@ -5,6 +5,7 @@ import ctypes
 from errors import SDL_Exception
 from components import *
 from utility import Position,Rectangle
+import sdl_manager
 
 class InputSystem(System):
     """Takes SDL_Events and forwards them to listeners"""
@@ -138,20 +139,10 @@ class RenderSystem(System):
         self.render_graphics(z1)
         SDL_RenderPresent(self.world.renderer)
 
-    def load_graphic(self,path,x=0,y=0,z=0):
-        path = str.encode(path)
-        surface = IMG_Load(path)
-        if surface == None:
-            raise OSError("File "+path+" could not be loaded.")
-
-        texture = SDL_CreateTextureFromSurface(self.world.renderer,
-                                               surface) 
-        if texture == None:
-            raise SDL_Exception
-
-        graphic = Graphic(texture,x,y,surface.contents.w,
-                                      surface.contents.h,z)
-        SDL_FreeSurface(surface)
+    def load_graphic(self,texture_name,x=0,y=0,z=0):
+        texture = sdl_manager.load_texture(self.world.renderer,
+                texture_name)
+        graphic = Graphic(texture,x,y,32,32,z)
         return graphic
         
 
