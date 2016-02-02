@@ -11,7 +11,7 @@ if renderer == None:
     raise SDL_Exception()
 
 img_paths = {
-        "human_m" : b"gfx/human_m.png",
+        "human_m"       : b"gfx/human_m.png",
         "cobble_blood1" : b"gfx/cobble_blood1.png"
 }
 
@@ -35,6 +35,9 @@ def load_texture(texture_name):
 
 @atexit.register
 def unload():
+    global loaded_textures
+    for texture in loaded_textures.values():
+        SDL_DestroyTexture(texture)
     global renderer,window
     SDL_DestroyRenderer(renderer)
     SDL_DestroyWindow(window)
