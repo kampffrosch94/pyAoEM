@@ -56,8 +56,9 @@ class TileMapSystem(System):
         tilemap_gc     = tilemap_entity.get(Graphic)
         tilemap        = tilemap_entity.get(TileMap)
 
-        SDL_SetRenderTarget(self.world.renderer,tilemap_gc.texture)
-        SDL_RenderClear(self.world.renderer)
+        renderer = sdl_manager.renderer
+        SDL_SetRenderTarget(renderer,tilemap_gc.texture)
+        SDL_RenderClear(renderer)
 
         src_rect = SDL_Rect(0,0,32,32)
         dest_rect = SDL_Rect(0,0,32,32)
@@ -71,11 +72,11 @@ class TileMapSystem(System):
                         texture = tilemap.textures[row[y]]
                         dest_rect.x = (x-root_pos.x) * 32
                         dest_rect.y = (y-root_pos.y) * 32
-                        SDL_RenderCopy( self.world.renderer,
+                        SDL_RenderCopy( renderer,
                                         texture,
                                         src_rect,
                                         dest_rect)
-        SDL_SetRenderTarget(self.world.renderer,None)
+        SDL_SetRenderTarget(renderer,None)
 
 class MapSystem(System): #TODO find better name
     """This system manages all entities which have a position on the map."""
@@ -123,25 +124,26 @@ class RenderSystem(System):
         self.world = world
 
     def render_graphics(self, graphics):
+        renderer = sdl_manager.renderer
         for graphic in graphics:
-            SDL_RenderCopy(self.world.renderer,
+            SDL_RenderCopy(renderer,
                     graphic.texture,
                     graphic.src_rect,
                     graphic.dest_rect)
 
     def process(self,entities):
-        SDL_RenderClear(self.world.renderer)
+        renderer = sdl_manager.renderer
+        SDL_RenderClear(renderer)
         graphics = [e.get(Graphic) for e in entities 
                     if e.get(Graphic).active]
         z0 = filter((lambda g: g.z == 0),graphics)
         z1 = filter((lambda g: g.z == 1),graphics)
         self.render_graphics(z0)
         self.render_graphics(z1)
-        SDL_RenderPresent(self.world.renderer)
+        SDL_RenderPresent(renderer)
 
     def load_graphic(self,texture_name,x=0,y=0,z=0):
-        texture = sdl_manager.load_texture(self.world.renderer,
-                texture_name)
+        texture = sdl_manager.load_texture(texture_name)
         graphic = Graphic(texture,x,y,32,32,z)
         return graphic
         

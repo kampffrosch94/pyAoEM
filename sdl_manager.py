@@ -1,5 +1,14 @@
 from sdl2 import *
 from sdl2.sdlimage import *
+import atexit
+
+
+SDL_Init(SDL_INIT_VIDEO)
+IMG_Init(IMG_INIT_JPG)
+window = SDL_CreateWindow(b"AoEM",0,0,640,640,SDL_SWSURFACE);
+renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED)
+if renderer == None:
+    raise SDL_Exception()
 
 img_paths = {
         "human_m" : b"gfx/human_m.png",
@@ -8,8 +17,8 @@ img_paths = {
 
 loaded_textures = {}
 
-def load_texture(renderer, texture_name):
-    global img_paths,loaded_textures
+def load_texture(texture_name):
+    global renderer,img_paths,loaded_textures
     if texture_name in loaded_textures:
         return loaded_textures[texture_name]
     surface = IMG_Load(img_paths[texture_name])
@@ -23,3 +32,11 @@ def load_texture(renderer, texture_name):
 
     loaded_textures[texture_name] = texture
     return texture
+
+@atexit.register
+def unload():
+    global renderer,window
+    SDL_DestroyRenderer(renderer)
+    SDL_DestroyWindow(window)
+    IMG_Quit()
+    SDL_Quit()

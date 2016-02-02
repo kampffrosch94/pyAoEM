@@ -83,14 +83,6 @@ class World(object):
         #The systems which use a certain componenttype
         self.componenttypes_to_system = {} 
 
-        SDL_Init(SDL_INIT_VIDEO)
-        IMG_Init(IMG_INIT_JPG)
-        self.window = SDL_CreateWindow(b"Test",0,0,640,640,
-                                       SDL_SWSURFACE);
-        self.renderer = SDL_CreateRenderer(self.window,-1,
-                                           SDL_RENDERER_ACCELERATED)
-        if self.renderer == None:
-            raise SDL_Exception()
 
         self.alive = True
 
@@ -158,11 +150,6 @@ class World(object):
             if hasattr(system,"destroy") and hasattr(
                     system.destroy,"__call__"):
                 system.destroy()
-
-        SDL_DestroyRenderer(self.renderer)
-        SDL_DestroyWindow(self.window)
-        IMG_Quit()
-        SDL_Quit()
             
 class System(object):
     """System which runs the code in a world.
