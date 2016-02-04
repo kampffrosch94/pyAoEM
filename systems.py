@@ -1,6 +1,7 @@
 from ecs import System
 from sdl2 import *
 from sdl2.sdlimage import *
+from sdl2.sdlttf import *
 import ctypes
 from errors import SDL_Exception
 from components import *
@@ -130,6 +131,7 @@ class RenderSystem(System):
                     graphic.texture,
                     graphic.src_rect,
                     graphic.dest_rect)
+        
 
     def process(self,entities):
         renderer = sdl_manager.renderer

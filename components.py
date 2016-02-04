@@ -14,15 +14,15 @@ class Graphic(object):
     Change x and y to change the position where the graphic will be
     rendered from the RenderSystem.
     """
-    def __init__(self,texture,x,y,width,height,z=0):
+    def __init__(self,texture,x=0,y=0,w=0,h=0,z=1):
         self.texture = texture
         if z < 0 or z > 1:
             raise NotImplementedError()
         self.z = z
         self.x = x
         self.y = y
-        self.src_rect = SDL_Rect(0,0,width,height)
-        self._dest_rect = SDL_Rect(x,y,width,height)
+        self.src_rect = SDL_Rect(0,0,w,h)
+        self._dest_rect = SDL_Rect(x,y,w,h)
         self.active = True
 
     @property

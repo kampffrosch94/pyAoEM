@@ -33,8 +33,8 @@ def main():
     player_char = Entity(world)
     player_char.name = "Player Character"
     
-    texturepath = ("human_m")
-    gc = rendersystem.load_graphic(texturepath,z=1)
+    texture = ("human_m")
+    gc = rendersystem.load_graphic(texture,z=1)
     mc = MapPos(1,1)
     player_char.set(gc)
     player_char.set(mc)
@@ -90,6 +90,11 @@ def main():
     global_input.get(InputMap).add_key_handler(SDLK_w,map_up)
     global_input.get(InputMap).add_key_handler(SDLK_s,map_down)
     global_input.get(InputMap).add_key_handler(SDLK_q,end_world)
+
+    text_test = Entity(world)
+    graphic = sdl_manager.create_text_graphic(b"Test Test test")
+    graphic.y = 500
+    text_test.set(graphic)
 
     while world.alive:
         world.invoke_system(WorldStepSystem)
