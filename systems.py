@@ -80,7 +80,7 @@ class TileMapSystem(System):
         SDL_SetRenderTarget(renderer,None)
 
 class MapSystem(System): #TODO find better name
-    """This system manages all entities which have a position on the map."""
+    """This system buffers all entities which have a position on the map."""
     def __init__(self,world):
         System.__init__(self, [MapPos])
         self.map_entities = {}

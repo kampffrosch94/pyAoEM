@@ -92,8 +92,14 @@ def main():
     global_input.get(InputMap).add_key_handler(SDLK_q,end_world)
 
     text_test = Entity(world)
-    graphic = sdl_manager.create_text_graphic(b"Test Test test")
-    graphic.y = 500
+    text = """Es war einmal ein Mann. 
+Der hatte sieben Soehne.
+Und die sieben Soehne sagten:
+\"Ach Vater, erzaehl uns doch eine Geschichte.\" 
+Und da fing der Vater an: 
+Es war einmal ein Mann..."""
+    graphic = sdl_manager.create_text_graphic(text.encode())
+    graphic.y = 485
     text_test.set(graphic)
 
     while world.alive:

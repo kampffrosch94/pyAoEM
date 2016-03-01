@@ -8,11 +8,16 @@ import atexit
 SDL_Init(SDL_INIT_VIDEO)
 IMG_Init(IMG_INIT_JPG)
 TTF_Init()
-window = SDL_CreateWindow(b"AoEM",0,0,640,640,SDL_SWSURFACE);
+WINDOW_W = 640
+WINDOW_H = 640
+FONT_SIZE = 14
+window = SDL_CreateWindow(b"AoEM",0,0,WINDOW_W,WINDOW_H,SDL_SWSURFACE);
 renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED)
 if renderer == None:
     raise SDL_Exception()
-font = TTF_OpenFont(b"fonts/OpenSans-Regular.ttf",16)
+#font = TTF_OpenFont(b"fonts/OpenSans-Regular.ttf",20)
+#font = TTF_OpenFont(b"fonts/AnonymousPro-Regular.ttf",20)
+font = TTF_OpenFont(b"fonts/VeraMono.ttf",FONT_SIZE)
 default_fg = SDL_Color()
 
 img_paths = {
@@ -42,7 +47,8 @@ def create_text_graphic(text,fg = None):
     global renderer,font,default_fg
     if fg is None:
         fg = default_fg
-    text_surface = TTF_RenderText_Solid(font,text,fg)
+    #text_surface = TTF_RenderText_Solid(font,text,fg)
+    text_surface = TTF_RenderText_Blended_Wrapped(font,text,fg,WINDOW_W)
     text_texture = SDL_CreateTextureFromSurface(renderer,text_surface)
     SDL_FreeSurface(text_surface)
     graphic = Graphic(text_texture,
