@@ -1,4 +1,4 @@
-from ecs import System
+from ecs import System, Entity
 from sdl2 import *
 from sdl2.sdlimage import *
 from sdl2.sdlttf import *
@@ -33,6 +33,7 @@ class InputSystem(System):
                     break
 
 class TileMap(object):
+    #TODO move to componenets or merge with the system
     """A map which holds tiles.
     
     self.textures is a list with textures
@@ -116,6 +117,45 @@ class MapToGraphicSystem(System):
                            (mc.y - self.root_pos.y)* 32)
             gc.active = in_view(gc)
 
+class LogSystem(System):
+    """Holds and Renders the Messagelog."""
+    def __init__(self,world):
+        System.__init__(self)
+        self.messages = []
+        world.message_log = self
+
+        self.texture = SDL_CreateTexture(
+                sdl_manager.renderer,
+                SDL_PIXELFORMAT_RGBA8888,
+                SDL_TEXTUREACCESS_TARGET,160,480)
+        e = Entity(world)
+        g = Graphic(self.texture,x=0,y=480)
+        e.set(g)
+
+    def add_msg(self,msg):
+        self.messages.append(msg)
+        if len(self.messages) > 9:
+            del self.messages[0]
+        self.dirty = True
+
+    def process(self,entities=None):
+        if self.dirty:
+            renderer = sdl_manager.renderer
+            SDL_SetRenderTarget(renderer,self.texture)
+            SDL_RenderClear(renderer)
+            y = 0
+            for msg in self.messages:
+                g = sdl_manager.create_text_graphic(msg)
+                g.y = y
+                SDL_RenderCopy( renderer,
+                                g.texture,
+                                g.src_rect,
+                                g.dest_rect)
+                y += g.h
+                g.destroy()
+            SDL_SetRenderTarget(renderer,None)
+            self.dirty = False
+
 class RenderSystem(System):
     """Renders textures to the window"""
     def __init__(self,world):
@@ -132,7 +172,6 @@ class RenderSystem(System):
                     graphic.src_rect,
                     graphic.dest_rect)
         
-
     def process(self,entities):
         renderer = sdl_manager.renderer
         SDL_RenderClear(renderer)

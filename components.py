@@ -1,5 +1,7 @@
 from sdl2 import *
 from utility import Position
+from errors import SDL_Exception
+from ctypes import byref
 __doc__ = """This File holds the various components of the ecs.
 
 A component should only hold data and no functionality if possible."""
@@ -21,9 +23,23 @@ class Graphic(object):
         self.z = z
         self.x = x
         self.y = y
+        if w == 0 or h == 0:
+            flags = Uint32()
+            access = c_int()
+            w = c_int()
+            h = c_int()
+            ret = SDL_QueryTexture(texture, byref(flags), 
+                        byref(access), byref(w), byref(h))
+            if ret == -1:
+                raise SDL_Exception()
+            w = w.value
+            h = h.value
+
+        self.w = w
+        self.h = h
         self.src_rect = SDL_Rect(0,0,w,h)
         self._dest_rect = SDL_Rect(x,y,w,h)
-        self.active = True
+        self.active = True #TODO make that a component
 
     @property
     def dest_rect(self):

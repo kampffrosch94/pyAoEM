@@ -5,6 +5,8 @@ from systems import *
 from components import *
 from errors import SDL_Exception
 from utility import Position
+import sdl_manager
+
 def main():
     world = World()
 
@@ -20,12 +22,18 @@ def main():
     tilemapsystem = TileMapSystem(world)
     world.add_system(tilemapsystem)
 
+    logsystem = LogSystem(world)
+    logsystem.add_msg("Message 1")
+    logsystem.add_msg("Message 2")
+    world.add_system(logsystem)
+
     inputsystem = InputSystem(world)
     world.add_system(inputsystem)
     worldstepsystem = WorldStepSystem(world,[
         mapsystem,
         maptographicsystem,
         tilemapsystem,
+        logsystem,
         rendersystem,
         inputsystem])
     world.add_system(worldstepsystem)
@@ -59,7 +67,7 @@ def main():
     texturepath = ("cobble_blood1")
     default_texture = rendersystem.load_graphic(texturepath).texture
     tmap = TileMap(1000,1000,default_texture)
-    import sdl_manager
+
     map_texture = SDL_CreateTexture(
             sdl_manager.renderer,
             SDL_PIXELFORMAT_RGBA8888,
@@ -83,6 +91,13 @@ def main():
     def end_world():
         world.end()
 
+    counter = 3
+    def add_msg():
+        nonlocal counter
+        msg = "Message " + str(counter) 
+        logsystem.add_msg(msg)
+        counter += 1
+
     global_input = Entity(world)
     global_input.set(InputMap())
     global_input.get(InputMap).add_key_handler(SDLK_d,map_right)
@@ -90,17 +105,7 @@ def main():
     global_input.get(InputMap).add_key_handler(SDLK_w,map_up)
     global_input.get(InputMap).add_key_handler(SDLK_s,map_down)
     global_input.get(InputMap).add_key_handler(SDLK_q,end_world)
-
-    text_test = Entity(world)
-    text = """Es war einmal ein Mann. 
-Der hatte sieben Soehne.
-Und die sieben Soehne sagten:
-\"Ach Vater, erzaehl uns doch eine Geschichte.\" 
-Und da fing der Vater an: 
-Es war einmal ein Mann..."""
-    graphic = sdl_manager.create_text_graphic(text.encode())
-    graphic.y = 485
-    text_test.set(graphic)
+    global_input.get(InputMap).add_key_handler(SDLK_m,add_msg)
 
     while world.alive:
         world.invoke_system(WorldStepSystem)

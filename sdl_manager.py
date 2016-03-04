@@ -43,18 +43,20 @@ def load_texture(texture_name):
     loaded_textures[texture_name] = texture
     return texture
 
-def create_text_graphic(text,fg = None):
+def create_text_texture(text,fg = None):
     global renderer,font,default_fg
     if fg is None:
         fg = default_fg
+    if hasattr(text,"encode"):
+        text = text.encode()
     #text_surface = TTF_RenderText_Solid(font,text,fg)
     text_surface = TTF_RenderText_Blended_Wrapped(font,text,fg,WINDOW_W)
     text_texture = SDL_CreateTextureFromSurface(renderer,text_surface)
     SDL_FreeSurface(text_surface)
-    graphic = Graphic(text_texture,
-                      w = text_surface.contents.w,
-                      h = text_surface.contents.h)
-    return graphic
+    return text_texture
+
+def create_text_graphic(text,fg = None):
+    return Graphic(create_text_texture(text,fg))
 
 @atexit.register
 def unload():
