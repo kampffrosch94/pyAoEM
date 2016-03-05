@@ -90,6 +90,8 @@ def main():
         tmap.root_pos.y += 1
     def end_world():
         world.end()
+    def delete_test():
+        player_char.delete(Graphic)
 
     counter = 3
     def add_msg():
@@ -106,6 +108,7 @@ def main():
     global_input.get(InputMap).add_key_handler(SDLK_s,map_down)
     global_input.get(InputMap).add_key_handler(SDLK_q,end_world)
     global_input.get(InputMap).add_key_handler(SDLK_m,add_msg)
+    global_input.get(InputMap).add_key_handler(SDLK_x,delete_test)
 
     while world.alive:
         world.invoke_system(WorldStepSystem)

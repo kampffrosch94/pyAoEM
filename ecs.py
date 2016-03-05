@@ -43,23 +43,35 @@ class Entity(object):
         if name in ("id", "world"):
             object.__setattr__(self, name, value)
         else:
-            wctypes = self.world.componenttypes
             if name not in self.world.componenttypes:
                 self.world.componenttypes.add(name)
                 self.world.components[name] = {}
+            if self in self.world.components[name]:
+                raise AttributeError("%s is already an attribute of %r" % 
+                        (name,self))
             self.world.components[name][self] = value
-            self.world.invalidate_ct_cache(name)
+
+            system_keys = self.world.find_entity_systems_wct(self,name)
+            for sk in system_keys:
+                self.world.system_entities[sk].append(self)
 
     def __delattr__(self, name):
         """Deletes the component data related to the Entity."""
         if name in ("id", "world"):
             raise AttributeError("'%s' cannot be deleted.", name)
-        try:
-            ctype = self.world.componenttypes[name]
-        except KeyError:
-            raise AttributeError("object '%s' has no attribute '%s'" % \
-                (self.__class__.__name__, name))
-        del self.world.components[ctype][self]
+        if not self in self.world.components[name]:
+            raise AttributeError("Entity '%r' has no attribute '%s'" % \
+                (self, name))
+        
+        c = self.world.components[name][self]
+        if hasattr(c,"destroy") and hasattr(c.destroy,"__call__"):
+            c.destroy()
+
+        system_keys = self.world.find_entity_systems_wct(self,name)
+        for sk in system_keys:
+            self.world.system_entities[sk].remove(self)
+
+        del self.world.components[name][self]
 
     def set(self,attribute):
         self.__setattr__(attribute.__class__.__name__,attribute)
@@ -81,31 +93,17 @@ class World(object):
         self.componenttypes = set()
 
         self.systems = {}
-        self.system_entity_cache = {}
-        self.system_entity_cache_useable = set()
-        #The systems which use a certain componenttype
+        self.system_entities = {}
+        #The keys of systems which use a certain componenttype
         self.componenttypes_to_system = {} 
-
 
         self.alive = True
 
-    def remove_entity(self, entity):
+    def remove_entity(self, entity): 
         """Removes an Entity from the World, including all its data."""
-        for ct in self.componenttypes:
-            if entity in self.components[ct]:
-                c = self.components[ct][entity]
-                if hasattr(c,"destroy") and hasattr(c.destroy,"__call__"):
-                    c.destroy()
-                del self.components[ct][entity]
-                self.invalidate_ct_cache(ct)
+        for ct in entity:
+            entity.__delattr__(ct)
         self.entities.remove(entity)
-
-    def invalidate_ct_cache(self,componenttype):
-        if not componenttype in self.componenttypes_to_system:
-            return
-        for system_key in self.componenttypes_to_system[componenttype]:
-            if system_key in self.system_entity_cache_useable:
-                self.system_entity_cache_useable.remove(system_key)
 
     def add_system(self,system):
         if not isinstance(system,System):
@@ -115,30 +113,34 @@ class World(object):
             raise KeyError("A system of this name is already registered.")
 
         self.systems[key] = system
-        self.system_entity_cache[key] = set()
         for ct in system.componenttypes:
             if not ct in self.componenttypes_to_system:
-                self.componenttypes_to_system[ct] = set()
-            self.componenttypes_to_system[ct].add(key)
+                self.componenttypes_to_system[ct] = []
+            self.componenttypes_to_system[ct].append(key)
 
+        if len(system.componenttypes) > 0:
+            self.system_entities[key] = self.find_system_entities(system)
+        else:
+            self.system_entities[key] = []
+
+    def find_system_entities(self,system):
+        typerestriction = system.componenttypes
+        def condition(typerestriction,entity):
+            ecs = [ec for ec in entity] #all component_ts of entity
+            return typerestriction.issubset(ecs)
+        return [e for e in self.entities if condition(typerestriction,e)]
+
+    def find_entity_systems_wct(self,entity,ct):
+        ecs = [ec for ec in entity] #all component_ts of entity
+        return [key for key in self.systems 
+                  if (ct in self.systems[key].componenttypes) and 
+                      self.systems[key].componenttypes.issubset(ecs)]
 
     def invoke_system(self,systemclass):
-        def find_matching_entities(typerestriction):
-            def condition(typerestriction,entity):
-                ecs = [ec for ec in entity]
-                return typerestriction.issubset(ecs)
-            return [e for e in self.entities 
-                    if condition(typerestriction,e)]
         key = systemclass.__name__
         s = self.systems[key]
         if s.active:
-            if (key in self.system_entity_cache_useable):
-                s.process(self.system_entity_cache[key])
-            else:
-                me = find_matching_entities(s.componenttypes)
-                s.process(me)
-                self.system_entity_cache[key] = me
-                self.system_entity_cache_useable.add(key) 
+            s.process(self.system_entities[key])
 
     def end(self):
         self.alive = False
@@ -172,3 +174,5 @@ class System(object):
     def process(self,entities):
         raise NotImplementedError("Must be implemented by a Subclass.")
 
+    def __hash__(self):
+        return hash(self.__class__.__name__)
