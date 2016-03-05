@@ -5,3 +5,5 @@ todo*
 build/
 dist
 *.spec
+*.dll
+sdl2/
