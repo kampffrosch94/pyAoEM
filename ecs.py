@@ -67,9 +67,12 @@ class Entity(object):
     def get(self, classobject):
         return self.__getattr__(classobject.__name__)
 
-    def delete(self):
+    def delete(self, classobject):
+        return self.__delattr__(classobject.__name__)
+
+    def remove(self):
         """Removes the Entity from the world it belongs to."""
-        self.world.delete(self)
+        self.world.remove_entity(self)
 
 class World(object):
     def __init__(self):
@@ -86,7 +89,7 @@ class World(object):
 
         self.alive = True
 
-    def delete(self, entity):
+    def remove_entity(self, entity):
         """Removes an Entity from the World, including all its data."""
         for ct in self.componenttypes:
             if entity in self.components[ct]:
@@ -144,7 +147,7 @@ class World(object):
         entities = self.entities.copy() #avoid del in the list we are
                                         #operating on
         for entity in entities:
-            self.delete(entity)
+            self.remove_entity(entity)
 
         for key,system in self.systems.items():
             if hasattr(system,"destroy") and hasattr(
