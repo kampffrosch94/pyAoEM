@@ -183,12 +183,6 @@ class RenderSystem(System):
         self.render_graphics(z1)
         SDL_RenderPresent(renderer)
 
-    def load_graphic(self,texture_name,x=0,y=0,z=0):
-        texture = sdl_manager.load_texture(texture_name)
-        graphic = Graphic(texture,x,y,32,32,z)
-        return graphic
-        
-
 class WorldStepSystem(System):
     """The System which runs the gameloop"""
     def __init__(self,world,systems):

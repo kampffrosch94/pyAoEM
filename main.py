@@ -41,8 +41,8 @@ def main():
     player_char = Entity(world)
     player_char.name = "Player Character"
     
-    texture = ("human_m")
-    gc = rendersystem.load_graphic(texture,z=1)
+    texture = sdl_manager.load_texture("human_m")
+    gc = Graphic(texture,z=1)
     mc = MapPos(1,1)
     player_char.set(gc)
     player_char.set(mc)
@@ -64,8 +64,8 @@ def main():
     player_char.get(InputMap).add_key_handler(SDLK_j,move_down)
     
     battlefield = Entity(world)
-    texturepath = ("cobble_blood1")
-    default_texture = rendersystem.load_graphic(texturepath).texture
+    texturepath = "cobble_blood1"
+    default_texture = sdl_manager.load_texture(texturepath)
     tmap = TileMap(1000,1000,default_texture)
 
     map_texture = SDL_CreateTexture(
