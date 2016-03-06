@@ -16,8 +16,16 @@ def main():
     maptographicsystem = MapToGraphicSystem(world)
     world.add_system(maptographicsystem)
 
-    rendersystem = RenderSystem(world)
-    world.add_system(rendersystem)
+    battlerendersystem = BattleRenderSystem()
+    world.add_system(battlerendersystem)
+
+    startrendersystem = StartRenderSystem()
+    startrendersystem.active = False
+    world.add_system(startrendersystem)
+
+    def switch_buffer():
+        battlerendersystem.active = not battlerendersystem.active
+        startrendersystem.active  = not startrendersystem.active
 
     tilemapsystem = TileMapSystem(world)
     world.add_system(tilemapsystem)
@@ -34,7 +42,8 @@ def main():
         maptographicsystem,
         tilemapsystem,
         logsystem,
-        rendersystem,
+        startrendersystem,
+        battlerendersystem,
         inputsystem])
     world.add_system(worldstepsystem)
 
@@ -45,6 +54,7 @@ def main():
     gc = Graphic(texture,z=1)
     mc = MapPos(1,1)
     player_char.set(gc)
+    player_char.set(BattleBuffer())
     player_char.set(mc)
 
     player_char.set(InputMap())
@@ -74,6 +84,7 @@ def main():
             SDL_TEXTUREACCESS_TARGET,640,480)
     map_graphic = Graphic(map_texture,0,0,640,480,z=0)
     battlefield.set(map_graphic)
+    battlefield.set(BattleBuffer())
     battlefield.set(tmap)
 
     def map_left():
@@ -109,6 +120,8 @@ def main():
     global_input.get(InputMap).add_key_handler(SDLK_q,end_world)
     global_input.get(InputMap).add_key_handler(SDLK_m,add_msg)
     global_input.get(InputMap).add_key_handler(SDLK_x,delete_test)
+    global_input.get(InputMap).add_key_handler(SDLK_t,switch_buffer)
+
 
     while world.alive:
         world.invoke_system(WorldStepSystem)

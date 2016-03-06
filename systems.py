@@ -131,6 +131,7 @@ class LogSystem(System):
         e = Entity(world)
         g = Graphic(self.texture,x=0,y=480)
         e.set(g)
+        e.set(BattleBuffer())
 
     def add_msg(self,msg):
         self.messages.append(msg)
@@ -158,11 +159,10 @@ class LogSystem(System):
 
 class RenderSystem(System):
     """Renders textures to the window"""
-    def __init__(self,world):
-        System.__init__(self,[Graphic])
-
-        IMG_Init(IMG_INIT_JPG)
-        self.world = world
+    def __init__(self,extra_cts = []):
+        cts = [Graphic]
+        cts.extend(extra_cts)
+        System.__init__(self,cts)
 
     def render_graphics(self, graphics):
         renderer = sdl_manager.renderer
@@ -182,6 +182,14 @@ class RenderSystem(System):
         self.render_graphics(z0)
         self.render_graphics(z1)
         SDL_RenderPresent(renderer)
+
+class BattleRenderSystem(RenderSystem):
+    def __init__(self):
+        RenderSystem.__init__(self,[BattleBuffer])
+
+class StartRenderSystem(RenderSystem):
+    def __init__(self):
+        RenderSystem.__init__(self,[StartBuffer])
 
 class WorldStepSystem(System):
     """The System which runs the gameloop"""
