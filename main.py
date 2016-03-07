@@ -6,6 +6,8 @@ from components import *
 from errors import SDL_Exception
 from utility import Position
 import sdl_manager
+import map_manager
+from map_manager import TileMap
 
 def main():
     world = World()
@@ -24,9 +26,6 @@ def main():
         battlerendersystem.active = not battlerendersystem.active
         startrendersystem.active  = not startrendersystem.active
 
-    tilemapsystem = TileMapSystem(world)
-    world.add_system(tilemapsystem)
-
     logsystem = LogSystem(world)
     logsystem.add_msg("Message 1")
     logsystem.add_msg("Message 2")
@@ -36,7 +35,6 @@ def main():
     world.add_system(inputsystem)
     worldstepsystem = WorldStepSystem(world,[
         maptographicsystem,
-        tilemapsystem,
         logsystem,
         startrendersystem,
         battlerendersystem,
@@ -69,31 +67,19 @@ def main():
     player_char.get(InputMap).add_key_handler(SDLK_k,move_up)
     player_char.get(InputMap).add_key_handler(SDLK_j,move_down)
     
-    battlefield = Entity(world)
     texturepath = "cobble_blood1"
     default_texture = sdl_manager.load_texture(texturepath)
-    tmap = TileMap(1000,1000,default_texture)
 
-    map_texture = SDL_CreateTexture(
-            sdl_manager.renderer,
-            SDL_PIXELFORMAT_RGBA8888,
-            SDL_TEXTUREACCESS_TARGET,640,480)
-    map_graphic = Graphic(map_texture,0,0,640,480,z=0)
-    battlefield.set(map_graphic)
-    battlefield.set(BattleBuffer())
-    battlefield.set(tmap)
+    map_manager.current_map = TileMap(1000,1000,default_texture)
 
+    from map_manager import current_map as tmap
     def map_left():
-        maptographicsystem.root_pos.x -= 1
         tmap.root_pos.x -= 1
     def map_right():
-        maptographicsystem.root_pos.x += 1
         tmap.root_pos.x += 1
     def map_up():
-        maptographicsystem.root_pos.y -= 1
         tmap.root_pos.y -= 1
     def map_down():
-        maptographicsystem.root_pos.y += 1
         tmap.root_pos.y += 1
     def end_world():
         world.end()

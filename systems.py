@@ -7,6 +7,8 @@ from errors import SDL_Exception
 from components import *
 from utility import Position,Rectangle
 import sdl_manager
+from sdl_manager import renderer
+import map_manager
 
 class InputSystem(System):
     """Takes SDL_Events and forwards them to listeners"""
@@ -32,61 +34,12 @@ class InputSystem(System):
                     key_binds[keysym]()
                     break
 
-class TileMap(object):
-    #TODO move to componenets or merge with the system
-    """A map which holds tiles.
-    
-    self.textures is a list with textures
-    self.tiles is a 2D grid which contains 
-    texturenumbers for self.textures """
-    def __init__(self,w,h,defaulttexture):
-        self.w = w
-        self.h = h
-        self.tiles = [[0 for x in range(h)] for x in range(w)] 
-        self.textures = [defaulttexture]
-        self.root_pos = Position(0,0)
-
-class TileMapSystem(System):
-    def __init__(self,world):
-        System.__init__(self, [Graphic,TileMap])
-        self.world = world
-
-    def process(self,entities):
-        if len(entities) != 1:
-            raise NotImplementedError()
-        tilemap_entity = entities[0]
-        tilemap_gc     = tilemap_entity.get(Graphic)
-        tilemap        = tilemap_entity.get(TileMap)
-
-        renderer = sdl_manager.renderer
-        SDL_SetRenderTarget(renderer,tilemap_gc.texture)
-        SDL_RenderClear(renderer)
-
-        src_rect = SDL_Rect(0,0,32,32)
-        dest_rect = SDL_Rect(0,0,32,32)
-        root_pos = tilemap.root_pos
-
-        for x in range(root_pos.x,root_pos.x + 20):
-            if x >= 0 and x < tilemap.w:
-                row = tilemap.tiles[x]
-                for y in range(root_pos.y,root_pos.y + 15):
-                    if y >= 0 and y < tilemap.h:
-                        texture = tilemap.textures[row[y]]
-                        dest_rect.x = (x-root_pos.x) * 32
-                        dest_rect.y = (y-root_pos.y) * 32
-                        SDL_RenderCopy( renderer,
-                                        texture,
-                                        src_rect,
-                                        dest_rect)
-        SDL_SetRenderTarget(renderer,None)
-
 class MapToGraphicSystem(System):
     """Converts coordinates on the map to coordinates in the window.
     
     Change root_pos to move the left upper corner of the visible map."""
     def __init__(self,world):
         System.__init__(self, [Graphic,MapPos])
-        self.root_pos = Position(0,0)
         self.map_bounds = Rectangle(0,0,640,480)
 
     def process(self,entities):
@@ -95,11 +48,12 @@ class MapToGraphicSystem(System):
             return (gc.x >= bounds.x and gc.x < bounds.xe and
                     gc.y >= bounds.y and gc.y < bounds.ye)
 
+        root_pos = map_manager.current_map.root_pos
         for entity in entities:
             gc = entity.get(Graphic)
             mc = entity.get(MapPos)
-            (gc.x,gc.y) = ((mc.x - self.root_pos.x)* 32,
-                           (mc.y - self.root_pos.y)* 32)
+            (gc.x,gc.y) = ((mc.x - root_pos.x)* 32,
+                           (mc.y - root_pos.y)* 32)
             gc.active = in_view(gc)
 
 class LogSystem(System):
@@ -157,20 +111,28 @@ class RenderSystem(System):
                     graphic.src_rect,
                     graphic.dest_rect)
         
-    def process(self,entities):
-        renderer = sdl_manager.renderer
-        SDL_RenderClear(renderer)
+    def render_entities(self,entities):
         graphics = [e.get(Graphic) for e in entities 
                     if e.get(Graphic).active]
         z0 = filter((lambda g: g.z == 0),graphics)
         z1 = filter((lambda g: g.z == 1),graphics)
         self.render_graphics(z0)
         self.render_graphics(z1)
+
+    def process(self,entities):
+        SDL_RenderClear(renderer)
+        self.render_entities(entities)
         SDL_RenderPresent(renderer)
 
 class BattleRenderSystem(RenderSystem):
     def __init__(self):
         RenderSystem.__init__(self,[BattleBuffer])
+
+    def process(self,entities):
+        SDL_RenderClear(renderer)
+        map_manager.current_map.render()
+        self.render_entities(entities)
+        SDL_RenderPresent(renderer)
 
 class StartRenderSystem(RenderSystem):
     def __init__(self):
