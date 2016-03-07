@@ -8,6 +8,7 @@ import sdl_manager
 from sdl_manager import renderer
 import map_manager
 import input_manager
+import battle_log
 
 class InputSystem(System):
     """Takes SDL_Events and forwards them to listeners"""
@@ -40,45 +41,6 @@ class MapToGraphicSystem(System):
                            (mc.y - root_pos.y)* 32)
             gc.active = in_view(gc)
 
-class LogSystem(System):
-    """Holds and Renders the Messagelog."""
-    def __init__(self,world):
-        System.__init__(self)
-        self.messages = []
-        world.message_log = self
-
-        self.texture = SDL_CreateTexture(
-                sdl_manager.renderer,
-                SDL_PIXELFORMAT_RGBA8888,
-                SDL_TEXTUREACCESS_TARGET,160,480)
-        e = Entity(world)
-        g = Graphic(self.texture,x=0,y=480)
-        e.set(g)
-        e.set(BattleBuffer())
-
-    def add_msg(self,msg):
-        self.messages.append(msg)
-        if len(self.messages) > 9:
-            del self.messages[0]
-        self.dirty = True
-
-    def process(self,entities=None):
-        if self.dirty:
-            renderer = sdl_manager.renderer
-            SDL_SetRenderTarget(renderer,self.texture)
-            SDL_RenderClear(renderer)
-            y = 0
-            for msg in self.messages:
-                g = sdl_manager.create_text_graphic(msg)
-                g.y = y
-                SDL_RenderCopy( renderer,
-                                g.texture,
-                                g.src_rect,
-                                g.dest_rect)
-                y += g.h
-                g.destroy()
-            SDL_SetRenderTarget(renderer,None)
-            self.dirty = False
 
 class RenderSystem(System):
     """Renders textures to the window"""
@@ -116,6 +78,7 @@ class BattleRenderSystem(RenderSystem):
         SDL_RenderClear(renderer)
         map_manager.current_map.render()
         self.render_entities(entities)
+        battle_log.render()
         SDL_RenderPresent(renderer)
 
 class StartRenderSystem(RenderSystem):

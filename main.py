@@ -27,17 +27,11 @@ def main():
         battlerendersystem.active = not battlerendersystem.active
         startrendersystem.active  = not startrendersystem.active
 
-    logsystem = LogSystem(world)
-    logsystem.add_msg("Message 1")
-    logsystem.add_msg("Message 2")
-    world.add_system(logsystem)
-
     inputsystem = InputSystem()
     world.add_system(inputsystem)
 
     worldstepsystem = WorldStepSystem(world,[
         maptographicsystem,
-        logsystem,
         startrendersystem,
         battlerendersystem,
         inputsystem])
@@ -73,11 +67,15 @@ def main():
         world.end()
     def delete_test():
         player_char.delete(Graphic)
+
+
+    battle_log.add_msg("Message 1")
+    battle_log.add_msg("Message 2")
     counter = 3
     def add_msg():
         nonlocal counter
         msg = "Message " + str(counter) 
-        logsystem.add_msg(msg)
+        battle_log.add_msg(msg)
         counter += 1
 
     def move_right():
