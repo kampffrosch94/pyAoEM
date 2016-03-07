@@ -10,9 +10,6 @@ import sdl_manager
 def main():
     world = World()
 
-    mapsystem = MapSystem(world)
-    world.add_system(mapsystem)
-
     maptographicsystem = MapToGraphicSystem(world)
     world.add_system(maptographicsystem)
 
@@ -38,7 +35,6 @@ def main():
     inputsystem = InputSystem(world)
     world.add_system(inputsystem)
     worldstepsystem = WorldStepSystem(world,[
-        mapsystem,
         maptographicsystem,
         tilemapsystem,
         logsystem,
