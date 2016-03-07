@@ -16,6 +16,8 @@ def activate_mode(mode):
     active_modes.append(mode)
 def deactivate_mode(mode):
     active_modes.remove(mode)
+def clear_mode(mode):
+    mode_key_handler[mode].clear()
 
 event = SDL_Event()
 quit_handler = None
