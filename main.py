@@ -6,6 +6,7 @@ from components import *
 from errors import SDL_Exception
 from utility import Position
 import sdl_manager
+import input_manager
 import map_manager
 from map_manager import TileMap
 
@@ -31,8 +32,9 @@ def main():
     logsystem.add_msg("Message 2")
     world.add_system(logsystem)
 
-    inputsystem = InputSystem(world)
+    inputsystem = InputSystem()
     world.add_system(inputsystem)
+
     worldstepsystem = WorldStepSystem(world,[
         maptographicsystem,
         logsystem,
@@ -51,21 +53,7 @@ def main():
     player_char.set(BattleBuffer())
     player_char.set(mc)
 
-    player_char.set(InputMap())
 
-    def move_right():
-        player_char.get(MapPos).x += 1
-    def move_left():
-        player_char.get(MapPos).x -= 1
-    def move_up():
-        player_char.get(MapPos).y -= 1
-    def move_down():
-        player_char.get(MapPos).y += 1
-
-    player_char.get(InputMap).add_key_handler(SDLK_l,move_right)
-    player_char.get(InputMap).add_key_handler(SDLK_h,move_left)
-    player_char.get(InputMap).add_key_handler(SDLK_k,move_up)
-    player_char.get(InputMap).add_key_handler(SDLK_j,move_down)
     
     texturepath = "cobble_blood1"
     default_texture = sdl_manager.load_texture(texturepath)
@@ -85,7 +73,6 @@ def main():
         world.end()
     def delete_test():
         player_char.delete(Graphic)
-
     counter = 3
     def add_msg():
         nonlocal counter
@@ -93,16 +80,30 @@ def main():
         logsystem.add_msg(msg)
         counter += 1
 
-    global_input = Entity(world)
-    global_input.set(InputMap())
-    global_input.get(InputMap).add_key_handler(SDLK_d,map_right)
-    global_input.get(InputMap).add_key_handler(SDLK_a,map_left)
-    global_input.get(InputMap).add_key_handler(SDLK_w,map_up)
-    global_input.get(InputMap).add_key_handler(SDLK_s,map_down)
-    global_input.get(InputMap).add_key_handler(SDLK_q,end_world)
-    global_input.get(InputMap).add_key_handler(SDLK_m,add_msg)
-    global_input.get(InputMap).add_key_handler(SDLK_x,delete_test)
-    global_input.get(InputMap).add_key_handler(SDLK_t,switch_buffer)
+    def move_right():
+        player_char.get(MapPos).x += 1
+    def move_left():
+        player_char.get(MapPos).x -= 1
+    def move_up():
+        player_char.get(MapPos).y -= 1
+    def move_down():
+        player_char.get(MapPos).y += 1
+
+    input_manager.add_handler("battle",SDLK_l,move_right)
+    input_manager.add_handler("battle",SDLK_h,move_left)
+    input_manager.add_handler("battle",SDLK_k,move_up)
+    input_manager.add_handler("battle",SDLK_j,move_down)
+    
+    input_manager.add_handler("battle",SDLK_d,map_right)
+    input_manager.add_handler("battle",SDLK_a,map_left)
+    input_manager.add_handler("battle",SDLK_w,map_up)
+    input_manager.add_handler("battle",SDLK_s,map_down)
+    input_manager.add_handler("battle",SDLK_q,end_world)
+    input_manager.quit_handler = end_world
+    input_manager.add_handler("battle",SDLK_m,add_msg)
+    input_manager.add_handler("battle",SDLK_x,delete_test)
+    input_manager.add_handler("battle",SDLK_t,switch_buffer)
+    input_manager.activate_mode("battle")
 
 
     while world.alive:

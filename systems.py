@@ -1,7 +1,5 @@
 from ecs import System, Entity
 from sdl2 import *
-from sdl2.sdlimage import *
-from sdl2.sdlttf import *
 import ctypes
 from errors import SDL_Exception
 from components import *
@@ -9,30 +7,16 @@ from utility import Position,Rectangle
 import sdl_manager
 from sdl_manager import renderer
 import map_manager
+import input_manager
 
 class InputSystem(System):
     """Takes SDL_Events and forwards them to listeners"""
-    def __init__(self,world):
-        System.__init__(self,[InputMap])
-        self.world = world
-        self.event = SDL_Event()
+    def __init__(self):
+        System.__init__(self,[])
 
     def process(self,entities):
-        key_binds = {}
-        for entity in entities:
-            key_binds.update(entity.get(InputMap).key_handlers)
-        while True:
-            if SDL_WaitEvent(ctypes.byref(self.event)) == 0:
-               raise SDL_Exception()
+        input_manager.handle_event()
 
-            if self.event.type == SDL_QUIT:
-                self.world.end()
-                break
-            elif self.event.type == SDL_KEYDOWN:
-                keysym = self.event.key.keysym.sym
-                if keysym in key_binds:
-                    key_binds[keysym]()
-                    break
 
 class MapToGraphicSystem(System):
     """Converts coordinates on the map to coordinates in the window.

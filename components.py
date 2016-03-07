@@ -59,11 +59,4 @@ class Graphic(object):
     def destroy(self):
         SDL_DestroyTexture(self.texture)
 
-class InputMap(object):
-    """Contains mappings from inputkeys to functions."""
-    def __init__(self):
-        self.key_handlers = {}
-
-    def add_key_handler(self,key_code, handlerfunc):
-        self.key_handlers[key_code] = handlerfunc
 
