@@ -8,7 +8,7 @@ class Entity(object):
     def __init__(self,world):
         self.id = hash(uuid.uuid4())
         self.world = world
-        world.entities.add(self)
+        world.entities.append(self)
 
     def __hash__(self):
         return self.id
@@ -88,7 +88,7 @@ class Entity(object):
 
 class World(object):
     def __init__(self):
-        self.entities = set()
+        self.entities = []
         self.components = {}
         self.componenttypes = set()
 
