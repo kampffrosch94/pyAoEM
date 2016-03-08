@@ -87,21 +87,22 @@ def main():
     def move_down():
         player_char.get(MapPos).y += 1
 
-    input_manager.add_handler("battle",SDLK_l,move_right)
-    input_manager.add_handler("battle",SDLK_h,move_left)
-    input_manager.add_handler("battle",SDLK_k,move_up)
-    input_manager.add_handler("battle",SDLK_j,move_down)
+    from input_manager import BattleMode
+    input_manager.add_handler(BattleMode,SDLK_l,move_right)
+    input_manager.add_handler(BattleMode,SDLK_h,move_left)
+    input_manager.add_handler(BattleMode,SDLK_k,move_up)
+    input_manager.add_handler(BattleMode,SDLK_j,move_down)
     
-    input_manager.add_handler("battle",SDLK_d,map_right)
-    input_manager.add_handler("battle",SDLK_a,map_left)
-    input_manager.add_handler("battle",SDLK_w,map_up)
-    input_manager.add_handler("battle",SDLK_s,map_down)
-    input_manager.add_handler("battle",SDLK_q,end_world)
+    input_manager.add_handler(BattleMode,SDLK_d,map_right)
+    input_manager.add_handler(BattleMode,SDLK_a,map_left)
+    input_manager.add_handler(BattleMode,SDLK_w,map_up)
+    input_manager.add_handler(BattleMode,SDLK_s,map_down)
+    input_manager.add_handler(BattleMode,SDLK_q,end_world)
     input_manager.quit_handler = end_world
-    input_manager.add_handler("battle",SDLK_m,add_msg)
-    input_manager.add_handler("battle",SDLK_x,delete_test)
-    input_manager.add_handler("battle",SDLK_t,switch_buffer)
-    input_manager.activate_mode("battle")
+    input_manager.add_handler(BattleMode,SDLK_m,add_msg)
+    input_manager.add_handler(BattleMode,SDLK_x,delete_test)
+    input_manager.add_handler(BattleMode,SDLK_t,switch_buffer)
+    input_manager.activate_mode(BattleMode)
 
 
     while world.alive:

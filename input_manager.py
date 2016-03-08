@@ -1,5 +1,7 @@
 from sdl2 import *
 import ctypes
+class BattleMode():
+    pass
 
 mode_key_handler = {}
 
