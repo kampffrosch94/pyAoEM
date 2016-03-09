@@ -2,20 +2,10 @@ from sdl2 import *
 from utility import Position
 from errors import SDL_Exception
 from ctypes import byref
+from game_components import *
 __doc__ = """This File holds the various components of the ecs.
 
 A component should only hold data and no functionality if possible."""
-
-from events import TakeDamage
-class Health(object):
-    def __init__(self,max_hp):
-        self.max_hp = max_hp
-        self.hp = max_hp
-        self.priority = 0
-
-    def take_damage(self,event : TakeDamage):
-        self.hp -= event.amount
-
 
 class MapPos(Position):
     """The position of an entity on the map."""

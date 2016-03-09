@@ -9,6 +9,18 @@ class Position:
     def __eq__(self,other):
         return (self.x,self.y) == (other.x,other.y)
 
+    def apply_direction(self,direction):
+        self.x += direction.dx
+        self.y += direction.dy
+
+    def copy(self):
+        return Position(self.x,self.y)
+
+class Direction:
+    def __init__(self,dx,dy):
+        self.dx = dx
+        self.dy = dy
+
 class Rectangle:
     def __init__(self,x,y,w,h):
         self.x  = x

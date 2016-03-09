@@ -9,6 +9,7 @@ from sdl_manager import renderer
 import map_manager
 import input_manager
 import battle_log
+from game_systems import *
 
 class InputSystem(System):
     """Takes SDL_Events and forwards them to listeners"""

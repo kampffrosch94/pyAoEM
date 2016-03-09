@@ -9,6 +9,8 @@ import sdl_manager
 import input_manager
 import map_manager
 from map_manager import TileMap
+import movement
+from utility import Direction
 
 world = World()
 
@@ -36,26 +38,31 @@ worldstepsystem = WorldStepSystem(world,[
     inputsystem])
 world.add_system(worldstepsystem)
 
-player_char = Entity(world)
-player_char.name = "Player Character"
-texture = sdl_manager.load_texture("human_m")
-gc = Graphic(texture,z=1)
-mc = MapPos(1,1)
+###Gamesystems
+world.add_system(BlockingSystem())
+world.add_system(AttackableSystem())
+###Gamesystems end
 
-player_char.set(gc)
+player_char = Entity(world)
+player_char.name = "Player"
+texture = sdl_manager.load_texture("human_m")
+player_char.set(Graphic(texture))
 player_char.set(BattleBuffer())
-player_char.set(mc)
-player_char.set(Health(10))
+player_char.set(MapPos(1,1))
+player_char.set(Health(player_char,10))
+player_char.set(Blocking())
+player_char.set(Offensive(dmg=2))
 
 enemy = Entity(world)
 texture = sdl_manager.load_texture("newt")
+enemy.name = "giant newt"
 enemy.set(Graphic(texture))
 enemy.set(BattleBuffer())
 enemy.set(MapPos(5,5))
-enemy.set(Health(5))
-
-
-
+enemy.set(Health(enemy,5))
+enemy.set(Blocking())
+corpsetexture = sdl_manager.load_texture("blood0")
+enemy.set(CorpseGraphic(corpsetexture))
 
 texturepath = "cobble_blood1"
 default_texture = sdl_manager.load_texture(texturepath)
@@ -76,30 +83,28 @@ def end_world():
 def delete_test():
     player_char.delete(Graphic)
 
-
-battle_log.add_msg("Message 1")
-battle_log.add_msg("Message 2")
-counter = 3
-def add_msg():
-    global counter
-    msg = "Message " + str(counter) 
-    battle_log.add_msg(msg)
-    counter += 1
+from movement import can_move, move, can_bump_attack,bump_attack
+def attack_or_move(entity,direction):
+    if can_move(entity,direction):
+        move(entity,direction)
+    elif can_bump_attack(entity,direction):
+        bump_attack(entity,direction)
 
 def move_right():
-    player_char.get(MapPos).x += 1
+    d = Direction(1,0)
+    attack_or_move(player_char,d)
 def move_left():
-    player_char.get(MapPos).x -= 1
+    d = Direction(-1,0)
+    attack_or_move(player_char,d)
 def move_up():
-    player_char.get(MapPos).y -= 1
+    d = Direction(0,-1)
+    attack_or_move(player_char,d)
 def move_down():
-    player_char.get(MapPos).y += 1
+    d = Direction(0,1)
+    attack_or_move(player_char,d)
 
 def go_interpreter():
-    from events import TakeDamage
-    td = TakeDamage(5)
     e = player_char
-    x = [c for c in e.event_handlers(td)]
     import IPython; IPython.embed()
 
 from input_manager import BattleMode
@@ -115,14 +120,13 @@ input_manager.add_handler(BattleMode,map_left ,SDLK_h,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,map_up   ,SDLK_k,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,map_down ,SDLK_j,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,end_world,SDLK_q)
-input_manager.add_handler(BattleMode,add_msg  ,SDLK_m)
 input_manager.add_handler(BattleMode,delete_test,SDLK_x)
 input_manager.add_handler(BattleMode,switch_buffer,SDLK_t)
 input_manager.add_handler(BattleMode,go_interpreter,SDLK_y)
 input_manager.activate_mode(BattleMode)
 
-
 def main():
+    battle_log.add_msg("Welcome to AoEM.")
     while world.alive:
         world.invoke_system(WorldStepSystem)
     

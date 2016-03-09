@@ -99,6 +99,9 @@ class Entity(object):
     def get(self, classobject):
         return self.__getattr__(classobject.__name__)
 
+    def has(self,classobject):
+        return hasattr(self,classobject.__name__)
+
     def delete(self, classobject):
         return self.__delattr__(classobject.__name__)
 
@@ -149,6 +152,10 @@ class World(object):
             ecs = [ec for ec in entity] #all component_ts of entity
             return typerestriction.issubset(ecs)
         return [e for e in self.entities if condition(typerestriction,e)]
+
+    def get_system_entities(self,system_class):
+        key = system_class.__name__
+        return self.system_entities[key]
 
     def find_entity_systems_wct(self,entity,ct):
         ecs = [ec for ec in entity] #all component_ts of entity
