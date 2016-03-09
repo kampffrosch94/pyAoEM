@@ -35,7 +35,7 @@ def update():
                             g.src_rect,
                             g.dest_rect)
             y += g.h
-            g.destroy()
+            SDL_DestroyTexture(g.texture)
         SDL_SetRenderTarget(renderer,None)
         dirty = False
 

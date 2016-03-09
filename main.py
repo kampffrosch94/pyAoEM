@@ -53,6 +53,16 @@ player_char.set(Health(player_char,10))
 player_char.set(Blocking())
 player_char.set(Offensive(dmg=2))
 
+player2 = Entity(world)
+player2.name = "Player 2"
+texture = sdl_manager.load_texture("human_m")
+player2.set(Graphic(texture))
+player2.set(BattleBuffer())
+player2.set(MapPos(2,1))
+player2.set(Health(player2,10))
+player2.set(Blocking())
+player2.set(Offensive(dmg=2))
+
 enemy = Entity(world)
 texture = sdl_manager.load_texture("newt")
 enemy.name = "giant newt"

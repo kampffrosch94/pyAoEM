@@ -53,9 +53,10 @@ class Entity(object):
         """Gets the component data related to the Entity."""
         if name in ("id", "world"):
             return object.__getattr__(self, name)
-        if not name in self.world.componenttypes:
+        if (not name in self.world.componenttypes) or (
+                not self in self.world.components[name]):
             raise AttributeError("object '%r' has no attribute '%r'" % \
-                (self.__class__.__name__, name))
+                (self, name))
         return self.world.components[name][self]
 
     def __setattr__(self, name, value):
@@ -84,8 +85,6 @@ class Entity(object):
                 (self, name))
         
         c = self.world.components[name][self]
-        if hasattr(c,"destroy") and hasattr(c.destroy,"__call__"):
-            c.destroy()
 
         system_keys = self.world.find_entity_systems_wct(self,name)
         for sk in system_keys:

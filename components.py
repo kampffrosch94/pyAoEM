@@ -56,8 +56,3 @@ class Graphic(object):
         self._dest_rect.x = self.x
         self._dest_rect.y = self.y
         return self._dest_rect
-
-    def destroy(self):
-        SDL_DestroyTexture(self.texture)
-
-
