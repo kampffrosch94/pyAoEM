@@ -5,12 +5,16 @@ class BattleMode():
 
 mode_key_handler = {}
 
-def add_handler(mode,key, handlerfunc):
+def add_handler(mode,handlerfunc,key,mod = KMOD_NONE):
     if not mode in mode_key_handler:
         mode_key_handler[mode] = {}
-    if key in mode_key_handler[mode]:#might be overkill
+    if (key,mod) in mode_key_handler[mode]:#might be overkill
         raise KeyError("Key %s already in mode %s" % (key,mode))
-    mode_key_handler[mode][key] = handlerfunc
+    if not mod == KMOD_SHIFT:
+        mode_key_handler[mode][(key,mod)] = handlerfunc
+    else:
+        mode_key_handler[mode][(key,KMOD_LSHIFT)] = handlerfunc
+        mode_key_handler[mode][(key,KMOD_RSHIFT)] = handlerfunc
 
 active_modes = []
 
@@ -35,7 +39,8 @@ def handle_event():
             quit_handler()
             break
         elif event.type == SDL_KEYDOWN:
-            keysym = event.key.keysym.sym
-            if keysym in key_binds:
-                key_binds[keysym]()
+            key = event.key.keysym.sym
+            mod = event.key.keysym.mod
+            if (key,mod) in key_binds:
+                key_binds[(key,mod)]()
                 break

@@ -29,6 +29,26 @@ class Entity(object):
             if self in self.world.components[ct]:
                 yield ct
 
+    def components(self):
+        for ct in self:
+            yield self.world.components[ct][self]
+
+    def event_handlers(self,event):
+        h_components = []
+        h_name = event.handler_name
+        for c in self.components():
+            if hasattr(c,h_name) and callable(getattr(c,h_name)):
+                h_components.append(c)
+        h_components.sort(key = (lambda c: c.priority),reverse=True)
+        for c in h_components:
+            yield c
+
+
+    def handle_event(self,event):
+        h_name = event.handler_name
+        for c in self.event_handlers(event):
+            getattr(c,h_name)(event)
+            
     def __getattr__(self, name):
         """Gets the component data related to the Entity."""
         if name in ("id", "world"):

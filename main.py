@@ -38,13 +38,22 @@ world.add_system(worldstepsystem)
 
 player_char = Entity(world)
 player_char.name = "Player Character"
-
 texture = sdl_manager.load_texture("human_m")
 gc = Graphic(texture,z=1)
 mc = MapPos(1,1)
+
 player_char.set(gc)
 player_char.set(BattleBuffer())
 player_char.set(mc)
+player_char.set(Health(10))
+
+enemy = Entity(world)
+texture = sdl_manager.load_texture("newt")
+enemy.set(Graphic(texture))
+enemy.set(BattleBuffer())
+enemy.set(MapPos(5,5))
+enemy.set(Health(5))
+
 
 
 
@@ -87,25 +96,29 @@ def move_down():
     player_char.get(MapPos).y += 1
 
 def go_interpreter():
-    global world
+    from events import TakeDamage
+    td = TakeDamage(5)
+    e = player_char
+    x = [c for c in e.event_handlers(td)]
     import IPython; IPython.embed()
 
 from input_manager import BattleMode
-input_manager.add_handler(BattleMode,SDLK_l,move_right)
-input_manager.add_handler(BattleMode,SDLK_h,move_left)
-input_manager.add_handler(BattleMode,SDLK_k,move_up)
-input_manager.add_handler(BattleMode,SDLK_j,move_down)
-
-input_manager.add_handler(BattleMode,SDLK_d,map_right)
-input_manager.add_handler(BattleMode,SDLK_a,map_left)
-input_manager.add_handler(BattleMode,SDLK_w,map_up)
-input_manager.add_handler(BattleMode,SDLK_s,map_down)
-input_manager.add_handler(BattleMode,SDLK_q,end_world)
 input_manager.quit_handler = end_world
-input_manager.add_handler(BattleMode,SDLK_m,add_msg)
-input_manager.add_handler(BattleMode,SDLK_x,delete_test)
-input_manager.add_handler(BattleMode,SDLK_t,switch_buffer)
-input_manager.add_handler(BattleMode,SDLK_y,go_interpreter)
+
+input_manager.add_handler(BattleMode,move_right,SDLK_l)
+input_manager.add_handler(BattleMode,move_left,SDLK_h)
+input_manager.add_handler(BattleMode,move_up  ,SDLK_k)
+input_manager.add_handler(BattleMode,move_down,SDLK_j)
+                                                      
+input_manager.add_handler(BattleMode,map_right,SDLK_l,KMOD_SHIFT)
+input_manager.add_handler(BattleMode,map_left ,SDLK_h,KMOD_SHIFT)
+input_manager.add_handler(BattleMode,map_up   ,SDLK_k,KMOD_SHIFT)
+input_manager.add_handler(BattleMode,map_down ,SDLK_j,KMOD_SHIFT)
+input_manager.add_handler(BattleMode,end_world,SDLK_q)
+input_manager.add_handler(BattleMode,add_msg  ,SDLK_m)
+input_manager.add_handler(BattleMode,delete_test,SDLK_x)
+input_manager.add_handler(BattleMode,switch_buffer,SDLK_t)
+input_manager.add_handler(BattleMode,go_interpreter,SDLK_y)
 input_manager.activate_mode(BattleMode)
 
 

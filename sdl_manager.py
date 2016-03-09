@@ -22,7 +22,8 @@ default_fg = SDL_Color()
 
 img_paths = {
         "human_m"       : b"gfx/human_m.png",
-        "cobble_blood1" : b"gfx/cobble_blood1.png"
+        "cobble_blood1" : b"gfx/cobble_blood1.png",
+        "newt"          : b"gfx/giant_newt.png"
 }
 
 loaded_textures = {}
