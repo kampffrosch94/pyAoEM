@@ -11,15 +11,6 @@ import input_manager
 import battle_log
 from game_systems import *
 
-class InputSystem(System):
-    """Takes SDL_Events and forwards them to listeners"""
-    def __init__(self):
-        System.__init__(self,[])
-
-    def process(self,entities):
-        input_manager.handle_event()
-
-
 class MapToGraphicSystem(System):
     """Converts coordinates on the map to coordinates in the window.
     

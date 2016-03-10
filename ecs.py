@@ -154,6 +154,7 @@ class World(object):
             self.system_entities[key] = self.find_system_entities(system)
         else:
             self.system_entities[key] = []
+        return system
 
     def find_system_entities(self,system):
         typerestriction = system.componenttypes

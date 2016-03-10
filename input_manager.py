@@ -1,5 +1,8 @@
 from sdl2 import *
 import ctypes
+
+controlled_entity = None
+
 class BattleMode():
     pass
 

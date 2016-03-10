@@ -1,9 +1,23 @@
 import game_events
+import input_manager
 
+###simple components
 class Blocking(object):
     """Only one blocking entity can be at a map_pos."""
     pass
 
+class CorpseGraphic(object):
+    def __init__(self,texture):
+        self.texture = texture
+
+class Team(object):
+    def __init__(self,team_name):
+        self.team_name = team_name
+
+    def __eq__(self,other):
+        return self.team_name == other.team_name
+
+###Eventhandling components
 class Health(object):
     def __init__(self,entity,max_hp):
         self.entity = entity
@@ -25,13 +39,20 @@ class Offensive(object):
     def deal_damage(self,event : game_events.DealDamage):
         event.amount += self.dmg
 
-class Team(object):
-    def __init__(self,team_name):
-        self.team_name = team_name
+class Input(object):
+    """Component for Player controlled entities."""
+    def __init__(self,entity):
+        self.entity = entity
+        self.priority = 0 
 
-    def __eq__(self,other):
-        return self.team_name == other.team_name
+    def act(self,event : game_events.Act):
+        input_manager.controlled_entity = self.entity
+        input_manager.handle_event()
 
-class CorpseGraphic(object):
-    def __init__(self,texture):
-        self.texture = texture
+class Fatigue(object):
+    def __init__(self,value=0):
+        self.value = value
+        self.priority = 0 
+
+    def pay_fatigue(self,event : game_events.PayFatigue):
+        self.value += event.amount

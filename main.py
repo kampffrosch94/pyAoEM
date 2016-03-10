@@ -28,20 +28,18 @@ def switch_buffer():
     battlerendersystem.active = not battlerendersystem.active
     startrendersystem.active  = not startrendersystem.active
 
-inputsystem = InputSystem()
-world.add_system(inputsystem)
+###Gamesystems
+world.add_system(BlockingSystem())
+world.add_system(AttackableSystem())
+tos = world.add_system(TurnOrderSystem())
+###Gamesystems end
 
 worldstepsystem = WorldStepSystem(world,[
     maptographicsystem,
     startrendersystem,
     battlerendersystem,
-    inputsystem])
+    tos])
 world.add_system(worldstepsystem)
-
-###Gamesystems
-world.add_system(BlockingSystem())
-world.add_system(AttackableSystem())
-###Gamesystems end
 
 player_char = Entity(world)
 player_char.name = "Player"
@@ -53,6 +51,8 @@ player_char.set(Health(player_char,10))
 player_char.set(Blocking())
 player_char.set(Offensive(dmg=2))
 player_char.set(Team("player_team"))
+player_char.set(Input(player_char))
+player_char.set(Fatigue())
 pc_control.player_char = player_char
 
 player2 = Entity(world)
@@ -64,6 +64,8 @@ player2.set(MapPos(2,1))
 player2.set(Health(player2,10))
 player2.set(Blocking())
 player2.set(Offensive(dmg=2))
+player2.set(Input(player2))
+player2.set(Fatigue())
 player2.set(Team("player_team"))
 
 enemy = Entity(world)
