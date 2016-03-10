@@ -17,7 +17,6 @@ class Health(object):
             import game_transformations
             game_transformations.kill(self.entity)
 
-
 class Offensive(object):
     def __init__(self,dmg):
         self.dmg = dmg
@@ -25,6 +24,13 @@ class Offensive(object):
 
     def deal_damage(self,event : game_events.DealDamage):
         event.amount += self.dmg
+
+class Team(object):
+    def __init__(self,team_name):
+        self.team_name = team_name
+
+    def __eq__(self,other):
+        return self.team_name == other.team_name
 
 class CorpseGraphic(object):
     def __init__(self,texture):

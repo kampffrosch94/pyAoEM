@@ -1,6 +1,6 @@
 from components import MapPos
 from game_systems import BlockingSystem, AttackableSystem
-from game_components import Offensive, Health
+from game_components import Offensive, Health, Team
 from game_events import DealDamage, TakeDamage
 import battle_log
 
@@ -33,8 +33,12 @@ def get_bump_attackable(entity,direction):
 def can_bump_attack(entity, direction):
     if not entity.has(Offensive):
         return False
-    if get_bump_attackable(entity,direction) == None:
+    target = get_bump_attackable(entity,direction)
+    if target == None:
         return False
+    elif entity.has(Team) and target.has(Team):
+        if entity.get(Team) == target.get(Team):
+            return False
     else:
         return True
 

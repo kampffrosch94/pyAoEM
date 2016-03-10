@@ -52,6 +52,7 @@ player_char.set(MapPos(1,1))
 player_char.set(Health(player_char,10))
 player_char.set(Blocking())
 player_char.set(Offensive(dmg=2))
+player_char.set(Team("player_team"))
 pc_control.player_char = player_char
 
 player2 = Entity(world)
@@ -63,6 +64,7 @@ player2.set(MapPos(2,1))
 player2.set(Health(player2,10))
 player2.set(Blocking())
 player2.set(Offensive(dmg=2))
+player2.set(Team("player_team"))
 
 enemy = Entity(world)
 texture = sdl_manager.load_texture("newt")
