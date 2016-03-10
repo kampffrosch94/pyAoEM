@@ -4,13 +4,13 @@ from ecs import World,Entity
 from systems import *
 from components import *
 from errors import SDL_Exception
-from utility import Position
 import sdl_manager
 import input_manager
 import map_manager
 from map_manager import TileMap
 import movement
 from utility import Direction
+import pc_control
 
 world = World()
 
@@ -52,6 +52,7 @@ player_char.set(MapPos(1,1))
 player_char.set(Health(player_char,10))
 player_char.set(Blocking())
 player_char.set(Offensive(dmg=2))
+pc_control.player_char = player_char
 
 player2 = Entity(world)
 player2.name = "Player 2"
@@ -93,37 +94,18 @@ def end_world():
 def delete_test():
     player_char.delete(Graphic)
 
-from movement import can_move, move, can_bump_attack,bump_attack
-def attack_or_move(entity,direction):
-    if can_move(entity,direction):
-        move(entity,direction)
-    elif can_bump_attack(entity,direction):
-        bump_attack(entity,direction)
-
-def move_right():
-    d = Direction(1,0)
-    attack_or_move(player_char,d)
-def move_left():
-    d = Direction(-1,0)
-    attack_or_move(player_char,d)
-def move_up():
-    d = Direction(0,-1)
-    attack_or_move(player_char,d)
-def move_down():
-    d = Direction(0,1)
-    attack_or_move(player_char,d)
-
 def go_interpreter():
     e = player_char
     import IPython; IPython.embed()
 
+def switch_player1():
+    pc_control.player_char = player_char
+
+def switch_player2():
+    pc_control.player_char = player2
+
 from input_manager import BattleMode
 input_manager.quit_handler = end_world
-
-input_manager.add_handler(BattleMode,move_right,SDLK_l)
-input_manager.add_handler(BattleMode,move_left,SDLK_h)
-input_manager.add_handler(BattleMode,move_up  ,SDLK_k)
-input_manager.add_handler(BattleMode,move_down,SDLK_j)
                                                       
 input_manager.add_handler(BattleMode,map_right,SDLK_l,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,map_left ,SDLK_h,KMOD_SHIFT)
@@ -133,6 +115,8 @@ input_manager.add_handler(BattleMode,end_world,SDLK_q)
 input_manager.add_handler(BattleMode,delete_test,SDLK_x)
 input_manager.add_handler(BattleMode,switch_buffer,SDLK_t)
 input_manager.add_handler(BattleMode,go_interpreter,SDLK_y)
+input_manager.add_handler(BattleMode,switch_player1,SDLK_F1)
+input_manager.add_handler(BattleMode,switch_player2,SDLK_F2)
 input_manager.activate_mode(BattleMode)
 
 def main():
