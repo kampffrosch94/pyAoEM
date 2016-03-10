@@ -11,6 +11,7 @@ from map_manager import TileMap
 import movement
 from utility import Direction
 import pc_control
+import factory
 
 world = World()
 
@@ -41,43 +42,29 @@ worldstepsystem = WorldStepSystem(world,[
     tos])
 world.add_system(worldstepsystem)
 
-player_char = Entity(world)
-player_char.name = "Player"
-texture = sdl_manager.load_texture("human_m")
-player_char.set(Graphic(texture))
-player_char.set(BattleBuffer())
-player_char.set(MapPos(1,1))
-player_char.set(Health(player_char,10))
-player_char.set(Blocking())
-player_char.set(Offensive(dmg=2))
-player_char.set(Team("player_team"))
-player_char.set(Input(player_char))
-player_char.set(Fatigue())
-pc_control.player_char = player_char
+factory.world = world
 
-player2 = Entity(world)
-player2.name = "Player 2"
-texture = sdl_manager.load_texture("human_m")
-player2.set(Graphic(texture))
-player2.set(BattleBuffer())
-player2.set(MapPos(2,1))
-player2.set(Health(player2,10))
-player2.set(Blocking())
-player2.set(Offensive(dmg=2))
-player2.set(Input(player2))
-player2.set(Fatigue())
-player2.set(Team("player_team"))
+player_char = factory.create_player_creature(
+    name    = "Player",
+    texture = "human_m",
+    pos     = (1,1),
+    mhp     = 10,
+    dmg     = 2)
 
-enemy = Entity(world)
-texture = sdl_manager.load_texture("newt")
-enemy.name = "giant newt"
-enemy.set(Graphic(texture))
-enemy.set(BattleBuffer())
-enemy.set(MapPos(5,5))
-enemy.set(Health(enemy,5))
-enemy.set(Blocking())
-corpsetexture = sdl_manager.load_texture("blood0")
-enemy.set(CorpseGraphic(corpsetexture))
+player2 = factory.create_player_creature(
+    name    = "Player 2",
+    texture = "human_m",
+    pos     = (2,1),
+    mhp     = 10,
+    dmg     = 2)
+
+enemy = factory.create_ai_creature(
+    name          = "giant_newt",
+    texture       = "newt",
+    pos           = (5,5),
+    mhp           = 5,
+    dmg           = 1,
+    corpsetexture = "blood0")
 
 texturepath = "cobble_blood1"
 default_texture = sdl_manager.load_texture(texturepath)

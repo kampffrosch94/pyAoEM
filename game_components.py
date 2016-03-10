@@ -49,6 +49,17 @@ class Input(object):
         input_manager.controlled_entity = self.entity
         input_manager.handle_event()
 
+class AI(object):
+    """Component for AI controlled entities."""
+    def __init__(self,entity):
+        self.entity = entity
+        self.priority = 0 
+
+    def act(self,event : game_events.Act):
+        #TODO this is a stub
+        from game_events import PayFatigue
+        self.entity.handle_event(PayFatigue(100))
+
 class Fatigue(object):
     def __init__(self,value=0):
         self.value = value

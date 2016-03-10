@@ -39,8 +39,7 @@ def can_bump_attack(entity, direction):
     elif entity.has(Team) and target.has(Team):
         if entity.get(Team) == target.get(Team):
             return False
-    else:
-        return True
+    return True
 
 def bump_attack(entity,direction):
     target = get_bump_attackable(entity,direction)

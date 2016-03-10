@@ -9,10 +9,10 @@ from sdl2 import SDLK_l, SDLK_h, SDLK_k, SDLK_j
 def attack_or_move(entity,direction):
     if can_move(entity,direction):
         move(entity,direction)
-        entity.handle_event(PayFatigue(50))
+        entity.handle_event(PayFatigue(100))
     elif can_bump_attack(entity,direction):
         bump_attack(entity,direction)
-        entity.handle_event(PayFatigue(100))
+        entity.handle_event(PayFatigue(200))
 
 def move_right():
     player_char = input_manager.controlled_entity
