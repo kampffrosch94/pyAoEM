@@ -98,8 +98,18 @@ class Entity(object):
     def get(self, classobject):
         return self.__getattr__(classobject.__name__)
 
+    def hasattr(self, name):
+        """Don't check for world or id."""
+        if (name in self.world.componenttypes) and (
+                self in self.world.components[name]):
+            return True
+        else:
+            return False
+
     def has(self,classobject):
-        return hasattr(self,classobject.__name__)
+        """Don't check for world or id."""
+        name = classobject.__name__
+        return self.hasattr(name)
 
     def delete(self, classobject):
         return self.__delattr__(classobject.__name__)
