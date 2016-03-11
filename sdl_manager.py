@@ -24,7 +24,8 @@ img_paths = {
         "human_m"       : b"gfx/human_m.png",
         "cobble_blood1" : b"gfx/cobble_blood1.png",
         "newt"          : b"gfx/giant_newt.png",
-        "blood0"        : b"gfx/blood_red00.png"
+        "blood0"        : b"gfx/blood_red00.png",
+        "lair0"         : b"gfx/walls/lair0.png"
 }
 
 loaded_textures = {}

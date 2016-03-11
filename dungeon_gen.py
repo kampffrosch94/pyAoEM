@@ -9,7 +9,7 @@ def cellular_automaton(w,h,wall_chance=42,iterations=3,spawn_walls=True):
     choices = [x for x,p in weighted_choices for i in range(p)]
     g_map = {} #generator_map
     for x in range(w):
-        for y in range(w):
+        for y in range(h):
             g_map[(x,y)] = random.choice(choices)
 
     def block_walls(pos,g_map):
@@ -53,6 +53,8 @@ def check_map(g_map):
             pos_neighbors[pos] = neighbors(pos)
 
     keys = [x for x in pos_neighbors.keys()]
+    if len(keys) == 0:
+        return False
     pos  = keys[0]
     while True:
         cp = pos_neighbors[pos].copy()
@@ -65,11 +67,15 @@ def check_map(g_map):
     result = (pos_neighbors[pos] == set(pos_neighbors.keys()))
     return result
 
-def checked_cellular_automaton(x,y,wall_chance = 42,iterations = 3,
-        seeed=None,spawn_walls=True):
-    m = cellular_automaton(x,y,wall_chance,iterations,spawn_walls)
+def checked_cellular_automaton(w,h,wall_chance = 42,iterations = 3,
+        spawn_walls=True):
+    m = cellular_automaton(w,h,wall_chance,iterations,spawn_walls)
+    i = 0
     while not check_map(m):
-        m = cellular_automaton(x,y,wall_chance,iterations,spawn_walls)
+        m = cellular_automaton(w,h,wall_chance,iterations,spawn_walls)
+        if i > 10000:
+            raise ValueError("Map can't be generated")
+        i += 1
     return m
 
 def quick_display(wall_chance = 42,iterations = 3,seeed=None,
