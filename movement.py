@@ -83,5 +83,8 @@ def ai_move(entity):
     for n_pos in map_manager.current_map.neighbors(pos):
         if d_map[goal_pos] > d_map[n_pos]:
             goal_pos = n_pos
+    if goal_pos == pos:
+        print("%s waits." % entity.name)
+        e.handle_event(PayFatigue(100))
     d = tuple(map(operator.sub,goal_pos,pos))
     attack_or_move(entity,utility.Direction(*d))
