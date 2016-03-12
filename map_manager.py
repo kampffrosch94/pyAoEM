@@ -26,9 +26,13 @@ class TileMap(object):
         self.w = w
         self.h = h
         g_map = dungeon_gen.checked_cellular_automaton(w,h,wall_chance)
+        self.wall_map = g_map
         self.tiles = g_map #needs more variety
         self.textures = [default_floor,default_wall]
         self.root_pos = Position(0,0)
+
+    def is_wall(self,pos):
+        return self.wall_map[(pos.x,pos.y)]
 
     def update(self):
         SDL_SetRenderTarget(renderer,map_texture)

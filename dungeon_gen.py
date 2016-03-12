@@ -37,7 +37,7 @@ def cellular_automaton(w,h,wall_chance=42,iterations=3,spawn_walls=True):
         g_map = new_map
     return g_map
 
-def check_map(g_map):
+def neighbor_map(g_map):
     pos_neighbors = {}
     def neighbors(pos):
         mx,my = pos
@@ -51,6 +51,10 @@ def check_map(g_map):
     for pos in g_map:
         if g_map[pos] == False:
             pos_neighbors[pos] = neighbors(pos)
+    return pos_neighbors
+
+def check_map(g_map):
+    pos_neighbors = neighbor_map(g_map)
 
     keys = [x for x in pos_neighbors.keys()]
     if len(keys) == 0:

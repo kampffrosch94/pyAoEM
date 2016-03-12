@@ -3,13 +3,18 @@ from game_systems import BlockingSystem, AttackableSystem
 from game_components import Offensive, Health, Team
 from game_events import DealDamage, TakeDamage
 import battle_log
+import map_manager
 
 def can_move(entity, direction):
-    world = entity.world
-    blocking_es = world.get_system_entities(BlockingSystem)
     pos = entity.get(MapPos)
     new_pos = pos.copy()
     new_pos.apply_direction(direction)
+
+    if map_manager.current_map.is_wall(new_pos):
+        return False
+
+    world = entity.world
+    blocking_es = world.get_system_entities(BlockingSystem)
     for e in blocking_es:
         if e.get(MapPos) == new_pos:
             return False

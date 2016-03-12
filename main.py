@@ -47,7 +47,7 @@ factory.world = world
 player_char = factory.create_player_creature(
     name    = "Player",
     texture = "human_m",
-    pos     = (1,1),
+    pos     = (4,4),
     mhp     = 10,
     dmg     = 2)
 
