@@ -22,10 +22,10 @@ class TileMap(object):
     self.textures is a list with textures
     self.tiles is a 2D grid which contains 
     texturenumbers for self.textures """
-    def __init__(self,w,h):
+    def __init__(self,w,h,wall_chance):
         self.w = w
         self.h = h
-        g_map = dungeon_gen.checked_cellular_automaton(w,h)
+        g_map = dungeon_gen.checked_cellular_automaton(w,h,wall_chance)
         self.tiles = g_map #needs more variety
         self.textures = [default_floor,default_wall]
         self.root_pos = Position(0,0)

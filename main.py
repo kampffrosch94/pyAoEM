@@ -66,11 +66,12 @@ enemy = factory.create_ai_creature(
     dmg           = 1,
     corpsetexture = "blood0")
 
-
-map_manager.current_map = TileMap(20,15)
+map_w,map_h = 20,15
+wall_chance = 42
+map_manager.current_map = TileMap(map_w,map_h,wall_chance)
 
 def regen_map():
-    map_manager.current_map = TileMap(20,15)
+    map_manager.current_map = TileMap(map_w,map_h,wall_chance)
 def map_left():
     map_manager.current_map.root_pos.x -= 1
 def map_right():
