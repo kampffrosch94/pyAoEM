@@ -2,7 +2,6 @@ from sdl2 import *
 from utility import Position
 from errors import SDL_Exception
 from ctypes import byref
-from game_components import *
 __doc__ = """This File holds the various components of the ecs.
 
 A component should only hold data and no functionality if possible."""

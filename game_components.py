@@ -56,9 +56,8 @@ class AI(object):
         self.priority = 0 
 
     def act(self,event : game_events.Act):
-        #TODO this is a stub
-        from game_events import PayFatigue
-        self.entity.handle_event(PayFatigue(100))
+        import movement
+        movement.ai_move(self.entity)
 
 class Fatigue(object):
     def __init__(self,value=0):

@@ -1,9 +1,12 @@
 from components import MapPos
-from game_systems import BlockingSystem, AttackableSystem
+from game_systems import (BlockingSystem, AttackableSystem,
+        TurnOrderSystem)
 from game_components import Offensive, Health, Team
-from game_events import DealDamage, TakeDamage
+from game_events import DealDamage, TakeDamage, PayFatigue
 import battle_log
 import map_manager
+import operator
+import utility
 
 def can_move(entity, direction):
     pos = entity.get(MapPos)
@@ -57,3 +60,28 @@ def bump_attack(entity,direction):
     #TODO cleanup the following
     print("Target new HP: %s" % target.get(Health).hp)
 
+
+def attack_or_move(entity,direction):
+    if can_move(entity,direction):
+        move(entity,direction)
+        entity.handle_event(PayFatigue(100))
+    elif can_bump_attack(entity,direction):
+        bump_attack(entity,direction)
+        entity.handle_event(PayFatigue(100))
+
+def ai_move(entity):
+    world = entity.world
+    acting_es = world.get_system_entities(TurnOrderSystem)
+    enemy_pos  = []
+    for e in acting_es:
+        if not e.get(Team) == entity.get(Team):
+            enemy_pos.append(e.get(MapPos).to_tuple())
+
+    d_map = map_manager.current_map.djikstra_map(enemy_pos)
+    pos = entity.get(MapPos).to_tuple()
+    goal_pos = pos
+    for n_pos in map_manager.current_map.neighbors(pos):
+        if d_map[goal_pos] > d_map[n_pos]:
+            goal_pos = n_pos
+    d = tuple(map(operator.sub,goal_pos,pos))
+    attack_or_move(entity,utility.Direction(*d))

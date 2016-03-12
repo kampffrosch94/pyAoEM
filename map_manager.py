@@ -32,7 +32,13 @@ class TileMap(object):
         self.root_pos = Position(0,0)
 
     def is_wall(self,pos):
-        return self.wall_map[(pos.x,pos.y)]
+        return self.wall_map[pos.to_tuple()]
+
+    def djikstra_map(self,start_positions : iter):
+        return dungeon_gen.djikstra_map(self.wall_map,start_positions)
+
+    def neighbors(self,pos):
+        return dungeon_gen.neighbors(self.wall_map,pos)
 
     def update(self):
         SDL_SetRenderTarget(renderer,map_texture)

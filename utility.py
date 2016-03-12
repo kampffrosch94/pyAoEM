@@ -16,6 +16,9 @@ class Position:
     def copy(self):
         return Position(self.x,self.y)
 
+    def to_tuple(self):
+        return (self.x,self.y)
+
 class Direction:
     def __init__(self,dx,dy):
         self.dx = dx
