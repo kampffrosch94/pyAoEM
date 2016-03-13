@@ -35,7 +35,7 @@ def attack_or_move(entity,direction):
         mp.apply_direction(direction)
         entity.handle_event(PayFatigue(100))
         return True
-    elif target.has(Health):
+    elif target.has(Health) and not entity.get(Team) == target.get(Team):
         battle_log.add_msg("%s hits %s." % (entity.name,target.name))
         deal_dmg_event = DealDamage()
         entity.handle_event(deal_dmg_event)
