@@ -76,6 +76,42 @@ class BattleRenderSystem(RenderSystem):
 class StartRenderSystem(RenderSystem):
     def __init__(self):
         RenderSystem.__init__(self,[StartBuffer])
+        self.header = sdl_manager.create_text_graphic(
+                "Attack on Evil Mountain\n--Unfinished Business--\n\n")
+        self.header.x,self.header.y = 200,150
+
+        self.choice = sdl_manager.create_text_graphic(
+                "a) Fight against the GIANT newts of Evil Mountain.\n"+
+                "b) Flee in terror. (Quit.)")
+        self.choice.x,self.choice.y = 100,300
+
+        self.game_ended = False
+
+    def process(self,entities):
+        SDL_RenderClear(renderer)
+        SDL_RenderCopy(renderer,
+                self.header.texture,
+                self.header.src_rect,
+                self.header.dest_rect)
+        if not self.game_ended:
+            SDL_RenderCopy(renderer,
+                    self.choice.texture,
+                    self.choice.src_rect,
+                    self.choice.dest_rect)
+        else:
+            SDL_RenderCopy(renderer,
+                    self.end_game.texture,
+                    self.end_game.src_rect,
+                    self.end_game.dest_rect)
+        SDL_RenderPresent(renderer)
+
+    def set_end_game(self,text):
+        if hasattr(self,"end_game"):
+            SDL_DestroyTexture(self.end_game.texture)
+        self.end_game = sdl_manager.create_text_graphic(text +
+                "\n\nb) to quit")
+        self.end_game.x,self.end_game.y = 100,300
+        self.game_ended= True
 
 class WorldStepSystem(System):
     """The System which runs the gameloop"""

@@ -5,6 +5,8 @@ controlled_entity = None
 
 class BattleMode():
     pass
+class StartMode():
+    pass
 
 mode_key_handler = {}
 
@@ -22,6 +24,7 @@ def add_handler(mode,handlerfunc,key,mod = KMOD_NONE):
 active_modes = []
 
 def activate_mode(mode):
+    active_modes.clear() #TODO rework this hack
     active_modes.append(mode)
 def deactivate_mode(mode):
     active_modes.remove(mode)
