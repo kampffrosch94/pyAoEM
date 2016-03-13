@@ -31,7 +31,6 @@ def switch_buffer():
 
 ###Gamesystems
 world.add_system(BlockingSystem())
-world.add_system(AttackableSystem())
 tos = world.add_system(TurnOrderSystem())
 ###Gamesystems end
 
@@ -70,6 +69,8 @@ map_w,map_h = 20,15
 wall_chance = 42
 map_manager.current_map = TileMap(map_w,map_h,wall_chance)
 
+def place_creature(current_map,entity,m):
+    pass
 def regen_map():
     map_manager.current_map = TileMap(map_w,map_h,wall_chance)
 def map_left():

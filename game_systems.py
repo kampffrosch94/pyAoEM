@@ -9,12 +9,6 @@ class BlockingSystem(System):
         System.__init__(self,[MapPos,Blocking])
         self.active = False
 
-class AttackableSystem(System):
-    """Just for holding blocking entities."""
-    def __init__(self):
-        System.__init__(self,[MapPos,Health])
-        self.active = False
-
 class TurnOrderSystem(System):
     def __init__(self):
         System.__init__(self,[Fatigue])

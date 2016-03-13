@@ -1,6 +1,5 @@
 from utility import Direction
-from movement import (can_move, move, can_bump_attack,bump_attack,
-        attack_or_move)
+from movement import (attack_or_move)
 import input_manager
 from input_manager import BattleMode
 from sdl2 import SDLK_l, SDLK_h, SDLK_k, SDLK_j, SDLK_PERIOD
