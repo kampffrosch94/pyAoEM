@@ -32,7 +32,7 @@ class TileMap(object):
         self.root_pos = Position(0,0)
 
     def is_wall(self,pos):
-        return self.wall_map[pos.to_tuple()]
+        return self.wall_map[pos]
 
     def djikstra_map(self,start_positions : iter):
         return dungeon_gen.djikstra_map(self.wall_map,start_positions)

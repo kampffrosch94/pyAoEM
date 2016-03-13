@@ -69,8 +69,27 @@ map_w,map_h = 20,15
 wall_chance = 42
 map_manager.current_map = TileMap(map_w,map_h,wall_chance)
 
-def place_creature(current_map,entity,m):
-    pass
+#place the actors TODO make this a function
+pos_list = [x for x in map_manager.current_map.wall_map]
+pos_list.sort(key=(lambda pos: pos[0] * map_w + pos[1]))
+pcs = [player_char,player2]
+enemies = [enemy]
+for pos in pos_list:
+    if len(pcs) == 0:
+        break
+    if movement.is_pos_free(world,pos):
+        e = pcs.pop()
+        mp = e.get(MapPos)
+        mp.x,mp.y = pos
+pos_list.reverse()
+for pos in pos_list:
+    if len(enemies) == 0:
+        break
+    if movement.is_pos_free(world,pos):
+        e = enemies.pop()
+        mp = e.get(MapPos)
+        mp.x,mp.y = pos
+
 def regen_map():
     map_manager.current_map = TileMap(map_w,map_h,wall_chance)
 def map_left():

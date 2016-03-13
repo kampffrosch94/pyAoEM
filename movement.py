@@ -7,21 +7,29 @@ import map_manager
 import operator
 import utility
 
-def get_entity_at_pos(world,pos):
+def get_blocker_at_pos(world,pos):
     blocking_es = world.get_system_entities(BlockingSystem)
     for e in blocking_es:
-        if e.get(MapPos) == pos:
+        if e.get(MapPos).to_tuple() == pos:
             return e
     return None
+
+def is_pos_free(world,pos):
+    if map_manager.current_map.is_wall(pos):
+        return False
+    target = get_blocker_at_pos(world,pos)
+    if not target == None:
+        return False
+    return True
 
 def attack_or_move(entity,direction):
     """returns True on success, False on failure"""
     pos = entity.get(MapPos)
     new_pos = pos.copy()
     new_pos.apply_direction(direction)
-    if map_manager.current_map.is_wall(new_pos):
+    if map_manager.current_map.is_wall(new_pos.to_tuple()):
         return False
-    target = get_entity_at_pos(entity.world,new_pos)
+    target = get_blocker_at_pos(entity.world,new_pos.to_tuple())
     if target == None: #move
         mp = entity.get(MapPos)
         mp.apply_direction(direction)
@@ -34,6 +42,8 @@ def attack_or_move(entity,direction):
         take_dmg_event = TakeDamage(deal_dmg_event)
         target.handle_event(take_dmg_event)
         entity.handle_event(PayFatigue(100))
+        return True
+    return False
 
 def ai_move(entity):
     world = entity.world
