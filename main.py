@@ -12,6 +12,7 @@ import movement
 from utility import Direction
 import pc_control
 import factory
+import random
 
 world = World()
 
@@ -43,27 +44,28 @@ world.add_system(worldstepsystem)
 
 factory.world = world
 
-player_char = factory.create_player_creature(
-    name    = "Player",
-    texture = "human_m",
-    pos     = (2,2),
-    mhp     = 10,
-    dmg     = 2)
+player_number = random.randint(1,3)
+enemy_number = random.randint(3,10)
+pcs = []
+enemies = []
+for i in range(player_number):
+    player_char = factory.create_player_creature(
+        name    = "Player "+str(i+1),
+        texture = "human_m",
+        pos     = (2,2),
+        mhp     = 10,
+        dmg     = 2)
+    pcs.append(player_char)
 
-player2 = factory.create_player_creature(
-    name    = "Player 2",
-    texture = "human_m",
-    pos     = (2,10),
-    mhp     = 10,
-    dmg     = 2)
-
-enemy = factory.create_ai_creature(
-    name          = "giant_newt",
-    texture       = "newt",
-    pos           = (15,10),
-    mhp           = 5,
-    dmg           = 1,
-    corpsetexture = "blood0")
+for i in range(enemy_number):
+    enemy = factory.create_ai_creature(
+        name          = "giant newt "+str(i+1),
+        texture       = "newt",
+        pos           = (15,10),
+        mhp           = 5,
+        dmg           = 1,
+        corpsetexture = "blood0")
+    enemies.append(enemy)
 
 map_w,map_h = 20,15
 wall_chance = 42
@@ -72,8 +74,6 @@ map_manager.current_map = TileMap(map_w,map_h,wall_chance)
 #place the actors TODO make this a function
 pos_list = [x for x in map_manager.current_map.wall_map]
 pos_list.sort(key=(lambda pos: pos[0] * map_w + pos[1]))
-pcs = [player_char,player2]
-enemies = [enemy]
 for pos in pos_list:
     if len(pcs) == 0:
         break
@@ -123,9 +123,9 @@ input_manager.add_handler(BattleMode,map_left ,SDLK_h,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,map_up   ,SDLK_k,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,map_down ,SDLK_j,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,end_world,SDLK_q)
-input_manager.add_handler(BattleMode,switch_buffer,SDLK_t)
-input_manager.add_handler(BattleMode,go_interpreter,SDLK_y)
-input_manager.add_handler(BattleMode,regen_map,SDLK_F1)
+#input_manager.add_handler(BattleMode,switch_buffer,SDLK_t)
+#input_manager.add_handler(BattleMode,go_interpreter,SDLK_y)
+#input_manager.add_handler(BattleMode,regen_map,SDLK_F1)
 
 input_manager.add_handler(StartMode,start_game,SDLK_a)
 input_manager.add_handler(StartMode,end_world,SDLK_b)

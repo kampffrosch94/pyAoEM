@@ -22,6 +22,11 @@ class TurnOrderSystem(System):
         #end of filth
             actor = min(entities, key=(lambda e: e.get(Fatigue).value))
             print("%s acts." % actor.name)
+            for e in entities:
+                print("%s: %s" % (e.name,e.get(Fatigue).value))
+                if e.get(Fatigue).value < actor.get(Fatigue).value:
+                    print("min doesn't work")
+                    break
             actor.handle_event(Act())
 
     #TODO filth again
