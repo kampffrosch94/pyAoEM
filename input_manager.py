@@ -1,7 +1,6 @@
 import ctypes
 import errors
-import sdl2.events
-import sdl2.keycode as keycode
+import sdl2
 
 controlled_entity = None
 
@@ -12,17 +11,17 @@ class StartMode():
 
 mode_key_handler = {}
 
-def add_handler(mode,handlerfunc,key,mod = keycode.KMOD_NONE):
+def add_handler(mode,handlerfunc,key,mod = sdl2.KMOD_NONE):
     if not mode in mode_key_handler:
         mode_key_handler[mode] = {}
     if (key,mod) in mode_key_handler[mode]:#might be overkill
         raise KeyError("Key %s already in mode %s" % (key,mode))
-    if not mod == keycode.KMOD_SHIFT:
+    if not mod == sdl2.KMOD_SHIFT:
         mode_key_handler[mode][(key,mod)] = handlerfunc
     else:
         #TODO read out modifierkeys correctly
-        mode_key_handler[mode][(key,keycode.KMOD_LSHIFT)] = handlerfunc
-        mode_key_handler[mode][(key,keycode.KMOD_RSHIFT)] = handlerfunc
+        mode_key_handler[mode][(key,sdl2.KMOD_LSHIFT)] = handlerfunc
+        mode_key_handler[mode][(key,sdl2.KMOD_RSHIFT)] = handlerfunc
 
 active_modes = []
 
@@ -34,7 +33,7 @@ def deactivate_mode(mode):
 def clear_mode(mode):
     mode_key_handler[mode].clear()
 
-event = sdl2.events.SDL_Event()
+event = sdl2.SDL_Event()
 
 def _missing_quit():
     raise NotImplementedError("Override quit_handler")
@@ -45,12 +44,12 @@ def handle_event():
     for mode in active_modes:
         key_binds.update(mode_key_handler[mode])
     while True:
-        if sdl2.events.SDL_WaitEvent(ctypes.byref(event)) == 0:
+        if sdl2.SDL_WaitEvent(ctypes.byref(event)) == 0:
            raise errors.SDL_Exception()
-        if event.type == sdl2.events.SDL_QUIT:
+        if event.type == sdl2.SDL_QUIT:
             quit_handler()
             break
-        elif event.type == sdl2.events.SDL_KEYDOWN:
+        elif event.type == sdl2.SDL_KEYDOWN:
             key = event.key.keysym.sym
             mod = event.key.keysym.mod
             if (key,mod) in key_binds:

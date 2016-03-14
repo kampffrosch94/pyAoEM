@@ -1,17 +1,16 @@
-from sdl2 import *
-from sdl_manager import renderer
-from utility import Position
 import sdl_manager
 import dungeon_gen
+import sdl2
+import utility
 dungeon_gen.seed()
 
 current_map = None
-map_src = SDL_Rect(w=640,h=480)
-map_dest = SDL_Rect(x=0,y=0,w=map_src.w,h=map_src.h)
-map_texture = SDL_CreateTexture(
-        renderer,
-        SDL_PIXELFORMAT_RGBA8888,
-        SDL_TEXTUREACCESS_TARGET,map_src.w,map_src.h)
+map_src = sdl2.SDL_Rect(w=640,h=480)
+map_dest = sdl2.SDL_Rect(x=0,y=0,w=map_src.w,h=map_src.h)
+map_texture = sdl2.SDL_CreateTexture(
+        sdl_manager.renderer,
+        sdl2.SDL_PIXELFORMAT_RGBA8888,
+        sdl2.SDL_TEXTUREACCESS_TARGET,map_src.w,map_src.h)
 
 default_floor = sdl_manager.load_texture("cobble_blood1")
 default_wall = sdl_manager.load_texture("lair0")
@@ -29,7 +28,7 @@ class TileMap(object):
         self.wall_map = g_map
         self.tiles = g_map #needs more variety
         self.textures = [default_floor,default_wall]
-        self.root_pos = Position(0,0)
+        self.root_pos = utility.Position(0,0)
 
     def is_wall(self,pos):
         return self.wall_map[pos]
@@ -41,11 +40,11 @@ class TileMap(object):
         return dungeon_gen.neighbors(self.wall_map,pos)
 
     def update(self):
-        SDL_SetRenderTarget(renderer,map_texture)
-        SDL_RenderClear(renderer)
+        sdl2.SDL_SetRenderTarget(sdl_manager.renderer,map_texture)
+        sdl2.SDL_RenderClear(sdl_manager.renderer)
 
-        src_rect = SDL_Rect(0,0,32,32)
-        dest_rect = SDL_Rect(0,0,32,32)
+        src_rect = sdl2.SDL_Rect(0,0,32,32)
+        dest_rect = sdl2.SDL_Rect(0,0,32,32)
         root_pos = self.root_pos
 
         for x in range(root_pos.x,root_pos.x + 20):
@@ -54,12 +53,13 @@ class TileMap(object):
                     texture = self.textures[self.tiles[(x,y)]]
                     dest_rect.x = (x-root_pos.x) * 32
                     dest_rect.y = (y-root_pos.y) * 32
-                    SDL_RenderCopy( renderer,
-                                    texture,
-                                    src_rect,
-                                    dest_rect)
-        SDL_SetRenderTarget(renderer,None)
+                    sdl2.SDL_RenderCopy(sdl_manager.renderer,
+                                        texture,
+                                        src_rect,
+                                        dest_rect)
+        sdl2.SDL_SetRenderTarget(sdl_manager.renderer,None)
 
     def render(self):
         self.update()
-        SDL_RenderCopy(renderer,map_texture,map_src,map_dest)
+        sdl2.SDL_RenderCopy(sdl_manager.renderer,map_texture,
+                map_src,map_dest)
