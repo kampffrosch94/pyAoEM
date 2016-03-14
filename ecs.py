@@ -1,7 +1,5 @@
 import uuid
 import inspect
-from sdl2 import *
-from sdl2.sdlimage import *
 """Entity Component System"""
 
 class Entity(object):
@@ -51,8 +49,10 @@ class Entity(object):
             
     def __getattr__(self, name):
         """Gets the component data related to the Entity."""
-        if name in ("id", "world"):
-            return object.__getattr__(self, name)
+        if name is "id":
+            return self.id
+        if name is "world":
+            return self.world
         if (not name in self.world.componenttypes) or (
                 not self in self.world.components[name]):
             raise AttributeError("object '%r' has no attribute '%r'" % \
