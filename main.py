@@ -1,9 +1,8 @@
-from sdl2 import *
-from sdl2.sdlimage import *
+import sdl2
 from ecs import World,Entity 
-from systems import *
-from components import *
-from errors import SDL_Exception
+import systems
+import game_systems
+import components
 import sdl_manager
 import input_manager
 import map_manager
@@ -13,29 +12,30 @@ from utility import Direction
 import pc_control
 import factory
 import random
+import battle_log
 
 world = World()
 
-maptographicsystem = MapToGraphicSystem(world)
+maptographicsystem = systems.MapToGraphicSystem()
 world.add_system(maptographicsystem)
 
-battlerendersystem = BattleRenderSystem()
+battlerendersystem = systems.BattleRenderSystem()
 world.add_system(battlerendersystem)
 battlerendersystem.active = False
 
-startrendersystem = StartRenderSystem()
+startrendersystem = systems.StartRenderSystem()
 world.add_system(startrendersystem)
 
 
 ###Gamesystems
-world.add_system(BlockingSystem())
-tos = world.add_system(TurnOrderSystem())
+world.add_system(game_systems.BlockingSystem())
+tos = world.add_system(game_systems.TurnOrderSystem())
 #TODO hackhackhack
 tos.battlerendersystem = battlerendersystem
 tos.startrendersystem = startrendersystem
 ###Gamesystems end
 
-worldstepsystem = WorldStepSystem(world,[
+worldstepsystem = systems.WorldStepSystem(world,[
     maptographicsystem,
     startrendersystem,
     battlerendersystem,
@@ -79,7 +79,7 @@ for pos in pos_list:
         break
     if movement.is_pos_free(world,pos):
         e = pcs.pop()
-        mp = e.get(MapPos)
+        mp = e.get(components.MapPos)
         mp.x,mp.y = pos
 pos_list.reverse()
 for pos in pos_list:
@@ -87,7 +87,7 @@ for pos in pos_list:
         break
     if movement.is_pos_free(world,pos):
         e = enemies.pop()
-        mp = e.get(MapPos)
+        mp = e.get(components.MapPos)
         mp.x,mp.y = pos
 
 def regen_map():
@@ -115,22 +115,22 @@ def start_game():
 
 input_manager.quit_handler = end_world
                                                       
-input_manager.add_handler(BattleMode,map_right,SDLK_l,KMOD_SHIFT)
-input_manager.add_handler(BattleMode,map_left ,SDLK_h,KMOD_SHIFT)
-input_manager.add_handler(BattleMode,map_up   ,SDLK_k,KMOD_SHIFT)
-input_manager.add_handler(BattleMode,map_down ,SDLK_j,KMOD_SHIFT)
-input_manager.add_handler(BattleMode,end_world,SDLK_q)
-input_manager.add_handler(BattleMode,go_interpreter,SDLK_y)
-input_manager.add_handler(BattleMode,regen_map,SDLK_F1)
+input_manager.add_handler(BattleMode,map_right,sdl2.SDLK_l,sdl2.KMOD_SHIFT)
+input_manager.add_handler(BattleMode,map_left ,sdl2.SDLK_h,sdl2.KMOD_SHIFT)
+input_manager.add_handler(BattleMode,map_up   ,sdl2.SDLK_k,sdl2.KMOD_SHIFT)
+input_manager.add_handler(BattleMode,map_down ,sdl2.SDLK_j,sdl2.KMOD_SHIFT)
+input_manager.add_handler(BattleMode,end_world,sdl2.SDLK_q)
+input_manager.add_handler(BattleMode,go_interpreter,sdl2.SDLK_y)
+input_manager.add_handler(BattleMode,regen_map,sdl2.SDLK_F1)
 
-input_manager.add_handler(StartMode,start_game,SDLK_a)
-input_manager.add_handler(StartMode,end_world,SDLK_b)
+input_manager.add_handler(StartMode,start_game,sdl2.SDLK_a)
+input_manager.add_handler(StartMode,end_world,sdl2.SDLK_b)
 input_manager.activate_mode(StartMode)
 
 def main():
     battle_log.add_msg("Welcome to AoEM.")
     while world.alive:
-        world.invoke_system(WorldStepSystem)
+        world.invoke_system(systems.WorldStepSystem)
     
     world.destroy()
 

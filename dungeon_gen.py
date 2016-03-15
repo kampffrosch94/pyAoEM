@@ -24,7 +24,7 @@ def cellular_automaton(w,h,wall_chance=42,iterations=3,spawn_walls=True):
                     result += 10
         return result
 
-    for step in range(iterations):
+    for _ in range(iterations):
         new_map = g_map.copy()
         for pos in g_map:
             sur_walls = block_walls(pos,new_map)
@@ -72,7 +72,7 @@ def check_map(g_map):
     return result
 
 def checked_cellular_automaton(w,h,wall_chance = 42,iterations = 3,
-        spawn_walls=True):
+                               spawn_walls=True):
     m = cellular_automaton(w,h,wall_chance,iterations,spawn_walls)
     i = 0
     while not check_map(m):
@@ -89,7 +89,7 @@ def djikstra_map(wall_map,start_positions:iter):
     infinity = 1000000000000000000
     for key in pos_neighbors:
         d_map[key] = infinity
-    for pos in start_positions: 
+    for pos in start_positions:
         if not pos in pos_neighbors:
             raise KeyError("start_positions are not free_tiles")
         d_map[pos] = 0
@@ -105,11 +105,11 @@ def djikstra_map(wall_map,start_positions:iter):
 
 #for testing import this module and execute the following function
 def quick_display(wall_chance = 42,iterations = 3,seeed=None,
-        spawn_walls=True):
+                  spawn_walls=True):
     seed(seeed)
     m = checked_cellular_automaton(20,15,wall_chance,
-            iterations,spawn_walls)
-    
+                                   iterations,spawn_walls)
+
     free_tiles = []
     for pos in m:
         if not m[pos]:
@@ -130,4 +130,4 @@ def quick_display(wall_chance = 42,iterations = 3,seeed=None,
                     c = " " + c
                 s += c
         print(s)
-    return m 
+    return m

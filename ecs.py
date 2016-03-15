@@ -1,5 +1,4 @@
 import uuid
-import inspect
 """Entity Component System"""
 
 class Entity(object):
@@ -204,7 +203,9 @@ class System(object):
     
     if active==False then process() wont be called"""
 
-    def __init__(self,componentclasses = []):
+    def __init__(self,componentclasses = None):
+        if componentclasses is None:
+            componentclasses = []
         self.componenttypes = set(c.__name__ for c in componentclasses)
         self.active = True
 
