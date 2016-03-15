@@ -1,18 +1,18 @@
 """Holds and Renders the Messagelog in battles."""
-from sdl_manager import renderer
-from components import Graphic
-from sdl2 import *
 import sdl_manager
+import sdl2
 
 messages = []
+
+log_src = sdl2.SDL_Rect(w=640, h=160)
+log_dest = sdl2.SDL_Rect(x=0, y=480, w=log_src.w, h=log_src.h)
+
+texture = sdl2.SDL_CreateTexture(
+    sdl_manager.renderer,
+    sdl2.SDL_PIXELFORMAT_RGBA8888,
+    sdl2.SDL_TEXTUREACCESS_TARGET,log_src.w,log_src.h)
+
 dirty = False
-
-log_src = SDL_Rect(w=640,h=160)
-log_dest = SDL_Rect(x=0,y=480,w=log_src.w,h=log_src.h)
-
-texture = SDL_CreateTexture(renderer,
-        SDL_PIXELFORMAT_RGBA8888,
-        SDL_TEXTUREACCESS_TARGET,log_src.w,log_src.h)
 
 def add_msg(msg):
     global dirty
@@ -24,21 +24,22 @@ def add_msg(msg):
 def update():
     global dirty
     if dirty:
-        SDL_SetRenderTarget(renderer,texture)
-        SDL_RenderClear(renderer)
+        sdl2.SDL_SetRenderTarget(sdl_manager.renderer,texture)
+        sdl2.SDL_RenderClear(sdl_manager.renderer)
         y = 0
         for msg in messages:
             g = sdl_manager.create_text_graphic(msg)
             g.y = y
-            SDL_RenderCopy( renderer,
-                            g.texture,
-                            g.src_rect,
-                            g.dest_rect)
+            sdl2.SDL_RenderCopy(
+                sdl_manager.renderer,
+                g.texture,
+                g.src_rect,
+                g.dest_rect)
             y += g.h
-            SDL_DestroyTexture(g.texture)
-        SDL_SetRenderTarget(renderer,None)
+            sdl2.SDL_DestroyTexture(g.texture)
+        sdl2.SDL_SetRenderTarget(sdl_manager.renderer,None)
         dirty = False
 
 def render():
     update()
-    SDL_RenderCopy(renderer,texture,log_src,log_dest)
+    sdl2.SDL_RenderCopy(sdl_manager.renderer,texture,log_src,log_dest)

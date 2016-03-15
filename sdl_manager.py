@@ -41,7 +41,7 @@ def load_texture(texture_name):
         raise OSError("File "+texture_name+" could not be loaded.")
     texture = sdl2.SDL_CreateTextureFromSurface(renderer,surface) 
     if texture == None:
-        raise SDL_Exception
+        raise errors.SDL_Exception()
 
     sdl2.SDL_FreeSurface(surface)
 
