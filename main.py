@@ -105,9 +105,6 @@ def end_world():
 def go_interpreter():
     e = player_char
     import IPython; IPython.embed()
-def switch_buffer():
-    battlerendersystem.active = not battlerendersystem.active
-    startrendersystem.active  = not startrendersystem.active
 
 from input_manager import BattleMode,StartMode
 def start_game():
@@ -123,9 +120,8 @@ input_manager.add_handler(BattleMode,map_left ,SDLK_h,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,map_up   ,SDLK_k,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,map_down ,SDLK_j,KMOD_SHIFT)
 input_manager.add_handler(BattleMode,end_world,SDLK_q)
-#input_manager.add_handler(BattleMode,switch_buffer,SDLK_t)
-#input_manager.add_handler(BattleMode,go_interpreter,SDLK_y)
-#input_manager.add_handler(BattleMode,regen_map,SDLK_F1)
+input_manager.add_handler(BattleMode,go_interpreter,SDLK_y)
+input_manager.add_handler(BattleMode,regen_map,SDLK_F1)
 
 input_manager.add_handler(StartMode,start_game,SDLK_a)
 input_manager.add_handler(StartMode,end_world,SDLK_b)
