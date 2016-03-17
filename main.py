@@ -1,6 +1,5 @@
 import random
 import sdl2
-import sdl_manager
 import map_manager
 import input_
 import ecs

@@ -2,7 +2,7 @@ import sdl2
 import ecs
 import components
 import utility
-import sdl_manager
+import res
 import map_manager
 import battle_log
 
@@ -40,7 +40,7 @@ class RenderSystem(ecs.System):
     def render_graphics(self, graphics):
         for graphic in graphics:
             sdl2.SDL_RenderCopy(
-                sdl_manager.renderer,
+                res.renderer,
                 graphic.texture,
                 graphic.src_rect,
                 graphic.dest_rect)
@@ -54,29 +54,29 @@ class RenderSystem(ecs.System):
         self.render_graphics(z1)
 
     def process(self,entities):
-        sdl2.SDL_RenderClear(sdl_manager.renderer)
+        sdl2.SDL_RenderClear(res.renderer)
         self.render_entities(entities)
-        sdl2.SDL_RenderPresent(sdl_manager.renderer)
+        sdl2.SDL_RenderPresent(res.renderer)
 
 class BattleRenderSystem(RenderSystem):
     def __init__(self):
         RenderSystem.__init__(self,[components.BattleBuffer])
 
     def process(self,entities):
-        sdl2.SDL_RenderClear(sdl_manager.renderer)
+        sdl2.SDL_RenderClear(res.renderer)
         map_manager.current_map.render()
         self.render_entities(entities)
         battle_log.render()
-        sdl2.SDL_RenderPresent(sdl_manager.renderer)
+        sdl2.SDL_RenderPresent(res.renderer)
 
 class StartRenderSystem(RenderSystem):
     def __init__(self):
         RenderSystem.__init__(self,[components.StartBuffer])
-        self.header = sdl_manager.create_text_graphic(
+        self.header = res.create_text_graphic(
             "Attack on Evil Mountain\n--Unfinished Business--\n\n")
         self.header.x,self.header.y = 200,150
 
-        self.choice = sdl_manager.create_text_graphic(
+        self.choice = res.create_text_graphic(
             "a) Fight against the GIANT newts of Evil Mountain.\n"+
             "b) Flee in terror. (Quit.)")
         self.choice.x,self.choice.y = 100,300
@@ -84,30 +84,30 @@ class StartRenderSystem(RenderSystem):
         self.game_ended = False
 
     def process(self,entities):
-        sdl2.SDL_RenderClear(sdl_manager.renderer)
+        sdl2.SDL_RenderClear(res.renderer)
         sdl2.SDL_RenderCopy(
-            sdl_manager.renderer,
+            res.renderer,
             self.header.texture,
             self.header.src_rect,
             self.header.dest_rect)
         if not self.game_ended:
             sdl2.SDL_RenderCopy(
-                sdl_manager.renderer,
+                res.renderer,
                 self.choice.texture,
                 self.choice.src_rect,
                 self.choice.dest_rect)
         else:
             sdl2.SDL_RenderCopy(
-                sdl_manager.renderer,
+                res.renderer,
                 self.end_game.texture,
                 self.end_game.src_rect,
                 self.end_game.dest_rect)
-        sdl2.SDL_RenderPresent(sdl_manager.renderer)
+        sdl2.SDL_RenderPresent(res.renderer)
 
     def set_end_game(self,text):
         if hasattr(self,"end_game"):
             sdl2.SDL_DestroyTexture(self.end_game.texture)
-        self.end_game = sdl_manager.create_text_graphic(
+        self.end_game = res.create_text_graphic(
             text +
             "\n\nb) to quit")
         self.end_game.x,self.end_game.y = 100,300

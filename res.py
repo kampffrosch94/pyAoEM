@@ -1,7 +1,6 @@
 import sdl2
 import sdl2.sdlimage as sdlimage
 import sdl2.sdlttf as sdlttf
-import errors
 import components
 import atexit
 
@@ -18,7 +17,7 @@ window = sdl2.SDL_CreateWindow(b"AoEM",0,0,WINDOW_W,WINDOW_H,
 
 renderer = sdl2.SDL_CreateRenderer(window,-1,sdl2.SDL_RENDERER_ACCELERATED)
 if renderer == None:
-    raise errors.SDL_Exception()
+    raise SDL_Exception()
 
 font = sdlttf.TTF_OpenFont(b"fonts/VeraMono.ttf",FONT_SIZE)
 default_fg = sdl2.SDL_Color()
@@ -41,7 +40,7 @@ def load_texture(texture_name):
         raise OSError("File "+texture_name+" could not be loaded.")
     texture = sdl2.SDL_CreateTextureFromSurface(renderer,surface) 
     if texture == None:
-        raise errors.SDL_Exception()
+        raise SDL_Exception()
 
     sdl2.SDL_FreeSurface(surface)
 
@@ -61,6 +60,13 @@ def create_text_texture(text,fg = None):
 
 def create_text_graphic(text,fg = None):
     return components.Graphic(create_text_texture(text,fg))
+
+class SDL_Exception(Exception):
+    def __init__(self):
+        Exception.__init__()
+        self.value = sdl2.SDL_GetError()
+    def __str__(self):
+        return repr(self.value)
 
 @atexit.register
 def unload():
