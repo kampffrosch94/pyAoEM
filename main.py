@@ -2,14 +2,13 @@ import random
 import sdl2
 import sdl_manager
 import map_manager
-import input_manager
+import input_
 import ecs
 import systems
 import game_systems
 import components
 import factory
 import movement
-import pc_control
 import battle_log
 
 world = ecs.World()
@@ -104,26 +103,26 @@ def go_interpreter():
     e = player_char
     import IPython; IPython.embed()
 
-from input_manager import BattleMode,StartMode
+from input_ import BattleMode,StartMode
 def start_game():
     startrendersystem.active  = False
     battlerendersystem.active = True
-    input_manager.activate_mode(BattleMode)
+    input_.activate_mode(BattleMode)
 
 
-input_manager.quit_handler = end_world
+input_.quit_handler = end_world
                                                       
-input_manager.add_handler(BattleMode,map_right,sdl2.SDLK_l,sdl2.KMOD_SHIFT)
-input_manager.add_handler(BattleMode,map_left ,sdl2.SDLK_h,sdl2.KMOD_SHIFT)
-input_manager.add_handler(BattleMode,map_up   ,sdl2.SDLK_k,sdl2.KMOD_SHIFT)
-input_manager.add_handler(BattleMode,map_down ,sdl2.SDLK_j,sdl2.KMOD_SHIFT)
-input_manager.add_handler(BattleMode,end_world,sdl2.SDLK_q)
-input_manager.add_handler(BattleMode,go_interpreter,sdl2.SDLK_y)
-input_manager.add_handler(BattleMode,regen_map,sdl2.SDLK_F1)
+input_.add_handler(BattleMode,map_right,sdl2.SDLK_l,sdl2.KMOD_SHIFT)
+input_.add_handler(BattleMode,map_left ,sdl2.SDLK_h,sdl2.KMOD_SHIFT)
+input_.add_handler(BattleMode,map_up   ,sdl2.SDLK_k,sdl2.KMOD_SHIFT)
+input_.add_handler(BattleMode,map_down ,sdl2.SDLK_j,sdl2.KMOD_SHIFT)
+input_.add_handler(BattleMode,end_world,sdl2.SDLK_q)
+input_.add_handler(BattleMode,go_interpreter,sdl2.SDLK_y)
+input_.add_handler(BattleMode,regen_map,sdl2.SDLK_F1)
 
-input_manager.add_handler(StartMode,start_game,sdl2.SDLK_a)
-input_manager.add_handler(StartMode,end_world,sdl2.SDLK_b)
-input_manager.activate_mode(StartMode)
+input_.add_handler(StartMode,start_game,sdl2.SDLK_a)
+input_.add_handler(StartMode,end_world,sdl2.SDLK_b)
+input_.activate_mode(StartMode)
 
 def main():
     battle_log.add_msg("Welcome to AoEM.")

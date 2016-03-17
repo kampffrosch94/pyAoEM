@@ -1,5 +1,5 @@
 import game_events
-import input_manager
+import input_
 
 ###simple components
 class Blocking(object):
@@ -46,8 +46,8 @@ class Input(object):
         self.priority = 0 
 
     def act(self,event : game_events.Act):
-        input_manager.controlled_entity = self.entity
-        input_manager.handle_event()
+        input_.controlled_entity = self.entity
+        input_.handle_event()
 
 class AI(object):
     """Component for AI controlled entities."""
