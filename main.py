@@ -1,20 +1,18 @@
+import random
 import sdl2
-from ecs import World,Entity 
+import sdl_manager
+import map_manager
+import input_manager
+import ecs
 import systems
 import game_systems
 import components
-import sdl_manager
-import input_manager
-import map_manager
-from map_manager import TileMap
-import movement
-from utility import Direction
-import pc_control
 import factory
-import random
+import movement
+import pc_control
 import battle_log
 
-world = World()
+world = ecs.World()
 
 maptographicsystem = systems.MapToGraphicSystem()
 world.add_system(maptographicsystem)
@@ -69,7 +67,7 @@ for i in range(enemy_number):
 
 map_w,map_h = 20,15
 wall_chance = 42
-map_manager.current_map = TileMap(map_w,map_h,wall_chance)
+map_manager.current_map = map_manager.TileMap(map_w,map_h,wall_chance)
 
 #place the actors TODO make this a function
 pos_list = [x for x in map_manager.current_map.wall_map]
