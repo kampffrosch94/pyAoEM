@@ -1,5 +1,5 @@
 from ecs import Entity
-from components import (Graphic, MapPos, BattleBuffer)
+from components import (MapPos, BattleBuffer)
 from game_components import (Health,Blocking,CorpseGraphic,Offensive,
         Fatigue,Team,Input,AI)
 import res
@@ -12,8 +12,7 @@ def create_creature(name,texture,pos,mhp,dmg,corpsetexture=None):
 
     pos_x,pos_y = pos
     creature.set(MapPos(pos_x,pos_y))
-    texture = res.load_texture(texture)
-    creature.set(Graphic(texture))
+    creature.set(res.load_graphic(texture))
     creature.set(BattleBuffer())
 
     creature.set(Blocking())
@@ -21,8 +20,7 @@ def create_creature(name,texture,pos,mhp,dmg,corpsetexture=None):
     creature.set(Offensive(dmg))
     creature.set(Fatigue())
     if corpsetexture:
-        corpsetexture = res.load_texture(corpsetexture)
-        creature.set(CorpseGraphic(corpsetexture))
+        creature.set(CorpseGraphic(res.load_graphic(corpsetexture)))
     return creature
 
 def create_player_creature(name,texture,pos,mhp,dmg,corpsetexture=None):

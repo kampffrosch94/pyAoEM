@@ -30,15 +30,15 @@ class TurnOrderSystem(ecs.System):
 
     #TODO filth again
     def game_over(self,victory):
-        import input_manager
+        import input_
         import sdl2
         self.startrendersystem.active  = True
         self.battlerendersystem.active = False
-        input_manager.activate_mode(input_manager.StartMode)
-        input_manager.clear_mode(input_manager.StartMode)
-        input_manager.add_handler(input_manager.StartMode,
-                                  input_manager.quit_handler,
-                                  sdl2.SDLK_b)
+        input_.activate_mode(input_.StartMode)
+        input_.clear_mode(input_.StartMode)
+        input_.add_handler(input_.StartMode,
+                           input_.quit_handler,
+                           sdl2.SDLK_b)
         if victory:
             self.startrendersystem.set_end_game(
                 "You win a glorious VICTORY!!!")
@@ -46,4 +46,4 @@ class TurnOrderSystem(ecs.System):
             self.startrendersystem.set_end_game(
                 "You were DEFEATED!!!")
         self.startrendersystem.process([])
-        input_manager.handle_event()
+        input_.handle_event()

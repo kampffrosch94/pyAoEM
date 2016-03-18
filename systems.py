@@ -11,18 +11,18 @@ class MapToGraphicSystem(ecs.System):
 
     Change root_pos to move the left upper corner of the visible map."""
     def __init__(self):
-        ecs.System.__init__(self, [components.Graphic,components.MapPos])
+        ecs.System.__init__(self, [res.Graphic,components.MapPos])
         self.map_bounds = utility.Rectangle(0,0,640,480)
 
     def process(self,entities):
-        def in_view(gc:components.Graphic):
+        def in_view(gc:res.Graphic):
             bounds = self.map_bounds
             return (gc.x >= bounds.x and gc.x < bounds.xe and
                     gc.y >= bounds.y and gc.y < bounds.ye)
 
         root_pos = map_manager.current_map.root_pos
         for entity in entities:
-            gc = entity.get(components.Graphic)
+            gc = entity.get(res.Graphic)
             mc = entity.get(components.MapPos)
             (gc.x,gc.y) = ((mc.x - root_pos.x)* 32,
                            (mc.y - root_pos.y)* 32)
@@ -32,22 +32,18 @@ class MapToGraphicSystem(ecs.System):
 class RenderSystem(ecs.System):
     """Renders textures to the window"""
     def __init__(self,extra_cts = None):
-        cts = [components.Graphic]
+        cts = [res.Graphic]
         if not extra_cts is None:
             cts.extend(extra_cts)
         ecs.System.__init__(self,cts)
 
     def render_graphics(self, graphics):
         for graphic in graphics:
-            sdl2.SDL_RenderCopy(
-                res.renderer,
-                graphic.texture,
-                graphic.src_rect,
-                graphic.dest_rect)
+            graphic.render()
 
     def render_entities(self,entities):
-        graphics = [e.get(components.Graphic) for e in entities
-                    if e.get(components.Graphic).active]
+        graphics = [e.get(res.Graphic) for e in entities
+                    if e.get(res.Graphic).active]
         z0 = filter((lambda g: g.z == 0),graphics)
         z1 = filter((lambda g: g.z == 1),graphics)
         self.render_graphics(z0)

@@ -7,8 +7,9 @@ class Blocking(object):
     pass
 
 class CorpseGraphic(object):
-    def __init__(self,texture):
-        self.texture = texture
+    #should be replaced with corpsify
+    def __init__(self,graphic):
+        self.texture = graphic.texture
 
 class Team(object):
     def __init__(self,team_name):
