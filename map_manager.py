@@ -2,6 +2,10 @@ import sdl2
 import res
 import dungeon_gen
 import utility
+MAP_WIDTH  = 20
+MAP_HEIGHT = 15
+TILE_HEIGHT= 32
+TILE_WIDTH = 32
 dungeon_gen.seed()
 
 current_map = None
@@ -38,12 +42,12 @@ class TileMap(object):
         sdl2.SDL_RenderClear(res.renderer)
 
         root_pos = self.root_pos
-        for x in range(root_pos.x,root_pos.x + 20):
-            for y in range(root_pos.y,root_pos.y + 15):
+        for x in range(root_pos.x,root_pos.x + MAP_WIDTH):
+            for y in range(root_pos.y,root_pos.y + MAP_HEIGHT):
                 if (x,y) in self.tiles:
                     g = self.tile_graphics[self.tiles[(x,y)]]
-                    g.x = (x-root_pos.x) * 32
-                    g.y = (y-root_pos.y) * 32
+                    g.x = (x-root_pos.x) * TILE_WIDTH
+                    g.y = (y-root_pos.y) * TILE_HEIGHT
                     g.render()
         sdl2.SDL_SetRenderTarget(res.renderer,None)
 

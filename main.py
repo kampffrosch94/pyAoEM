@@ -9,19 +9,16 @@ import components
 import factory
 import movement
 import battle_log
+import battle
 
 world = ecs.World()
 
-maptographicsystem = systems.MapToGraphicSystem()
-world.add_system(maptographicsystem)
-
-battlerendersystem = systems.BattleRenderSystem()
+battlerendersystem = battle.BattleRenderSystem()
 world.add_system(battlerendersystem)
 battlerendersystem.active = False
 
 startrendersystem = systems.StartRenderSystem()
 world.add_system(startrendersystem)
-
 
 ###Gamesystems
 world.add_system(game_systems.BlockingSystem())
@@ -32,7 +29,6 @@ tos.startrendersystem = startrendersystem
 ###Gamesystems end
 
 worldstepsystem = systems.WorldStepSystem(world,[
-    maptographicsystem,
     startrendersystem,
     battlerendersystem,
     tos])

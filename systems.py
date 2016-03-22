@@ -6,68 +6,9 @@ import res
 import map_manager
 import battle_log
 
-class MapToGraphicSystem(ecs.System):
-    """Converts coordinates on the map to coordinates in the window.
-
-    Change root_pos to move the left upper corner of the visible map."""
+class StartRenderSystem(ecs.System):
     def __init__(self):
-        ecs.System.__init__(self, [res.Graphic,components.MapPos])
-        self.map_bounds = utility.Rectangle(0,0,640,480)
-
-    def process(self,entities):
-        def in_view(gc:res.Graphic):
-            bounds = self.map_bounds
-            return (gc.x >= bounds.x and gc.x < bounds.xe and
-                    gc.y >= bounds.y and gc.y < bounds.ye)
-
-        root_pos = map_manager.current_map.root_pos
-        for entity in entities:
-            gc = entity.get(res.Graphic)
-            mc = entity.get(components.MapPos)
-            (gc.x,gc.y) = ((mc.x - root_pos.x)* 32,
-                           (mc.y - root_pos.y)* 32)
-            gc.active = in_view(gc)
-
-
-class RenderSystem(ecs.System):
-    """Renders textures to the window"""
-    def __init__(self,extra_cts = None):
-        cts = [res.Graphic]
-        if not extra_cts is None:
-            cts.extend(extra_cts)
-        ecs.System.__init__(self,cts)
-
-    def render_graphics(self, graphics):
-        for graphic in graphics:
-            graphic.render()
-
-    def render_entities(self,entities):
-        graphics = [e.get(res.Graphic) for e in entities
-                    if e.get(res.Graphic).active]
-        z0 = filter((lambda g: g.z == 0),graphics)
-        z1 = filter((lambda g: g.z == 1),graphics)
-        self.render_graphics(z0)
-        self.render_graphics(z1)
-
-    def process(self,entities):
-        sdl2.SDL_RenderClear(res.renderer)
-        self.render_entities(entities)
-        sdl2.SDL_RenderPresent(res.renderer)
-
-class BattleRenderSystem(RenderSystem):
-    def __init__(self):
-        RenderSystem.__init__(self,[components.BattleBuffer])
-
-    def process(self,entities):
-        sdl2.SDL_RenderClear(res.renderer)
-        map_manager.current_map.render()
-        self.render_entities(entities)
-        battle_log.render()
-        sdl2.SDL_RenderPresent(res.renderer)
-
-class StartRenderSystem(RenderSystem):
-    def __init__(self):
-        RenderSystem.__init__(self,[components.StartBuffer])
+        super().__init__([components.StartBuffer])
         self.header = res.create_text_graphic(
             "Attack on Evil Mountain\n--Unfinished Business--\n\n")
         self.header.x,self.header.y = 200,150
