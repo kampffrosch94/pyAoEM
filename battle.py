@@ -6,12 +6,10 @@ import map_manager
 import utility
 import battle_log
 
-map_bounds = utility.Rectangle(0,0,20,15)
+map_bounds = utility.Rectangle(0,0,map_manager.MAP_WIDTH,map_manager.MAP_HEIGHT)
 
 def in_view(pos):
-    bounds = map_bounds
-    return (pos.x >= bounds.x and pos.x < bounds.xe and
-            pos.y >= bounds.y and pos.y < bounds.ye)
+    return map_bounds.in_bounds(pos)
 
 class BattleRenderSystem(ecs.System):
     def __init__(self):

@@ -9,6 +9,9 @@ class Position:
     def __eq__(self,other):
         return (self.x,self.y) == (other.x,other.y)
 
+    def __repr__(self):
+        return ("x: %r y: %r" % (self.x,self.y))
+
     def apply_direction(self,direction):
         self.x += direction.dx
         self.y += direction.dy
@@ -30,3 +33,7 @@ class Rectangle:
         self.y  = y
         self.xe = x + w
         self.ye = y + h
+
+    def in_bounds(self,pos):
+        return (pos.x >= self.x and pos.x < self.xe and
+                pos.y >= self.y and pos.y < self.ye)
