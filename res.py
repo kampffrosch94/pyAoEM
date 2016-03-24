@@ -46,7 +46,6 @@ class Graphic(object):
         self.h = h
         self.src_rect = sdl2.SDL_Rect(0,0,w,h)
         self.dest_rect = sdl2.SDL_Rect(x,y,w,h)
-        self.active = True
 
     @property
     def x(self):
