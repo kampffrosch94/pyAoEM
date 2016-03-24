@@ -1,8 +1,9 @@
 from ecs import Entity
 from components import (MapPos, BattleBuffer)
 from game_components import (Health,Blocking,CorpseGraphic,Offensive,
-        Fatigue,Team,Input,AI)
+        Fatigue,Team,AI)
 import res
+import input_
 
 world = None
 
@@ -26,7 +27,7 @@ def create_creature(name,texture,pos,mhp,dmg,corpsetexture=None):
 def create_player_creature(name,texture,pos,mhp,dmg,corpsetexture=None):
     pc = create_creature(name,texture,pos,mhp,dmg,corpsetexture)
     pc.set(Team("player_team"))
-    pc.set(Input(pc))
+    pc.set(input_.Input(pc))
     return pc
 
 def create_ai_creature(name,texture,pos,mhp,dmg,corpsetexture=None):

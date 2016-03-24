@@ -82,3 +82,16 @@ add_handler(BattleMode,move_left, sdl2.SDLK_h)
 add_handler(BattleMode,move_up  , sdl2.SDLK_k)
 add_handler(BattleMode,move_down, sdl2.SDLK_j)
 add_handler(BattleMode,wait,      sdl2.SDLK_PERIOD)
+
+# Components
+
+class Input(object):
+    """Component for Player controlled entities."""
+    def __init__(self,entity):
+        self.entity = entity
+        self.priority = 0 
+
+    def act(self,event):
+        global controlled_entity
+        controlled_entity = self.entity
+        handle_event()

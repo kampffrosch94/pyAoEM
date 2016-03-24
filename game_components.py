@@ -40,16 +40,6 @@ class Offensive(object):
     def deal_damage(self,event : game_events.DealDamage):
         event.amount += self.dmg
 
-class Input(object):
-    """Component for Player controlled entities."""
-    def __init__(self,entity):
-        self.entity = entity
-        self.priority = 0 
-
-    def act(self,event : game_events.Act):
-        input_.controlled_entity = self.entity
-        input_.handle_event()
-
 class AI(object):
     """Component for AI controlled entities."""
     def __init__(self,entity):
