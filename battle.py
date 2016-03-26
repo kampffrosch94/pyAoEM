@@ -1,4 +1,3 @@
-import sdl2
 import ecs
 import res
 import components
@@ -36,8 +35,8 @@ class BattleRenderSystem(ecs.System):
             g.render()
 
     def process(self,entities):
-        sdl2.SDL_RenderClear(res.renderer)
+        res.render_clear()
         map_manager.current_map.render()
         self.render_entities(entities)
         battle_log.render()
-        sdl2.SDL_RenderPresent(res.renderer)
+        res.render_present()

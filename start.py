@@ -1,7 +1,6 @@
-import sdl2
+import res
 import ecs
 import components
-import res
 
 class StartRenderSystem(ecs.System):
     def __init__(self):
@@ -16,10 +15,10 @@ class StartRenderSystem(ecs.System):
             x=100, y=300)
 
     def process(self,entities):
-        sdl2.SDL_RenderClear(res.renderer)
+        res.render_clear()
         self.header.render()
         self.choice.render()
-        sdl2.SDL_RenderPresent(res.renderer)
+        res.render_present()
 
     def set_end_game(self,text):
         self.choice.destroy() #TODO remove on removal of destroy

@@ -113,6 +113,15 @@ def create_text_graphic(text,x=0,y=0,fg = None,max_width = WINDOW_W):
     sdl2.SDL_FreeSurface(text_surface)
     return g
 
+def reset_render_target():
+    sdl2.SDL_SetRenderTarget(renderer, None)
+
+def render_clear():
+    sdl2.SDL_RenderClear(renderer)
+
+def render_present():
+    sdl2.SDL_RenderPresent(renderer)
+
 class SDL_Exception(Exception):
     def __init__(self):
         Exception.__init__()
