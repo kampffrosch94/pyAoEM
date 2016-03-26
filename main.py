@@ -3,7 +3,6 @@ import sdl2
 import map_manager
 import input_
 import ecs
-import systems
 import game_systems
 import components
 import factory
@@ -29,7 +28,7 @@ tos.battlerendersystem = battlerendersystem
 tos.startrendersystem = startrendersystem
 ###Gamesystems end
 
-worldstepsystem = systems.WorldStepSystem(world,[
+worldstepsystem = ecs.WorldStepSystem(world,[
     startrendersystem,
     battlerendersystem,
     tos])
@@ -123,7 +122,7 @@ input_.activate_mode(StartMode)
 def main():
     battle_log.add_msg("Welcome to AoEM.")
     while world.alive:
-        world.invoke_system(systems.WorldStepSystem)
+        world.invoke_system(ecs.WorldStepSystem)
     
     world.destroy()
 
