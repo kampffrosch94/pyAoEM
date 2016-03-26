@@ -1,6 +1,6 @@
 import random
 import sdl2
-import map_manager
+import map_
 import input_
 import ecs
 import game_systems
@@ -60,17 +60,17 @@ for i in range(enemy_number):
 
 map_w,map_h = 20,15
 wall_chance = 42
-map_manager.current_map = map_manager.TileMap(map_w,map_h,wall_chance)
+map_.current_map = map_.TileMap(map_w,map_h,wall_chance)
 
 #place the actors TODO make this a function
-pos_list = [x for x in map_manager.current_map.wall_map]
+pos_list = [x for x in map_.current_map.wall_map]
 pos_list.sort(key=(lambda pos: pos[0] * map_w + pos[1]))
 for pos in pos_list:
     if len(pcs) == 0:
         break
     if movement.is_pos_free(world,pos):
         e = pcs.pop()
-        mp = e.get(map_manager.MapPos)
+        mp = e.get(map_.MapPos)
         mp.x,mp.y = pos
 pos_list.reverse()
 for pos in pos_list:
@@ -78,19 +78,19 @@ for pos in pos_list:
         break
     if movement.is_pos_free(world,pos):
         e = enemies.pop()
-        mp = e.get(map_manager.MapPos)
+        mp = e.get(map_.MapPos)
         mp.x,mp.y = pos
 
 def regen_map():
-    map_manager.current_map = TileMap(map_w,map_h,wall_chance)
+    map_.current_map = TileMap(map_w,map_h,wall_chance)
 def map_left():
-    map_manager.current_map.root_pos.x -= 1
+    map_.current_map.root_pos.x -= 1
 def map_right():
-    map_manager.current_map.root_pos.x += 1
+    map_.current_map.root_pos.x += 1
 def map_up():
-    map_manager.current_map.root_pos.y -= 1
+    map_.current_map.root_pos.y -= 1
 def map_down():
-    map_manager.current_map.root_pos.y += 1
+    map_.current_map.root_pos.y += 1
 def end_world():
     world.end()
 def go_interpreter():
