@@ -1,9 +1,10 @@
 from ecs import Entity
-from components import (MapPos, BattleBuffer)
 from game_components import (Health,Blocking,CorpseGraphic,Offensive,
         Fatigue,Team,AI)
 import res
 import input_
+import map_manager
+import battle
 
 world = None
 
@@ -12,9 +13,9 @@ def create_creature(name,texture,pos,mhp,dmg,corpsetexture=None):
     creature.name = name
 
     pos_x,pos_y = pos
-    creature.set(MapPos(pos_x,pos_y))
+    creature.set(map_manager.MapPos(pos_x,pos_y))
     creature.set(res.load_graphic(texture))
-    creature.set(BattleBuffer())
+    creature.set(battle.BattleBuffer())
 
     creature.set(Blocking())
     creature.set(Health(creature,mhp))

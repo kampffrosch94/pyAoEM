@@ -1,10 +1,9 @@
 import res
 import ecs
-import components
 
 class StartRenderSystem(ecs.System):
     def __init__(self):
-        super().__init__([components.StartBuffer])
+        super().__init__([StartBuffer])
         self.header = res.create_text_graphic(
             "Attack on Evil Mountain\n--Unfinished Business--\n\n",
             x=200, y=150)
@@ -26,3 +25,8 @@ class StartRenderSystem(ecs.System):
             text +
             "\n\nb) to quit",
             x=100, y=300)
+
+# Components
+
+class StartBuffer(object):
+    pass

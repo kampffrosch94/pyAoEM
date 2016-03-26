@@ -4,7 +4,6 @@ import map_manager
 import input_
 import ecs
 import game_systems
-import components
 import factory
 import movement
 import battle_log
@@ -71,7 +70,7 @@ for pos in pos_list:
         break
     if movement.is_pos_free(world,pos):
         e = pcs.pop()
-        mp = e.get(components.MapPos)
+        mp = e.get(map_manager.MapPos)
         mp.x,mp.y = pos
 pos_list.reverse()
 for pos in pos_list:
@@ -79,7 +78,7 @@ for pos in pos_list:
         break
     if movement.is_pos_free(world,pos):
         e = enemies.pop()
-        mp = e.get(components.MapPos)
+        mp = e.get(map_manager.MapPos)
         mp.x,mp.y = pos
 
 def regen_map():

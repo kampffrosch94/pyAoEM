@@ -1,6 +1,5 @@
 import ecs
 import res
-import components
 import map_manager
 import utility
 import battle_log
@@ -12,15 +11,14 @@ def in_view(pos):
 
 class BattleRenderSystem(ecs.System):
     def __init__(self):
-        super().__init__([res.Graphic,components.MapPos,
-                          components.BattleBuffer])
+        super().__init__([res.Graphic, map_manager.MapPos, BattleBuffer])
 
     def render_entities(self,entities):
         graphics = [e.get(res.Graphic) for e in entities
-                    if in_view(e.get(components.MapPos))]
+                    if in_view(e.get(map_manager.MapPos))]
         graphics = []
         for e in entities:
-            mp = e.get(components.MapPos)
+            mp = e.get(map_manager.MapPos)
             if in_view(mp):
                 g = e.get(res.Graphic)
                 g.x = map_manager.TILE_WIDTH * mp.x
@@ -40,3 +38,8 @@ class BattleRenderSystem(ecs.System):
         self.render_entities(entities)
         battle_log.render()
         res.render_present()
+
+# Components
+
+class BattleBuffer(object):
+    pass

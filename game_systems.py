@@ -1,12 +1,12 @@
 import ecs
 import game_components
-import components
 import game_events
+import map_manager
 
 class BlockingSystem(ecs.System):
     """Just for holding blocking entities."""
     def __init__(self):
-        ecs.System.__init__(self,[components.MapPos,
+        ecs.System.__init__(self,[map_manager.MapPos,
                                   game_components.Blocking])
         self.active = False
 

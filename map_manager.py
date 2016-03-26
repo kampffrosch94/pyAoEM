@@ -55,3 +55,8 @@ class TileMap(object):
     def render(self):
         self.update()
         map_graphic.render()
+
+# Components
+
+class MapPos(utility.Position):
+    """The position of an entity on the map."""
