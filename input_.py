@@ -1,6 +1,5 @@
 import ctypes
 import sdl2
-import errors
 import movement
 import utility
 
@@ -46,7 +45,8 @@ def handle_event():
         key_binds.update(mode_key_handler[mode])
     while True:
         if sdl2.SDL_WaitEvent(ctypes.byref(event)) == 0:
-            raise errors.SDL_Exception()
+            import res
+            raise res.SDL_Exception()
         if event.type == sdl2.SDL_QUIT:
             quit_handler()
             break
