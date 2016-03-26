@@ -10,6 +10,7 @@ import factory
 import movement
 import battle_log
 import battle
+import start
 
 world = ecs.World()
 
@@ -17,7 +18,7 @@ battlerendersystem = battle.BattleRenderSystem()
 world.add_system(battlerendersystem)
 battlerendersystem.active = False
 
-startrendersystem = systems.StartRenderSystem()
+startrendersystem = start.StartRenderSystem()
 world.add_system(startrendersystem)
 
 ###Gamesystems

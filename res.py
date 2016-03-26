@@ -37,7 +37,7 @@ class Graphic(object):
     Change x and y to change the position where the graphic will be
     rendered from the RenderSystem.
     """
-    def __init__(self,texture,x,y,w,h,z=1):
+    def __init__(self,texture,x,y,w,h,z=1,destroy=False):
         self.texture = texture
         if z < 0 or z > 1:
             raise NotImplementedError()
@@ -46,6 +46,11 @@ class Graphic(object):
         self.h = h
         self.src_rect = sdl2.SDL_Rect(0,0,w,h)
         self.dest_rect = sdl2.SDL_Rect(x,y,w,h)
+
+        if destroy:
+            def destroy_f():
+                sdl2.SDL_DestroyTexture(self.texture)
+            self.destroy = destroy_f
 
     @property
     def x(self):
@@ -87,14 +92,14 @@ def load_graphic(texture_name):
     loaded_textures[texture_name] = (texture,g.x,g.y,g.w,g.h)
     return g
 
-def create_graphic(x,y,w,h):
+def create_graphic(x,y,w,h,z=1):
     texture = sdl2.SDL_CreateTexture(
         renderer,
         sdl2.SDL_PIXELFORMAT_RGBA8888,
         sdl2.SDL_TEXTUREACCESS_TARGET, w, h)
-    return Graphic(texture, x, y, w, h)
+    return Graphic(texture, x, y, w, h, z, destroy=True)
 
-def create_text_graphic(text,fg = None,max_width = WINDOW_W):
+def create_text_graphic(text,x=0,y=0,fg = None,max_width = WINDOW_W):
     if fg is None:
         fg = default_fg
     if hasattr(text,"encode"):
@@ -104,7 +109,7 @@ def create_text_graphic(text,fg = None,max_width = WINDOW_W):
     text_texture = sdl2.SDL_CreateTextureFromSurface(renderer,text_surface)
 
     rect = text_surface.contents.clip_rect
-    g = Graphic(text_texture,rect.x,rect.y,rect.w,rect.h)
+    g = Graphic(text_texture,x,y,rect.w,rect.h,destroy=True)
     sdl2.SDL_FreeSurface(text_surface)
     return g
 
