@@ -1,7 +1,7 @@
 import random
 import sdl2
-import map_
 import input_
+import map_
 import ecs
 import game
 import factory
@@ -12,24 +12,22 @@ import start
 
 world = ecs.World()
 
-battlerendersystem = battle.BattleRenderSystem()
-world.add_system(battlerendersystem)
-battlerendersystem.active = False
+world.add_system(battle.system)
+battle.system.active = False
 
-startrendersystem = start.StartRenderSystem()
-world.add_system(startrendersystem)
+world.add_system(start.system)
 
 ###Gamesystems
 world.add_system(game.BlockingSystem())
 tos = world.add_system(game.TurnOrderSystem())
 #TODO hackhackhack
-tos.battlerendersystem = battlerendersystem
-tos.startrendersystem = startrendersystem
+tos.battlerendersystem = battle.system
+tos.startrendersystem = start.system
 ###Gamesystems end
 
 worldstepsystem = ecs.WorldStepSystem(world,[
-    startrendersystem,
-    battlerendersystem,
+    start.system,
+    battle.system,
     tos])
 world.add_system(worldstepsystem)
 
@@ -97,12 +95,9 @@ def go_interpreter():
     e = player_char
     import IPython; IPython.embed()
 
-from input_ import BattleMode,StartMode
-def start_game():
-    startrendersystem.active  = False
-    battlerendersystem.active = True
-    input_.activate_mode(BattleMode)
 
+from start import StartMode
+from input_ import BattleMode
 
 input_.quit_handler = end_world
                                                       
@@ -114,15 +109,10 @@ input_.add_handler(BattleMode,end_world,sdl2.SDLK_q)
 input_.add_handler(BattleMode,go_interpreter,sdl2.SDLK_y)
 input_.add_handler(BattleMode,regen_map,sdl2.SDLK_F1)
 
-input_.add_handler(StartMode,start_game,sdl2.SDLK_a)
-input_.add_handler(StartMode,end_world,sdl2.SDLK_b)
-input_.activate_mode(StartMode)
-
 def main():
     battle_log.add_msg("Welcome to AoEM.")
     while world.alive:
         world.invoke_system(ecs.WorldStepSystem)
-    
     world.destroy()
 
 if __name__ == "__main__":

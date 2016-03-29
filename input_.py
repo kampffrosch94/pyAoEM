@@ -15,8 +15,6 @@ quit_handler = _missing_quit
 
 class BattleMode():
     pass
-class StartMode():
-    pass
 
 def activate_mode(mode):
     active_modes.clear() #TODO rework this hack

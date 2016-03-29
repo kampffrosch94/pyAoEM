@@ -1,5 +1,15 @@
-import res
+import sdl2
 import ecs
+import res
+import input_
+import battle
+
+# Components
+
+class StartBuffer(object):
+    pass
+
+# System
 
 class StartRenderSystem(ecs.System):
     def __init__(self):
@@ -26,7 +36,18 @@ class StartRenderSystem(ecs.System):
             "\n\nb) to quit",
             x=100, y=300)
 
-# Components
+system = StartRenderSystem()
 
-class StartBuffer(object):
+# Keybinds
+
+class StartMode():
     pass
+
+def start_game():
+    system.active  = False
+    battle.system.active = True
+    input_.activate_mode(input_.BattleMode)
+
+input_.add_handler(StartMode,start_game,sdl2.SDLK_a)
+input_.add_handler(StartMode,input_.quit_handler,sdl2.SDLK_b)
+input_.activate_mode(StartMode)

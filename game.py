@@ -109,13 +109,14 @@ class TurnOrderSystem(ecs.System):
 
     #TODO filth again
     def game_over(self,victory):
-        import input_
         import sdl2
+        import input_
+        import start
         self.startrendersystem.active  = True
         self.battlerendersystem.active = False
-        input_.activate_mode(input_.StartMode)
-        input_.clear_mode(input_.StartMode)
-        input_.add_handler(input_.StartMode,
+        input_.activate_mode(start.StartMode)
+        input_.clear_mode(start.StartMode)
+        input_.add_handler(start.StartMode,
                            input_.quit_handler,
                            sdl2.SDLK_b)
         if victory:

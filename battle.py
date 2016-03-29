@@ -10,6 +10,13 @@ map_bounds = utility.Rectangle(0,0,map_.MAP_WIDTH,map_.MAP_HEIGHT)
 def in_view(pos):
     return map_bounds.in_bounds(pos)
 
+# Components
+
+class BattleBuffer(object):
+    pass
+
+# System
+
 class BattleRenderSystem(ecs.System):
     def __init__(self):
         super().__init__([res.Graphic, game.MapPos, BattleBuffer])
@@ -40,7 +47,5 @@ class BattleRenderSystem(ecs.System):
         battle_log.render()
         res.render_present()
 
-# Components
+system = BattleRenderSystem()
 
-class BattleBuffer(object):
-    pass
