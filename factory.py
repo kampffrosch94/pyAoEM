@@ -2,7 +2,6 @@ from ecs import Entity
 from game import (Health,Blocking,Offensive,Fatigue,Team,AI)
 import game
 import res
-import input_
 import battle
 
 world = None
@@ -25,7 +24,7 @@ def create_creature(name,texture,pos,mhp,dmg):
 def create_player_creature(name,texture,pos,mhp,dmg):
     pc = create_creature(name,texture,pos,mhp,dmg)
     pc.set(Team("player_team"))
-    pc.set(input_.Input(pc))
+    pc.set(battle.Input(pc))
     return pc
 
 def create_ai_creature(name,texture,pos,mhp,dmg):

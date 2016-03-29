@@ -13,9 +13,6 @@ def _missing_quit():
 
 quit_handler = _missing_quit
 
-class BattleMode():
-    pass
-
 def activate_mode(mode):
     active_modes.clear() #TODO rework this hack
     active_modes.append(mode)
@@ -55,41 +52,3 @@ def handle_event():
                 key_binds[(key,mod)]()
                 break
 
-# Input for a controlled entity on the map
-
-controlled_entity = None
-
-def move_right():
-    d = utility.Direction(1,0)
-    movement.attack_or_move(controlled_entity,d)
-def move_left():
-    d = utility.Direction(-1,0)
-    movement.attack_or_move(controlled_entity,d)
-def move_up():
-    d = utility.Direction(0,-1)
-    movement.attack_or_move(controlled_entity,d)
-def move_down():
-    d = utility.Direction(0,1)
-    movement.attack_or_move(controlled_entity,d)
-def wait():
-    d = utility.Direction(0,0)
-    movement.attack_or_move(controlled_entity,d)
-
-add_handler(BattleMode,move_right,sdl2.SDLK_l)
-add_handler(BattleMode,move_left, sdl2.SDLK_h)
-add_handler(BattleMode,move_up  , sdl2.SDLK_k)
-add_handler(BattleMode,move_down, sdl2.SDLK_j)
-add_handler(BattleMode,wait,      sdl2.SDLK_PERIOD)
-
-# Components
-
-class Input(object):
-    """Component for Player controlled entities."""
-    def __init__(self,entity):
-        self.entity = entity
-        self.priority = 0 
-
-    def act(self,event):
-        global controlled_entity
-        controlled_entity = self.entity
-        handle_event()

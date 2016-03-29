@@ -74,16 +74,6 @@ for pos in pos_list:
         mp = e.get(game.MapPos)
         mp.x,mp.y = pos
 
-def regen_map():
-    map_.current_map = TileMap(map_w,map_h,wall_chance)
-def map_left():
-    map_.current_map.root_pos.x -= 1
-def map_right():
-    map_.current_map.root_pos.x += 1
-def map_up():
-    map_.current_map.root_pos.y -= 1
-def map_down():
-    map_.current_map.root_pos.y += 1
 def end_world():
     world.end()
 def go_interpreter():
@@ -91,18 +81,11 @@ def go_interpreter():
     import IPython; IPython.embed()
 
 
-from start import StartMode
-from input_ import BattleMode
+from battle import BattleMode
 
 input_.quit_handler = end_world
-                                                      
-input_.add_handler(BattleMode,map_right,sdl2.SDLK_l,sdl2.KMOD_SHIFT)
-input_.add_handler(BattleMode,map_left ,sdl2.SDLK_h,sdl2.KMOD_SHIFT)
-input_.add_handler(BattleMode,map_up   ,sdl2.SDLK_k,sdl2.KMOD_SHIFT)
-input_.add_handler(BattleMode,map_down ,sdl2.SDLK_j,sdl2.KMOD_SHIFT)
 input_.add_handler(BattleMode,end_world,sdl2.SDLK_q)
 input_.add_handler(BattleMode,go_interpreter,sdl2.SDLK_y)
-input_.add_handler(BattleMode,regen_map,sdl2.SDLK_F1)
 
 def main():
     battle_log.add_msg("Welcome to AoEM.")

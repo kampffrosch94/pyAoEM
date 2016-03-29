@@ -50,7 +50,7 @@ class StartMode():
 def start_game():
     system.active  = False
     battle.system.active = True
-    input_.activate_mode(input_.BattleMode)
+    input_.activate_mode(battle.BattleMode)
 
 input_.add_handler(StartMode,start_game,sdl2.SDLK_a)
 input_.add_handler(StartMode,input_.quit_handler,sdl2.SDLK_b)
