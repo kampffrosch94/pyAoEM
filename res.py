@@ -75,6 +75,9 @@ class Graphic(object):
     def make_render_target(self):
         sdl2.SDL_SetRenderTarget(renderer, self.texture)
 
+    def corpsify(self): #placeholder
+        self.texture = load_graphic("blood0").texture
+
 def load_graphic(texture_name):
     if texture_name in loaded_textures:
         cached = loaded_textures[texture_name]

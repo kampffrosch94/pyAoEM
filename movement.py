@@ -1,6 +1,6 @@
-from game_systems import (BlockingSystem, TurnOrderSystem)
-from game_components import Offensive, Health, Team
-from game_events import DealDamage, TakeDamage, PayFatigue
+from game import (BlockingSystem, TurnOrderSystem)
+from game import Offensive, Health, Team
+from game import DealDamage, TakeDamage, PayFatigue
 import battle_log
 import map_
 import operator

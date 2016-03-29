@@ -1,6 +1,6 @@
 from ecs import Entity
-from game_components import (Health,Blocking,CorpseGraphic,Offensive,
-        Fatigue,Team,AI)
+from game import (Health,Blocking,CorpseGraphic,Offensive,
+                  Fatigue,Team,AI)
 import res
 import input_
 import map_

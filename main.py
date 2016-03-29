@@ -3,7 +3,7 @@ import sdl2
 import map_
 import input_
 import ecs
-import game_systems
+import game
 import factory
 import movement
 import battle_log
@@ -20,8 +20,8 @@ startrendersystem = start.StartRenderSystem()
 world.add_system(startrendersystem)
 
 ###Gamesystems
-world.add_system(game_systems.BlockingSystem())
-tos = world.add_system(game_systems.TurnOrderSystem())
+world.add_system(game.BlockingSystem())
+tos = world.add_system(game.TurnOrderSystem())
 #TODO hackhackhack
 tos.battlerendersystem = battlerendersystem
 tos.startrendersystem = startrendersystem
