@@ -1,9 +1,9 @@
 from ecs import Entity
 from game import (Health,Blocking,CorpseGraphic,Offensive,
                   Fatigue,Team,AI)
+import game
 import res
 import input_
-import map_
 import battle
 
 world = None
@@ -13,7 +13,7 @@ def create_creature(name,texture,pos,mhp,dmg,corpsetexture=None):
     creature.name = name
 
     pos_x,pos_y = pos
-    creature.set(map_.MapPos(pos_x,pos_y))
+    creature.set(game.MapPos(pos_x,pos_y))
     creature.set(res.load_graphic(texture))
     creature.set(battle.BattleBuffer())
 

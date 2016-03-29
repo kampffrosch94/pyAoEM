@@ -70,7 +70,7 @@ for pos in pos_list:
         break
     if movement.is_pos_free(world,pos):
         e = pcs.pop()
-        mp = e.get(map_.MapPos)
+        mp = e.get(game.MapPos)
         mp.x,mp.y = pos
 pos_list.reverse()
 for pos in pos_list:
@@ -78,7 +78,7 @@ for pos in pos_list:
         break
     if movement.is_pos_free(world,pos):
         e = enemies.pop()
-        mp = e.get(map_.MapPos)
+        mp = e.get(game.MapPos)
         mp.x,mp.y = pos
 
 def regen_map():

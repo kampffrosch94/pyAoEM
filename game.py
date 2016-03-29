@@ -1,12 +1,15 @@
 import ecs
-import map_
 import res
 import battle_log
+import utility
 
 ###simple components
 class Blocking(object):
     """Only one blocking entity can be at a map_pos."""
     pass
+
+class MapPos(utility.Position):
+    """The position of an entity on the map."""
 
 class CorpseGraphic(object):
     #should be replaced with corpsify
@@ -85,7 +88,7 @@ class Fatigue(object):
 class BlockingSystem(ecs.System):
     """Just for holding blocking entities."""
     def __init__(self):
-        ecs.System.__init__(self,[map_.MapPos, Blocking])
+        ecs.System.__init__(self,[MapPos, Blocking])
         self.active = False
 
 class TurnOrderSystem(ecs.System):
