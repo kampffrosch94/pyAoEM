@@ -48,8 +48,7 @@ for i in range(enemy_number):
         texture       = "newt",
         pos           = (15,10),
         mhp           = 5,
-        dmg           = 1,
-        corpsetexture = "blood0")
+        dmg           = 1)
     enemies.append(enemy)
 
 map_w,map_h = 20,15

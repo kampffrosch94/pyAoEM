@@ -11,11 +11,6 @@ class Blocking(object):
 class MapPos(utility.Position):
     """The position of an entity on the map."""
 
-class CorpseGraphic(object):
-    #should be replaced with corpsify
-    def __init__(self,graphic):
-        self.texture = graphic.texture
-
 class Team(object):
     def __init__(self,team_name):
         self.team_name = team_name
