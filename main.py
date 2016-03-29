@@ -20,10 +20,6 @@ world.add_system(start.system)
 ###Gamesystems
 world.add_system(game.BlockingSystem())
 tos = world.add_system(game.TurnOrderSystem())
-#TODO hackhackhack
-tos.battlerendersystem = battle.system
-tos.startrendersystem = start.system
-###Gamesystems end
 
 worldstepsystem = ecs.WorldStepSystem(world,[
     start.system,

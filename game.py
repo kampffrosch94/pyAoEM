@@ -112,20 +112,16 @@ class TurnOrderSystem(ecs.System):
         import sdl2
         import input_
         import start
-        self.startrendersystem.active  = True
-        self.battlerendersystem.active = False
+        import battle
+        start.system.active  = True
+        battle.system.active = False
         input_.activate_mode(start.StartMode)
         input_.clear_mode(start.StartMode)
         input_.add_handler(start.StartMode,
                            input_.quit_handler,
                            sdl2.SDLK_b)
-        if victory:
-            self.startrendersystem.set_end_game(
-                "You win a glorious VICTORY!!!")
-        else:
-            self.startrendersystem.set_end_game(
-                "You were DEFEATED!!!")
-        self.startrendersystem.process([])
+        start.system.set_end_game(victory)
+        start.system.process([])
         input_.handle_event()
 
 

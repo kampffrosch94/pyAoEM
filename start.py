@@ -29,7 +29,11 @@ class StartRenderSystem(ecs.System):
         self.choice.render()
         res.render_present()
 
-    def set_end_game(self,text):
+    def set_end_game(self,victory):
+        if victory:
+            text = "You win a glorious VICTORY!!!"
+        else:
+            text = "You were DEFEATED!!!"
         self.choice.destroy() #TODO remove on removal of destroy
         self.choice = res.create_text_graphic(
             text +
