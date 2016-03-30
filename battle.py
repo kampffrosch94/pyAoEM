@@ -8,11 +8,6 @@ import movement
 import utility
 import battle_log
 
-map_bounds = utility.Rectangle(0,0,map_.MAP_WIDTH,map_.MAP_HEIGHT)
-
-def in_view(pos):
-    return map_bounds.in_bounds(pos)
-
 # Components
 
 class BattleBuffer(object):
@@ -38,15 +33,13 @@ class BattleRenderSystem(ecs.System):
         super().__init__([res.Graphic, game.MapPos, BattleBuffer])
 
     def render_entities(self,entities):
-        graphics = [e.get(res.Graphic) for e in entities
-                    if in_view(e.get(game.MapPos))]
         graphics = []
         for e in entities:
             mp = e.get(game.MapPos)
-            if in_view(mp):
+            if map_.current_map.is_visible(mp):
                 g = e.get(res.Graphic)
-                g.x = map_.TILE_WIDTH * mp.x
-                g.y = map_.TILE_HEIGHT * mp.y
+                g.x = map_.TILE_WIDTH * (mp.x - map_.current_map.root_pos.x)
+                g.y = map_.TILE_HEIGHT *(mp.y - map_.current_map.root_pos.y)
                 graphics.append(g)
 
         z0 = [g for g in graphics if g.z == 0]

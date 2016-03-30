@@ -31,6 +31,12 @@ class TileMap(object):
     def is_wall(self,pos):
         return self.wall_map[pos]
 
+    def is_visible(self,pos):
+        return (pos.x >= self.root_pos.x and 
+                pos.x < self.root_pos.x + MAP_WIDTH  and
+                pos.y >= self.root_pos.y and 
+                pos.y < self.root_pos.y + MAP_HEIGHT )
+
     def djikstra_map(self,start_positions : iter):
         return dungeon_gen.djikstra_map(self.wall_map,start_positions)
 
