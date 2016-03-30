@@ -26,10 +26,20 @@ img_paths = {
     "cobble_blood1" : b"gfx/cobble_blood1.png",
     "newt"          : b"gfx/giant_newt.png",
     "blood0"        : b"gfx/blood_red00.png",
-    "lair0"         : b"gfx/walls/lair0.png"
+    "lair0"         : b"gfx/walls/lair0.png",
+    "cursor_green"  : b"gfx/cursor_green.png"
 }
 
 loaded_textures = {}
+
+def reset_render_target():
+    sdl2.SDL_SetRenderTarget(renderer, None)
+
+def render_clear():
+    sdl2.SDL_RenderClear(renderer)
+
+def render_present():
+    sdl2.SDL_RenderPresent(renderer)
 
 class Graphic(object):
     """Contains a texture and the position where it should be rendered.
@@ -116,15 +126,6 @@ def create_text_graphic(text,x=0,y=0,fg = None,max_width = WINDOW_W):
     g = Graphic(text_texture,x,y,rect.w,rect.h,destroy=True)
     sdl2.SDL_FreeSurface(text_surface)
     return g
-
-def reset_render_target():
-    sdl2.SDL_SetRenderTarget(renderer, None)
-
-def render_clear():
-    sdl2.SDL_RenderClear(renderer)
-
-def render_present():
-    sdl2.SDL_RenderPresent(renderer)
 
 class SDL_Exception(Exception):
     def __init__(self):
