@@ -28,6 +28,7 @@ class StartRenderSystem(ecs.System):
         self.header.render()
         self.choice.render()
         res.render_present()
+        input_.handle_event()
 
     def set_end_game(self,victory):
         if victory:
@@ -49,9 +50,11 @@ class StartMode():
 
 def start_game():
     system.active  = False
-    battle.system.active = True
-    input_.activate_mode(battle.BattleMode)
+    battle.activate()
+
+def quit():
+    input_.quit_handler()
 
 input_.add_handler(StartMode,start_game,sdl2.SDLK_a)
-input_.add_handler(StartMode,input_.quit_handler,sdl2.SDLK_b)
+input_.add_handler(StartMode,quit,sdl2.SDLK_b)
 input_.activate_mode(StartMode)

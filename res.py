@@ -89,6 +89,7 @@ class Graphic(object):
         self.texture = load_graphic("blood0").texture
         self.z = 0
 
+
 def load_graphic(texture_name):
     if texture_name in loaded_textures:
         cached = loaded_textures[texture_name]

@@ -88,37 +88,17 @@ class BlockingSystem(ecs.System):
 
 class TurnOrderSystem(ecs.System):
     def __init__(self):
-        ecs.System.__init__(self,[Fatigue])
+        ecs.System.__init__(self,[Fatigue,Team,res.Graphic])
 
     def process(self, entities):
         #TODO rework this
-        if all(entities[0].get(Team)
-               == e.get(Team) for e in entities):
+        if all(entities[0].get(Team) == e.get(Team) for e in entities):
             #GAME OVER
-            self.game_over(entities[0].get(Team).team_name=="player_team")
-        else:
-        #end of filth
+            game_over(entities[0].get(Team).team_name=="player_team")
+        else: # normal
             actor = min(entities, key=(lambda e: e.get(Fatigue).value))
             print("%s acts." % actor.name)
-            actor.handle_event(Act())
-
-    #TODO filth again
-    def game_over(self,victory):
-        import sdl2
-        import input_
-        import start
-        import battle
-        start.system.active  = True
-        battle.system.active = False
-        input_.activate_mode(start.StartMode)
-        input_.clear_mode(start.StartMode)
-        input_.add_handler(start.StartMode,
-                           input_.quit_handler,
-                           sdl2.SDLK_b)
-        start.system.set_end_game(victory)
-        start.system.process([])
-        input_.handle_event()
-
+            actor.set(Act())
 
 # transformations
 
@@ -127,3 +107,19 @@ def kill(entity):
     entity.delete(Fatigue)
     entity.get(res.Graphic).corpsify()
     battle_log.add_msg("%s dies." % entity.name)
+
+# transitions
+#TODO make a proper game_over screen and cleanup
+def game_over(victory):
+    import sdl2
+    import input_
+    import start
+    import battle
+    start.system.active  = True
+    battle.deactivate()
+    input_.activate_mode(start.StartMode)
+    input_.clear_mode(start.StartMode)
+    input_.add_handler(start.StartMode,
+                       input_.quit_handler,
+                       sdl2.SDLK_b)
+    start.system.set_end_game(victory)

@@ -97,6 +97,9 @@ class Entity(object):
     def get(self, classobject):
         return self.__getattr__(classobject.__name__)
 
+    def delete(self, classobject):
+        return self.__delattr__(classobject.__name__)
+
     def hasattr(self, name):
         """Don't check for world or id."""
         if (name in self.world.componenttypes) and (
@@ -109,9 +112,6 @@ class Entity(object):
         """Don't check for world or id."""
         name = classobject.__name__
         return self.hasattr(name)
-
-    def delete(self, classobject):
-        return self.__delattr__(classobject.__name__)
 
     def remove(self):
         """Removes the Entity from the world it belongs to."""

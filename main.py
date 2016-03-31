@@ -13,18 +13,20 @@ import start
 world = ecs.World()
 
 world.add_system(battle.system)
-battle.system.active = False
+acts = world.add_system(battle.act_system)
+battle.deactivate()
 
 world.add_system(start.system)
 
-###Gamesystems
 world.add_system(game.BlockingSystem())
-tos = world.add_system(game.TurnOrderSystem())
+tos = world.add_system(battle.turnorder_system)
 
 worldstepsystem = ecs.WorldStepSystem(world,[
     start.system,
+    tos,
     battle.system,
-    tos])
+    acts
+    ])
 world.add_system(worldstepsystem)
 
 factory.world = world

@@ -58,6 +58,40 @@ class BattleRenderSystem(ecs.System):
 
 system = BattleRenderSystem()
 
+class ActRenderSystem(ecs.System):
+    def __init__(self):
+        ecs.System.__init__(self,[game.Act,game.Team,res.Graphic])
+        self.cursor = res.load_graphic("cursor_green")
+
+    def process(self,entities):
+        assert len(entities) == 1
+        e = entities[0]
+        act = e.get(game.Act)
+        e.delete(game.Act)
+        g = e.get(res.Graphic)
+        if e.get(game.Team).team_name == "player_team":
+            self.cursor.x = g.x
+            self.cursor.y = g.y
+            self.cursor.render()
+            res.render_present()
+        e.handle_event(act)
+
+act_system = ActRenderSystem()
+
+turnorder_system = game.TurnOrderSystem()
+# Activation
+
+def activate():
+    system.active = True
+    act_system.active = True
+    turnorder_system.active = True
+    input_.activate_mode(BattleMode)
+
+def deactivate():
+    system.active = False
+    act_system.active = False
+    turnorder_system.active = False
+
 # Keybinds
 
 class BattleMode():
