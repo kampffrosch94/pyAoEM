@@ -7,7 +7,7 @@ class Position:
         return hash((self.x,self.y))
 
     def __eq__(self,other):
-        return (self.x,self.y) == (other.x,other.y)
+        return hash(self) == hash(other)
 
     def __repr__(self):
         return ("x: %r y: %r" % (self.x,self.y))

@@ -63,7 +63,7 @@ pos_list.sort(key=(lambda pos: pos[0] * map_w + pos[1]))
 for pos in pos_list:
     if len(pcs) == 0:
         break
-    if movement.is_pos_free(world,pos):
+    if movement.pos_is_free(world,pos):
         e = pcs.pop()
         mp = e.get(game.MapPos)
         mp.x,mp.y = pos
@@ -71,7 +71,7 @@ pos_list.reverse()
 for pos in pos_list:
     if len(enemies) == 0:
         break
-    if movement.is_pos_free(world,pos):
+    if movement.pos_is_free(world,pos):
         e = enemies.pop()
         mp = e.get(game.MapPos)
         mp.x,mp.y = pos

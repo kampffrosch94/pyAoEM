@@ -38,6 +38,7 @@ def cellular_automaton(w,h,wall_chance=42,iterations=3,spawn_walls=True):
     return g_map
 
 def neighbors(g_map,pos):
+    """returns not wall neighbors of pos"""
     mx,my = pos
     result = set()
     for x in range(mx-1,mx+2):
