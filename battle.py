@@ -102,24 +102,47 @@ class BattleMode():
 def move_right():
     d = utility.Direction(1,0)
     movement.attack_or_move(controlled_entity,d)
+
 def move_left():
     d = utility.Direction(-1,0)
     movement.attack_or_move(controlled_entity,d)
+
 def move_up():
     d = utility.Direction(0,-1)
     movement.attack_or_move(controlled_entity,d)
+
 def move_down():
     d = utility.Direction(0,1)
     movement.attack_or_move(controlled_entity,d)
-def wait():
-    d = utility.Direction(0,0)
+
+def move_right_up():
+    d = utility.Direction(1,-1)
     movement.attack_or_move(controlled_entity,d)
 
-input_.add_handler(BattleMode,move_right,sdl2.SDLK_l)
-input_.add_handler(BattleMode,move_left, sdl2.SDLK_h)
-input_.add_handler(BattleMode,move_up  , sdl2.SDLK_k)
-input_.add_handler(BattleMode,move_down, sdl2.SDLK_j)
-input_.add_handler(BattleMode,wait,      sdl2.SDLK_PERIOD)
+def move_right_down():
+    d = utility.Direction(1,1)
+    movement.attack_or_move(controlled_entity,d)
+
+def move_left_up():
+    d = utility.Direction(-1,-1)
+    movement.attack_or_move(controlled_entity,d)
+
+def move_left_down():
+    d = utility.Direction(-1,1)
+    movement.attack_or_move(controlled_entity,d)
+
+def wait():
+    controlled_entity.handle_event(game.PayFatigue(100))
+
+input_.add_handler(BattleMode, move_right,      sdl2.SDLK_l)
+input_.add_handler(BattleMode, move_left,       sdl2.SDLK_h)
+input_.add_handler(BattleMode, move_up,         sdl2.SDLK_k)
+input_.add_handler(BattleMode, move_down,       sdl2.SDLK_j)
+input_.add_handler(BattleMode, move_right_up,   sdl2.SDLK_u)
+input_.add_handler(BattleMode, move_right_down, sdl2.SDLK_n)
+input_.add_handler(BattleMode, move_left_up,    sdl2.SDLK_z)
+input_.add_handler(BattleMode, move_left_down,  sdl2.SDLK_b)
+input_.add_handler(BattleMode, wait,            sdl2.SDLK_PERIOD)
 
 # Input for moving the map_view
 
