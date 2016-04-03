@@ -13,7 +13,7 @@ import start
 world = ecs.World()
 
 world.add_system(battle.system)
-acts = world.add_system(battle.act_system)
+acts = world.add_system(battle.act_render_system)
 battle.deactivate()
 
 world.add_system(start.system)

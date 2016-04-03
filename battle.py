@@ -8,6 +8,10 @@ import movement
 import utility
 import battle_log
 
+# the canvas for the scene
+
+canvas = res.create_graphic(0,0,res.WINDOW_W,res.WINDOW_H)
+
 # Components
 
 class BattleBuffer(object):
@@ -50,11 +54,18 @@ class BattleRenderSystem(ecs.System):
             g.render()
 
     def process(self,entities):
+        map_.current_map.update()
+        battle_log.update()
+
+        canvas.make_render_target()
+
         res.render_clear()
         map_.current_map.render()
         self.render_entities(entities)
         battle_log.render()
         res.render_present()
+
+        res.reset_render_target()
 
 system = BattleRenderSystem()
 
@@ -70,26 +81,29 @@ class ActRenderSystem(ecs.System):
         e.delete(game.Act)
         g = e.get(res.Graphic)
         if e.get(game.Team).team_name == "player_team":
+            canvas.make_render_target()
             self.cursor.x = g.x
             self.cursor.y = g.y
             self.cursor.render()
-            res.render_present()
+            res.reset_render_target()
+        canvas.render()
+        res.render_present()
         e.handle_event(act)
 
-act_system = ActRenderSystem()
+act_render_system = ActRenderSystem()
 
 turnorder_system = game.TurnOrderSystem()
 # Activation
 
 def activate():
     system.active = True
-    act_system.active = True
+    act_render_system.active = True
     turnorder_system.active = True
     input_.activate_mode(BattleMode)
 
 def deactivate():
     system.active = False
-    act_system.active = False
+    act_render_system.active = False
     turnorder_system.active = False
 
 # Keybinds

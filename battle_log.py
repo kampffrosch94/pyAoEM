@@ -30,5 +30,4 @@ def update():
         dirty = False
 
 def render():
-    update()
     graphic.render()
