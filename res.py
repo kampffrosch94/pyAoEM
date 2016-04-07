@@ -31,6 +31,7 @@ img_paths = {
 }
 
 loaded_textures = {}
+loaded_textures_properties = {}
 
 def reset_render_target():
     sdl2.SDL_SetRenderTarget(renderer, None)
@@ -90,10 +91,11 @@ class Graphic(object):
         self.z = 0
 
 
-def load_graphic(texture_name):
+def _load_texture(texture_name):
     if texture_name in loaded_textures:
-        cached = loaded_textures[texture_name]
-        return Graphic(*cached)
+        cached_texture = loaded_textures[texture_name]
+        cached_properties = loaded_textures_properties[texture_name]
+        return cached_texture, cached_properties
     surface = sdlimage.IMG_Load(img_paths[texture_name])
     if surface == None:
         raise OSError("File "+texture_name+" could not be loaded.")
@@ -102,10 +104,16 @@ def load_graphic(texture_name):
         raise SDL_Exception()
 
     rect = surface.contents.clip_rect
-    g = Graphic(texture,rect.x,rect.y,rect.w,rect.h)
     sdl2.SDL_FreeSurface(surface)
-    loaded_textures[texture_name] = (texture,g.x,g.y,g.w,g.h)
-    return g
+
+    properties = (rect.x,rect.y,rect.w,rect.h)
+    loaded_textures[texture_name] = texture
+    loaded_textures_properties[texture_name] = properties
+    return texture,properties
+
+def load_graphic(texture_name):
+    texture, properties = _load_texture(texture_name)
+    return Graphic(texture, *properties)
 
 def create_graphic(x,y,w,h,z=1):
     texture = sdl2.SDL_CreateTexture(
