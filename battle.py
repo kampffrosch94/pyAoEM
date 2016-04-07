@@ -11,7 +11,6 @@ import battle_log
 # the canvas for the scene
 
 canvas = res.create_graphic(0,0,res.WINDOW_W,res.WINDOW_H)
-current_actor_marker = res.load_graphic("cursor_green")
 
 # Components
 
@@ -63,14 +62,11 @@ class BattleRenderSystem(ecs.System):
             g.render()
 
     def render_turn_order(self, es_in_to):
+        """render_entities must be run before to update graphic positions"""
         current_actor = es_in_to[0]
         if current_actor.get(game.Team).team_name == "player_team":
-        #TODO change this render code to not copy other graphic coordinates
             g = current_actor.get(res.Graphic)
-            current_actor_marker.x = g.x
-            current_actor_marker.y = g.y
-            current_actor_marker.render()
-
+            g.render_other_texture("cursor_green")
 
     def process(self,entities):
         map_.current_map.update()

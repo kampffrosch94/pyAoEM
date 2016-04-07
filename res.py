@@ -83,6 +83,13 @@ class Graphic(object):
                             self.src_rect,
                             self.dest_rect)
 
+    def render_other_texture(self,texture_name):
+        other_texture, _ = _load_texture(texture_name)
+        sdl2.SDL_RenderCopy(renderer,
+                            other_texture,
+                            self.src_rect,
+                            self.dest_rect)
+
     def make_render_target(self):
         sdl2.SDL_SetRenderTarget(renderer, self.texture)
 
