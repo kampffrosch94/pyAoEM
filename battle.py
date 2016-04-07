@@ -43,30 +43,30 @@ def update_graphic_pos(e):
     return False
 
 
+def render_entities(entities):
+    graphics = []
+    for e in entities:
+        if update_graphic_pos(e):
+            graphics.append(e.get(res.Graphic))
+
+    z0 = [g for g in graphics if g.z == 0]
+    z1 = [g for g in graphics if g.z == 1]
+    for g in z0:
+        g.render()
+    for g in z1:
+        g.render()
+
+def render_turn_order(es_in_to):
+    """render_entities must be run before this to update graphic positions"""
+    current_actor = es_in_to[0]
+    if current_actor.get(game.Team).team_name == "player_team":
+        g = current_actor.get(res.Graphic)
+        g.render_other_texture("cursor_green")
+
 class BattleRenderSystem(ecs.System):
     def __init__(self,turn_order_system):
         super().__init__([res.Graphic, game.MapPos, BattleBuffer])
         self.turn_order_system = turn_order_system
-
-    def render_entities(self,entities):
-        graphics = []
-        for e in entities:
-            if update_graphic_pos(e):
-                graphics.append(e.get(res.Graphic))
-
-        z0 = [g for g in graphics if g.z == 0]
-        z1 = [g for g in graphics if g.z == 1]
-        for g in z0:
-            g.render()
-        for g in z1:
-            g.render()
-
-    def render_turn_order(self, es_in_to):
-        """render_entities must be run before to update graphic positions"""
-        current_actor = es_in_to[0]
-        if current_actor.get(game.Team).team_name == "player_team":
-            g = current_actor.get(res.Graphic)
-            g.render_other_texture("cursor_green")
 
     def process(self,entities):
         map_.current_map.update()
@@ -77,8 +77,8 @@ class BattleRenderSystem(ecs.System):
         res.render_clear()
         map_.current_map.render()
         battle_log.render()
-        self.render_entities(entities)
-        self.render_turn_order(self.turn_order_system.turn_order)
+        render_entities(entities)
+        render_turn_order(self.turn_order_system.turn_order)
         res.render_present()
 
         res.reset_render_target()
@@ -88,9 +88,7 @@ class BattleRenderSystem(ecs.System):
 
 
 turn_order_system = game.TurnOrderSystem()
-
 system = BattleRenderSystem(turn_order_system)
-
 act_system = game.ActSystem(turn_order_system)
 
 # Activation
