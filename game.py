@@ -89,6 +89,7 @@ class BlockingSystem(ecs.System):
 class TurnOrderSystem(ecs.System):
     def __init__(self):
         ecs.System.__init__(self,[Fatigue,Team,res.Graphic])
+        self.turn_order = []
 
     def process(self, entities):
         #TODO rework this
@@ -96,10 +97,21 @@ class TurnOrderSystem(ecs.System):
             #GAME OVER
             game_over(entities[0].get(Team).team_name=="player_team")
         else: # normal
-            actor = min(entities, key=(lambda e: e.get(Fatigue).value))
-            print("%s acts." % actor.name)
-            actor.set(Act())
+            entities.sort(key=(lambda e: e.get(Fatigue).value))
+            self.turn_order = entities
 
+class ActSystem(ecs.System):
+    def __init__(self,turn_order_system):
+        ecs.System.__init__(self)
+        self.turn_order_system = turn_order_system
+
+    def process(self,_):
+        turn_order = self.turn_order_system.turn_order
+        actor = turn_order[0]
+        print("%s turn" % turn_order[0].name)
+        actor.handle_event(Act())
+        del turn_order[0]
+        turn_order.append(actor)
 # transformations
 
 def kill(entity):

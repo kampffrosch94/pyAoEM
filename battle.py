@@ -11,6 +11,7 @@ import battle_log
 # the canvas for the scene
 
 canvas = res.create_graphic(0,0,res.WINDOW_W,res.WINDOW_H)
+current_actor_marker = res.load_graphic("cursor_green")
 
 # Components
 
@@ -30,21 +31,29 @@ class Input(object):
         controlled_entity = self.entity
         input_.handle_event()
 
-# System
+# render code and System
+
+def update_graphic_pos(e):
+    """returns True if graphic is visible else False"""
+    mp = e.get(game.MapPos)
+    if map_.current_map.is_visible(mp):
+        g = e.get(res.Graphic)
+        g.x = map_.TILE_WIDTH * (mp.x - map_.current_map.root_pos.x)
+        g.y = map_.TILE_HEIGHT*(mp.y - map_.current_map.root_pos.y)
+        return True
+    return False
+
 
 class BattleRenderSystem(ecs.System):
-    def __init__(self):
+    def __init__(self,turn_order_system):
         super().__init__([res.Graphic, game.MapPos, BattleBuffer])
+        self.turn_order_system = turn_order_system
 
     def render_entities(self,entities):
         graphics = []
         for e in entities:
-            mp = e.get(game.MapPos)
-            if map_.current_map.is_visible(mp):
-                g = e.get(res.Graphic)
-                g.x = map_.TILE_WIDTH * (mp.x - map_.current_map.root_pos.x)
-                g.y = map_.TILE_HEIGHT *(mp.y - map_.current_map.root_pos.y)
-                graphics.append(g)
+            if update_graphic_pos(e):
+                graphics.append(e.get(res.Graphic))
 
         z0 = [g for g in graphics if g.z == 0]
         z1 = [g for g in graphics if g.z == 1]
@@ -52,6 +61,16 @@ class BattleRenderSystem(ecs.System):
             g.render()
         for g in z1:
             g.render()
+
+    def render_turn_order(self, es_in_to):
+        current_actor = es_in_to[0]
+        if current_actor.get(game.Team).team_name == "player_team":
+        #TODO change this render code to not copy other graphic coordinates
+            g = current_actor.get(res.Graphic)
+            current_actor_marker.x = g.x
+            current_actor_marker.y = g.y
+            current_actor_marker.render()
+
 
     def process(self,entities):
         map_.current_map.update()
@@ -61,50 +80,35 @@ class BattleRenderSystem(ecs.System):
 
         res.render_clear()
         map_.current_map.render()
-        self.render_entities(entities)
         battle_log.render()
+        self.render_entities(entities)
+        self.render_turn_order(self.turn_order_system.turn_order)
         res.render_present()
 
         res.reset_render_target()
 
-system = BattleRenderSystem()
-
-class ActRenderSystem(ecs.System):
-    def __init__(self):
-        ecs.System.__init__(self,[game.Act,game.Team,res.Graphic])
-        self.cursor = res.load_graphic("cursor_green")
-
-    def process(self,entities):
-        assert len(entities) == 1
-        e = entities[0]
-        act = e.get(game.Act)
-        e.delete(game.Act)
-        g = e.get(res.Graphic)
-        if e.get(game.Team).team_name == "player_team":
-            canvas.make_render_target()
-            self.cursor.x = g.x
-            self.cursor.y = g.y
-            self.cursor.render()
-            res.reset_render_target()
         canvas.render()
         res.render_present()
-        e.handle_event(act)
 
-act_render_system = ActRenderSystem()
 
-turnorder_system = game.TurnOrderSystem()
+turn_order_system = game.TurnOrderSystem()
+
+system = BattleRenderSystem(turn_order_system)
+
+act_system = game.ActSystem(turn_order_system)
+
 # Activation
 
 def activate():
     system.active = True
-    act_render_system.active = True
-    turnorder_system.active = True
+    turn_order_system.active = True
+    act_system.active = True
     input_.activate_mode(BattleMode)
 
 def deactivate():
     system.active = False
-    act_render_system.active = False
-    turnorder_system.active = False
+    turn_order_system.active = False
+    act_system.active = False
 
 # Keybinds
 
