@@ -129,6 +129,7 @@ class World(object):
         self.componenttypes_to_system = {} 
 
         self.alive = True
+        self.main_loop = None
 
     def remove_entity(self, entity): 
         """Removes an Entity from the World, including all its data."""
@@ -214,14 +215,3 @@ class System(object):
 
     def __hash__(self):
         return hash(self.__class__.__name__)
-
-class WorldStepSystem(System):
-    """The System which runs the gameloop"""
-    def __init__(self,world,systems):
-        System.__init__(self)
-        self.systems = [s.__class__ for s in systems]
-        self.world = world
-
-    def process(self,entities):
-        for s in self.systems:
-            self.world.invoke_system(s)

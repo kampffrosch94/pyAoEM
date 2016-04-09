@@ -88,7 +88,7 @@ class BlockingSystem(ecs.System):
 
 class TurnOrderSystem(ecs.System):
     def __init__(self):
-        ecs.System.__init__(self,[Fatigue,Team,res.Graphic])
+        ecs.System.__init__(self,[Fatigue,Team])
         self.turn_order = []
 
     def process(self, entities):
@@ -123,15 +123,5 @@ def kill(entity):
 # transitions
 #TODO make a proper game_over screen and cleanup
 def game_over(victory):
-    import sdl2
-    import input_
     import start
-    import battle
-    start.system.active  = True
-    battle.deactivate()
-    input_.activate_mode(start.StartMode)
-    input_.clear_mode(start.StartMode)
-    input_.add_handler(start.StartMode,
-                       input_.quit_handler,
-                       sdl2.SDLK_b)
-    start.system.set_end_game(victory)
+    start.activate()

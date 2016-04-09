@@ -91,19 +91,6 @@ turn_order_system = game.TurnOrderSystem()
 system = BattleRenderSystem(turn_order_system)
 act_system = game.ActSystem(turn_order_system)
 
-# Activation
-
-def activate():
-    system.active = True
-    turn_order_system.active = True
-    act_system.active = True
-    input_.activate_mode(BattleMode)
-
-def deactivate():
-    system.active = False
-    turn_order_system.active = False
-    act_system.active = False
-
 # Keybinds
 
 class BattleMode():
@@ -146,16 +133,6 @@ def move_left_down():
 def wait():
     controlled_entity.handle_event(game.PayFatigue(100))
 
-input_.add_handler(BattleMode, move_right,      sdl2.SDLK_l)
-input_.add_handler(BattleMode, move_left,       sdl2.SDLK_h)
-input_.add_handler(BattleMode, move_up,         sdl2.SDLK_k)
-input_.add_handler(BattleMode, move_down,       sdl2.SDLK_j)
-input_.add_handler(BattleMode, move_right_up,   sdl2.SDLK_u)
-input_.add_handler(BattleMode, move_right_down, sdl2.SDLK_n)
-input_.add_handler(BattleMode, move_left_up,    sdl2.SDLK_z)
-input_.add_handler(BattleMode, move_left_down,  sdl2.SDLK_b)
-input_.add_handler(BattleMode, wait,            sdl2.SDLK_PERIOD)
-
 # Input for moving the map_view
 
 map_w,map_h = 20,15
@@ -171,8 +148,34 @@ def map_up():
 def map_down():
     map_.current_map.root_pos.y += 1
 
-input_.add_handler(BattleMode,map_right,sdl2.SDLK_l,sdl2.KMOD_SHIFT)
-input_.add_handler(BattleMode,map_left ,sdl2.SDLK_h,sdl2.KMOD_SHIFT)
-input_.add_handler(BattleMode,map_up   ,sdl2.SDLK_k,sdl2.KMOD_SHIFT)
-input_.add_handler(BattleMode,map_down ,sdl2.SDLK_j,sdl2.KMOD_SHIFT)
-input_.add_handler(BattleMode,regen_map,sdl2.SDLK_F1)
+# Activation
+world = None
+
+def activate(w):
+    global world
+    world = w
+    input_.clear_handlers()
+    input_.add_handler(map_right,sdl2.SDLK_l,sdl2.KMOD_SHIFT)
+    input_.add_handler(map_left ,sdl2.SDLK_h,sdl2.KMOD_SHIFT)
+    input_.add_handler(map_up   ,sdl2.SDLK_k,sdl2.KMOD_SHIFT)
+    input_.add_handler(map_down ,sdl2.SDLK_j,sdl2.KMOD_SHIFT)
+    input_.add_handler(regen_map,sdl2.SDLK_F1)
+
+    input_.add_handler(move_right,      sdl2.SDLK_l)
+    input_.add_handler(move_left,       sdl2.SDLK_h)
+    input_.add_handler(move_up,         sdl2.SDLK_k)
+    input_.add_handler(move_down,       sdl2.SDLK_j)
+    input_.add_handler(move_right_up,   sdl2.SDLK_u)
+    input_.add_handler(move_right_down, sdl2.SDLK_n)
+    input_.add_handler(move_left_up,    sdl2.SDLK_z)
+    input_.add_handler(move_left_down,  sdl2.SDLK_b)
+    input_.add_handler(wait,            sdl2.SDLK_PERIOD)
+    world.main_loop = main_loop
+
+def deactivate():
+    pass # TODO remove this function
+
+def main_loop():
+    world.invoke_system(game.TurnOrderSystem)
+    world.invoke_system(BattleRenderSystem)
+    world.invoke_system(game.ActSystem)

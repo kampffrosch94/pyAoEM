@@ -13,7 +13,6 @@ import start
 world = ecs.World()
 
 
-world.add_system(start.system)
 world.add_system(game.BlockingSystem())
 
 world.add_system(battle.system)
@@ -21,18 +20,10 @@ tos = world.add_system(battle.turn_order_system)
 act = world.add_system(battle.act_system)
 battle.deactivate()
 
-worldstepsystem = ecs.WorldStepSystem(world,[
-    start.system,
-    tos,
-    battle.system,
-    act
-    ])
-world.add_system(worldstepsystem)
-
 factory.world = world
 
 player_number = random.randint(1,3)
-enemy_number = random.randint(3,10)
+enemy_number = random.randint(1,2)
 pcs = []
 enemies = []
 for i in range(player_number):
@@ -86,13 +77,14 @@ def go_interpreter():
 from battle import BattleMode
 
 input_.quit_handler = end_world
-input_.add_handler(BattleMode,end_world,sdl2.SDLK_q)
-input_.add_handler(BattleMode,go_interpreter,sdl2.SDLK_y)
+input_.add_handler(go_interpreter,sdl2.SDLK_y)
+
+start.activate(world)
 
 def main():
     battle_log.add_msg("Welcome to AoEM.")
     while world.alive:
-        world.invoke_system(ecs.WorldStepSystem)
+        world.main_loop()
     world.destroy()
 
 if __name__ == "__main__":
