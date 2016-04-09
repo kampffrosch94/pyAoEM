@@ -68,15 +68,8 @@ for pos in pos_list:
 
 def end_world():
     world.end()
-def go_interpreter():
-    e = player_char
-    import IPython; IPython.embed()
-
-
-from battle import BattleMode
 
 input_.quit_handler = end_world
-input_.add_handler(go_interpreter,sdl2.SDLK_y)
 
 start.activate(world)
 

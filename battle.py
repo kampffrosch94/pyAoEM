@@ -14,9 +14,6 @@ canvas = res.create_graphic(0,0,res.WINDOW_W,res.WINDOW_H)
 
 # Components
 
-class BattleBuffer(object):
-    pass
-
 controlled_entity = None
 
 class Input(object):
@@ -65,7 +62,7 @@ def render_turn_order(es_in_to):
 
 class BattleRenderSystem(ecs.System):
     def __init__(self,turn_order_system):
-        super().__init__([res.Graphic, game.MapPos, BattleBuffer])
+        super().__init__([res.Graphic, game.MapPos])
         self.turn_order_system = turn_order_system
 
     def process(self,entities):
@@ -90,10 +87,7 @@ turn_order_system = game.TurnOrderSystem()
 system = BattleRenderSystem(turn_order_system)
 act_system = game.ActSystem(turn_order_system)
 
-# Keybinds
-
-class BattleMode():
-    pass
+# Keybindings
 
 # Input for a controlled entity on the map
 
@@ -148,16 +142,18 @@ def map_down():
     map_.current_map.root_pos.y += 1
 def quit_():
     input_.quit_handler()
+def go_interpreter():
+    e = player_char
+    import IPython; IPython.embed()
 
 # Activation
 world = None
 
-def activate(w):
-    global world
-    world = w
+def bind_keys():
     input_.clear_handlers()
 
     input_.add_handler(quit_, sdl2.SDLK_q)
+    input_.add_handler(go_interpreter,sdl2.SDLK_y)
 
     input_.add_handler(map_right,sdl2.SDLK_l,sdl2.KMOD_SHIFT)
     input_.add_handler(map_left ,sdl2.SDLK_h,sdl2.KMOD_SHIFT)
@@ -175,7 +171,12 @@ def activate(w):
     input_.add_handler(move_left_up,    sdl2.SDLK_z)
     input_.add_handler(move_left_down,  sdl2.SDLK_b)
     input_.add_handler(wait,            sdl2.SDLK_PERIOD)
+
+def activate(w):
+    global world
+    world = w
     world.main_loop = main_loop
+    bind_keys()
 
 def main_loop():
     world.invoke_system(game.TurnOrderSystem)

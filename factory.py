@@ -13,7 +13,6 @@ def create_creature(name,texture,pos,mhp,dmg):
     pos_x,pos_y = pos
     creature.set(game.MapPos(pos_x,pos_y))
     creature.set(res.load_graphic(texture))
-    creature.set(battle.BattleBuffer())
 
     creature.set(Blocking())
     creature.set(Health(creature,mhp))
