@@ -89,25 +89,17 @@ class BlockingSystem(ecs.System):
 class TurnOrderSystem(ecs.System):
     def __init__(self):
         ecs.System.__init__(self,[Fatigue,Team])
-        self.turn_order = []
 
     def process(self, entities):
         entities.sort(key=(lambda e: e.get(Fatigue).value))
-        self.turn_order = entities
 
-class ActSystem(ecs.System):
-    def __init__(self,turn_order_system):
-        ecs.System.__init__(self)
-        self.turn_order_system = turn_order_system
-
-    def process(self,_):
-        turn_order = self.turn_order_system.turn_order
-        actor = turn_order[0]
-        print("%s turn" % turn_order[0].name)
-        actor.handle_event(Act())
-        del turn_order[0]
-        turn_order.append(actor)
 # transformations
+def active_take_turn(turn_order):
+    actor = turn_order[0]
+    print("%s turn" % turn_order[0].name)
+    actor.handle_event(Act())
+    del turn_order[0]
+    turn_order.append(actor)
 
 def kill(entity):
     entity.delete(Blocking)

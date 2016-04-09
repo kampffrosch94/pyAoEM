@@ -39,19 +39,22 @@ def update_graphic_pos(e):
         return True
     return False
 
+class BattleRenderSystem(ecs.System):
+    def __init__(self):
+        super().__init__([res.Graphic, game.MapPos])
 
-def render_entities(entities):
-    graphics = []
-    for e in entities:
-        if update_graphic_pos(e):
-            graphics.append(e.get(res.Graphic))
+    def process(self, entities):
+        graphics = []
+        for e in entities:
+            if update_graphic_pos(e):
+                graphics.append(e.get(res.Graphic))
 
-    z0 = [g for g in graphics if g.z == 0]
-    z1 = [g for g in graphics if g.z == 1]
-    for g in z0:
-        g.render()
-    for g in z1:
-        g.render()
+        z0 = [g for g in graphics if g.z == 0]
+        z1 = [g for g in graphics if g.z == 1]
+        for g in z0:
+            g.render()
+        for g in z1:
+            g.render()
 
 def render_turn_order(es_in_to):
     """render_entities must be run before this to update graphic positions"""
@@ -60,32 +63,25 @@ def render_turn_order(es_in_to):
         g = current_actor.get(res.Graphic)
         g.render_other_texture("cursor_green")
 
-class BattleRenderSystem(ecs.System):
-    def __init__(self,turn_order_system):
-        super().__init__([res.Graphic, game.MapPos])
-        self.turn_order_system = turn_order_system
+def render(world):
+    map_.current_map.update()
+    battle_log.update()
 
-    def process(self,entities):
-        map_.current_map.update()
-        battle_log.update()
+    canvas.make_render_target()
 
-        canvas.make_render_target()
+    res.render_clear()
+    map_.current_map.render()
+    battle_log.render()
 
-        res.render_clear()
-        map_.current_map.render()
-        battle_log.render()
-        render_entities(entities)
-        render_turn_order(self.turn_order_system.turn_order)
-        res.render_present()
+    world.invoke_system(BattleRenderSystem)
+    render_turn_order(world.get_system_entities(game.TurnOrderSystem))
 
-        res.reset_render_target()
+    res.render_present()
 
-        canvas.render()
-        res.render_present()
+    res.reset_render_target()
 
-turn_order_system = game.TurnOrderSystem()
-system = BattleRenderSystem(turn_order_system)
-act_system = game.ActSystem(turn_order_system)
+    canvas.render()
+    res.render_present()
 
 # Keybindings
 
@@ -147,7 +143,6 @@ def go_interpreter():
     import IPython; IPython.embed()
 
 # Activation
-world = None
 
 def bind_keys():
     input_.clear_handlers()
@@ -172,13 +167,15 @@ def bind_keys():
     input_.add_handler(move_left_down,  sdl2.SDLK_b)
     input_.add_handler(wait,            sdl2.SDLK_PERIOD)
 
-def activate(w):
-    global world
-    world = w
+_world = None
+
+def activate(world):
+    global _world
+    _world = world
     world.main_loop = main_loop
     bind_keys()
 
 def main_loop():
-    world.invoke_system(game.TurnOrderSystem)
-    world.invoke_system(BattleRenderSystem)
-    world.invoke_system(game.ActSystem)
+    _world.invoke_system(game.TurnOrderSystem)
+    render(_world)
+    game.active_take_turn(_world.get_system_entities(game.TurnOrderSystem))
