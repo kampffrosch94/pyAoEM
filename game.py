@@ -92,13 +92,8 @@ class TurnOrderSystem(ecs.System):
         self.turn_order = []
 
     def process(self, entities):
-        #TODO rework this
-        if all(entities[0].get(Team) == e.get(Team) for e in entities):
-            #GAME OVER
-            game_over(entities[0].get(Team).team_name=="player_team")
-        else: # normal
-            entities.sort(key=(lambda e: e.get(Fatigue).value))
-            self.turn_order = entities
+        entities.sort(key=(lambda e: e.get(Fatigue).value))
+        self.turn_order = entities
 
 class ActSystem(ecs.System):
     def __init__(self,turn_order_system):
@@ -119,6 +114,11 @@ def kill(entity):
     entity.delete(Fatigue)
     entity.get(res.Graphic).corpsify()
     battle_log.add_msg("%s dies." % entity.name)
+
+    #check game over
+    entities = entity.world.get_system_entities(TurnOrderSystem)
+    if all(entities[0].get(Team) == e.get(Team) for e in entities):
+        game_over(entities[0].get(Team).team_name=="player_team")
 
 # transitions
 #TODO make a proper game_over screen and cleanup

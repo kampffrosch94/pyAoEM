@@ -27,7 +27,6 @@ def render():
     res.render_present()
 
 def main_loop():
-    print("TODO enter main loop")
     render()
     input_.handle_event()
 

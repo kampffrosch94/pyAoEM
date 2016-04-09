@@ -18,7 +18,6 @@ world.add_system(game.BlockingSystem())
 world.add_system(battle.system)
 tos = world.add_system(battle.turn_order_system)
 act = world.add_system(battle.act_system)
-battle.deactivate()
 
 factory.world = world
 

@@ -86,7 +86,6 @@ class BattleRenderSystem(ecs.System):
         canvas.render()
         res.render_present()
 
-
 turn_order_system = game.TurnOrderSystem()
 system = BattleRenderSystem(turn_order_system)
 act_system = game.ActSystem(turn_order_system)
@@ -147,6 +146,8 @@ def map_up():
     map_.current_map.root_pos.y -= 1
 def map_down():
     map_.current_map.root_pos.y += 1
+def quit_():
+    input_.quit_handler()
 
 # Activation
 world = None
@@ -155,10 +156,14 @@ def activate(w):
     global world
     world = w
     input_.clear_handlers()
+
+    input_.add_handler(quit_, sdl2.SDLK_q)
+
     input_.add_handler(map_right,sdl2.SDLK_l,sdl2.KMOD_SHIFT)
     input_.add_handler(map_left ,sdl2.SDLK_h,sdl2.KMOD_SHIFT)
     input_.add_handler(map_up   ,sdl2.SDLK_k,sdl2.KMOD_SHIFT)
     input_.add_handler(map_down ,sdl2.SDLK_j,sdl2.KMOD_SHIFT)
+
     input_.add_handler(regen_map,sdl2.SDLK_F1)
 
     input_.add_handler(move_right,      sdl2.SDLK_l)
@@ -171,9 +176,6 @@ def activate(w):
     input_.add_handler(move_left_down,  sdl2.SDLK_b)
     input_.add_handler(wait,            sdl2.SDLK_PERIOD)
     world.main_loop = main_loop
-
-def deactivate():
-    pass # TODO remove this function
 
 def main_loop():
     world.invoke_system(game.TurnOrderSystem)
