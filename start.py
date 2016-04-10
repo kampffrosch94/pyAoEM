@@ -32,10 +32,9 @@ def main_loop():
 
 world = None
 
-def activate(w=None):
-    if w is not None:
-        global world 
-        world = w
+def activate(w):
+    global world 
+    world = w
 
     input_.clear_handlers()
     input_.add_handler(to_battle, sdl2.SDLK_a)

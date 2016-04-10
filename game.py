@@ -115,5 +115,5 @@ def kill(entity):
 # transitions
 #TODO make a proper game_over screen and cleanup
 def game_over(victory):
-    import start
-    start.activate()
+    import game_over
+    game_over.activate(victory)
