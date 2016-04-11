@@ -22,12 +22,17 @@ font = sdlttf.TTF_OpenFont(b"fonts/VeraMono.ttf",FONT_SIZE)
 default_fg = sdl2.SDL_Color()
 
 img_paths = {
-    "human_m"       : b"gfx/human_m.png",
-    "cobble_blood1" : b"gfx/cobble_blood1.png",
-    "newt"          : b"gfx/giant_newt.png",
-    "blood0"        : b"gfx/blood_red00.png",
-    "lair0"         : b"gfx/walls/lair0.png",
-    "cursor_green"  : b"gfx/cursor_green.png"
+    "human_m"         : b"gfx/human_m.png",
+    "cobble_blood1"   : b"gfx/cobble_blood1.png",
+    "newt"            : b"gfx/giant_newt.png",
+    "blood0"          : b"gfx/blood_red00.png",
+    "lair0"           : b"gfx/walls/lair0.png",
+    "cursor_green"    : b"gfx/cursor_green.png",
+    "dmg_light"       : b"gfx/dmg/mdam_lightly_damaged.png",
+    "dmg_moderate"    : b"gfx/dmg/mdam_moderately_damaged.png",
+    "dmg_heavy"       : b"gfx/dmg/mdam_heavily_damaged.png",
+    "dmg_severely"    : b"gfx/dmg/mdam_severely_damaged.png",
+    "dmg_almost_dead" : b"gfx/dmg/mdam_almost_dead.png",
 }
 
 loaded_textures = {}

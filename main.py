@@ -15,8 +15,9 @@ world = ecs.World()
 
 world.add_system(game.BlockingSystem())
 
-world.add_system(battle.BattleRenderSystem())
+world.add_system(battle.EntityRenderSystem())
 world.add_system(game.TurnOrderSystem())
+world.add_system(battle.HealthRenderSystem())
 
 factory.world = world
 

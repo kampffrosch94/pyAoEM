@@ -39,7 +39,7 @@ def update_graphic_pos(e):
         return True
     return False
 
-class BattleRenderSystem(ecs.System):
+class EntityRenderSystem(ecs.System):
     def __init__(self):
         super().__init__([res.Graphic, game.MapPos])
 
@@ -55,6 +55,28 @@ class BattleRenderSystem(ecs.System):
             g.render()
         for g in z1:
             g.render()
+
+class HealthRenderSystem(ecs.System):
+    def __init__(self):
+        super().__init__([res.Graphic, game.MapPos, game.Health, game.Fatigue])
+
+    def process(self, entities):
+        for e in entities:
+            mp = e.get(game.MapPos)
+            if map_.current_map.is_visible(mp): 
+                hc = e.get(game.Health)
+                g = e.get(res.Graphic)
+                if hc.hp < hc.max_hp:
+                    if hc.hp <= hc.max_hp / 5:
+                        g.render_other_texture("dmg_almost_dead")
+                    elif hc.hp <= hc.max_hp * 2 / 5:
+                        g.render_other_texture("dmg_severely")
+                    elif hc.hp <= hc.max_hp * 3 / 5:
+                        g.render_other_texture("dmg_heavy")
+                    elif hc.hp <= hc.max_hp * 4 / 5:
+                        g.render_other_texture("dmg_moderate")
+                    else:
+                        g.render_other_texture("dmg_light")
 
 def render_turn_order(es_in_to):
     """render_entities must be run before this to update graphic positions"""
@@ -73,7 +95,8 @@ def render(world):
     map_.current_map.render()
     battle_log.render()
 
-    world.invoke_system(BattleRenderSystem)
+    world.invoke_system(EntityRenderSystem)
+    world.invoke_system(HealthRenderSystem)
     render_turn_order(world.get_system_entities(game.TurnOrderSystem))
 
     res.render_present()
