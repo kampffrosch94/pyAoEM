@@ -25,7 +25,8 @@ class Input(object):
     def act(self,event):
         global controlled_entity
         controlled_entity = self.entity
-        input_.handle_event()
+        while not input_.handle_event():
+            pass
 
 # render code and System
 
@@ -81,11 +82,14 @@ class HealthRenderSystem(ecs.System):
 def render_turn_order(es_in_to):
     """render_entities must be run before this to update graphic positions"""
     current_actor = es_in_to[0]
-    if current_actor.get(game.Team).team_name == "player_team":
-        g = current_actor.get(res.Graphic)
-        g.render_other_texture("cursor_green")
+    if map_.current_map.is_visible(current_actor.get(game.MapPos)): 
+        if current_actor.get(game.Team).team_name == "player_team":
+            g = current_actor.get(res.Graphic)
+            g.render_other_texture("cursor_green")
 
-def render(world):
+def render():
+    world = _world
+
     map_.current_map.update()
     battle_log.update()
 
@@ -112,38 +116,39 @@ def render(world):
 
 def move_right():
     d = utility.Direction(1,0)
-    movement.attack_or_move(controlled_entity,d)
+    return movement.attack_or_move(controlled_entity,d)
 
 def move_left():
     d = utility.Direction(-1,0)
-    movement.attack_or_move(controlled_entity,d)
+    return movement.attack_or_move(controlled_entity,d)
 
 def move_up():
     d = utility.Direction(0,-1)
-    movement.attack_or_move(controlled_entity,d)
+    return movement.attack_or_move(controlled_entity,d)
 
 def move_down():
     d = utility.Direction(0,1)
-    movement.attack_or_move(controlled_entity,d)
+    return movement.attack_or_move(controlled_entity,d)
 
 def move_right_up():
     d = utility.Direction(1,-1)
-    movement.attack_or_move(controlled_entity,d)
+    return movement.attack_or_move(controlled_entity,d)
 
 def move_right_down():
     d = utility.Direction(1,1)
-    movement.attack_or_move(controlled_entity,d)
+    return movement.attack_or_move(controlled_entity,d)
 
 def move_left_up():
     d = utility.Direction(-1,-1)
-    movement.attack_or_move(controlled_entity,d)
+    return movement.attack_or_move(controlled_entity,d)
 
 def move_left_down():
     d = utility.Direction(-1,1)
-    movement.attack_or_move(controlled_entity,d)
+    return movement.attack_or_move(controlled_entity,d)
 
 def wait():
     controlled_entity.handle_event(game.PayFatigue(100))
+    return True
 
 # Input for moving the map_view
 
@@ -151,18 +156,23 @@ map_w,map_h = 20,15
 wall_chance = 42
 def regen_map():
     map_.current_map = map_.TileMap(map_w,map_h,wall_chance)
+    render()
 def map_left():
     map_.current_map.root_pos.x -= 1
+    render()
 def map_right():
     map_.current_map.root_pos.x += 1
+    render()
 def map_up():
     map_.current_map.root_pos.y -= 1
+    render()
 def map_down():
     map_.current_map.root_pos.y += 1
+    render()
 def quit_():
     input_.quit_handler()
+    return True
 def go_interpreter():
-    e = player_char
     import IPython; IPython.embed()
 
 # Activation
@@ -200,5 +210,5 @@ def activate(world):
 
 def main_loop():
     _world.invoke_system(game.TurnOrderSystem)
-    render(_world)
+    render()
     game.active_take_turn(_world.get_system_entities(game.TurnOrderSystem))

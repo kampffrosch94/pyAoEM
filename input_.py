@@ -36,5 +36,4 @@ def handle_event():
             key = event.key.keysym.sym
             mod = event.key.keysym.mod
             if (key,mod) in key_handlers:
-                key_handlers[(key,mod)]()
-                break
+                return key_handlers[(key,mod)]()
