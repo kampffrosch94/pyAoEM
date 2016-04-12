@@ -7,6 +7,7 @@ import game
 import movement
 import utility
 import battle_log
+import menu
 
 # the canvas for the scene
 
@@ -152,11 +153,6 @@ def wait():
 
 # Input for moving the map_view
 
-map_w,map_h = 20,15
-wall_chance = 42
-def regen_map():
-    map_.current_map = map_.TileMap(map_w,map_h,wall_chance)
-    render()
 def map_left():
     map_.current_map.root_pos.x -= 1
     render()
@@ -168,6 +164,23 @@ def map_up():
     render()
 def map_down():
     map_.current_map.root_pos.y += 1
+    render()
+
+# Tests of unfinished stuff
+def menu_test():
+    head = "Example Header."
+    choices = ["Take this.", "Body Slam",
+               "I don't know anymore."]
+    m = menu.ChoiceMenu(200,200,200,200,head,choices)
+    print("You chose Nr: %s" % m.choose())
+    bind_keys()
+    render()
+
+# Debug 
+map_w,map_h = 20,15
+wall_chance = 42
+def regen_map():
+    map_.current_map = map_.TileMap(map_w,map_h,wall_chance)
     render()
 def quit_():
     input_.quit_handler()
@@ -199,6 +212,8 @@ def bind_keys():
     input_.add_handler(move_left_up,    sdl2.SDLK_z)
     input_.add_handler(move_left_down,  sdl2.SDLK_b)
     input_.add_handler(wait,            sdl2.SDLK_PERIOD)
+
+    input_.add_handler(menu_test,       sdl2.SDLK_m)
 
 _world = None
 
