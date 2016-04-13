@@ -156,9 +156,13 @@ def wait():
     controlled_entity.handle_event(game.PayFatigue(100))
     return True
 
-def cursor():
+def cursor(trail = False):
     pos = controlled_entity.get(game.MapPos).copy()
     g   = res.load_graphic("cursor")
+
+    if trail:
+        start = pos.copy()
+        trail_g = res.load_graphic("ray")
 
     def move_dir_f(x,y):
         return lambda: pos.apply_direction(utility.Direction(x,y))
@@ -183,6 +187,11 @@ def cursor():
     while not input_.handle_event():
         render()
         render_at_pos(g, pos)
+
+        if trail:
+            for p in utility.get_line(start.to_tuple(), pos.to_tuple())[1::]:
+                render_at_pos(trail_g, p)
+
         res.render_present()
 
     render()
@@ -207,7 +216,16 @@ def choose_ability():
     render()
 
     if choice == 0:
-        print("Target = %s" % cursor())
+        target_pos = cursor(trail = True);
+        actors = _world.get_system_entities(game.TurnOrderSystem)
+        target = None
+        for e in actors:
+            if e.get(game.MapPos) == target_pos: 
+                target = e
+        if target is not None:
+            print("Target is: \n %s" % target)
+        else:
+            print("No target at %s" % target_pos)
     else:
         print("Target thyself.")
 
