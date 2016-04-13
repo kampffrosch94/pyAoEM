@@ -33,6 +33,7 @@ img_paths = {
     "dmg_heavy"       : b"gfx/dmg/mdam_heavily_damaged.png",
     "dmg_severely"    : b"gfx/dmg/mdam_severely_damaged.png",
     "dmg_almost_dead" : b"gfx/dmg/mdam_almost_dead.png",
+    "cursor"          : b"gfx/cursor.png",
 }
 
 loaded_textures = {}

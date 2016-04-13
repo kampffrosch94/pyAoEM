@@ -30,6 +30,11 @@ class Input(object):
             pass
 
 # render code and System
+def render_at_pos(graphic:res.Graphic, pos):
+    if map_.current_map.is_visible(pos):
+        graphic.x = map_.TILE_WIDTH * (pos.x - map_.current_map.root_pos.x)
+        graphic.y = map_.TILE_HEIGHT* (pos.y - map_.current_map.root_pos.y)
+        graphic.render()
 
 def update_graphic_pos(e):
     """returns True if graphic is visible else False"""
@@ -151,6 +156,43 @@ def wait():
     controlled_entity.handle_event(game.PayFatigue(100))
     return True
 
+def look():
+    pos = controlled_entity.get(game.MapPos).copy()
+    g   = res.load_graphic("cursor")
+
+    def move_dir_f(x,y):
+        return lambda: pos.apply_direction(utility.Direction(x,y))
+
+    def stop():
+        return True
+
+    input_.clear_handlers()
+    input_.add_handler(stop, sdl2.SDLK_ESCAPE)
+    input_.add_handler(stop, sdl2.SDLK_RETURN)
+    input_.add_handler(move_dir_f(-1,0),  sdl2.SDLK_h)
+    input_.add_handler(move_dir_f(+1,0),  sdl2.SDLK_l)
+    input_.add_handler(move_dir_f(0,-1),  sdl2.SDLK_k)
+    input_.add_handler(move_dir_f(0,+1),  sdl2.SDLK_j)
+    input_.add_handler(move_dir_f(+1,-1), sdl2.SDLK_u)
+    input_.add_handler(move_dir_f(+1,+1), sdl2.SDLK_n)
+    input_.add_handler(move_dir_f(-1,-1), sdl2.SDLK_z)
+    input_.add_handler(move_dir_f(-1,+1), sdl2.SDLK_b)
+    render_at_pos(g, pos)
+    res.render_present()
+
+    while not input_.handle_event():
+        render()
+        render_at_pos(g, pos)
+        res.render_present()
+
+    print("Endpos is: %s" % pos)
+    for e in _world.entities:
+        if e.has(game.MapPos):
+            if e.get(game.MapPos) == pos:
+                print(str(e))
+    render()
+    bind_keys()
+
 # Input for moving the map_view
 
 def map_left():
@@ -182,14 +224,19 @@ wall_chance = 42
 def regen_map():
     map_.current_map = map_.TileMap(map_w,map_h,wall_chance)
     render()
+
 def quit_():
     input_.quit_handler()
     return True
+
 def go_interpreter():
-    from functools import reduce
     actors = _world.get_system_entities(game.TurnOrderSystem)
-    print_actors = lambda: print(str(
-        reduce(lambda x,y: x+"\n"+y ,map(str, actors))))
+
+    def print_actors():
+        import functools
+        def concat(x,y):
+            return x+"\n"+y
+        print(str(functools.reduce(concat, map(str, actors))))
 
     import IPython; IPython.embed()
 
@@ -217,8 +264,10 @@ def bind_keys():
     input_.add_handler(move_left_up,    sdl2.SDLK_z)
     input_.add_handler(move_left_down,  sdl2.SDLK_b)
     input_.add_handler(wait,            sdl2.SDLK_PERIOD)
+    input_.add_handler(look,            sdl2.SDLK_COMMA)
 
     input_.add_handler(menu_test,       sdl2.SDLK_m)
+
 
 _world = None
 
