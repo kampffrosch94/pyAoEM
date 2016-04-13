@@ -17,6 +17,10 @@ class Team(object):
 
     def __eq__(self,other):
         return self.team_name == other.team_name
+
+    def __repr__(self):
+        return self.team_name
+
 # Events
 
 class TakeDamage(object):
@@ -52,6 +56,9 @@ class Health(object):
         if self.hp <= 0:
             kill(self.entity)
 
+    def __repr__(self):
+        return "%s/%s" % (self.hp, self.max_hp)
+
 class Offensive(object):
     def __init__(self,dmg):
         self.dmg = dmg
@@ -59,6 +66,9 @@ class Offensive(object):
 
     def deal_damage(self,event : DealDamage):
         event.amount += self.dmg
+
+    def __repr__(self):
+        return "dmg: %s" % self.dmg
 
 class AI(object):
     """Component for AI controlled entities."""
@@ -77,6 +87,9 @@ class Fatigue(object):
 
     def pay_fatigue(self, event : PayFatigue):
         self.value += event.amount
+
+    def __repr__(self):
+        return "%s" % self.value
 
 # Systems
 

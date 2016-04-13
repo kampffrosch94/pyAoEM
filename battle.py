@@ -186,6 +186,11 @@ def quit_():
     input_.quit_handler()
     return True
 def go_interpreter():
+    from functools import reduce
+    actors = _world.get_system_entities(game.TurnOrderSystem)
+    print_actors = lambda: print(str(
+        reduce(lambda x,y: x+"\n"+y ,map(str, actors))))
+
     import IPython; IPython.embed()
 
 # Activation

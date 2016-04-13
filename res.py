@@ -53,7 +53,7 @@ class Graphic(object):
     Change x and y to change the position where the graphic will be
     rendered from the RenderSystem.
     """
-    def __init__(self,texture,x,y,w,h,z=1,destroy=False):
+    def __init__(self,texture,x,y,w,h,z=1,destroy=False, texture_name=None):
         self.texture = texture
         if z < 0 or z > 1:
             raise NotImplementedError()
@@ -67,6 +67,9 @@ class Graphic(object):
             def destroy_f():
                 sdl2.SDL_DestroyTexture(self.texture)
             self.destroy = destroy_f
+
+        if texture_name is not None:
+            self.texture_name = texture_name
 
     @property
     def x(self):
@@ -102,6 +105,12 @@ class Graphic(object):
         self.texture = load_graphic("blood0").texture
         self.z = 0
 
+    def __repr__(self):
+        if self.texture_name is not None:
+            return self.texture_name
+        else: 
+            return "Pos: (%s,%s) W: %s H: %s" % (self.x,self.y,self.w,self.h)
+
 
 def _load_texture(texture_name):
     if texture_name in loaded_textures:
@@ -125,7 +134,7 @@ def _load_texture(texture_name):
 
 def load_graphic(texture_name):
     texture, properties = _load_texture(texture_name)
-    return Graphic(texture, *properties)
+    return Graphic(texture, *properties, texture_name = texture_name)
 
 def create_graphic(x,y,w,h,z=1):
     texture = sdl2.SDL_CreateTexture(
