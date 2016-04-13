@@ -70,7 +70,7 @@ class HealthRenderSystem(ecs.System):
     def process(self, entities):
         for e in entities:
             mp = e.get(game.MapPos)
-            if map_.current_map.is_visible(mp): 
+            if map_.current_map.is_visible(mp):
                 hc = e.get(game.Health)
                 g = e.get(res.Graphic)
                 if hc.hp < hc.max_hp:
@@ -88,7 +88,7 @@ class HealthRenderSystem(ecs.System):
 def render_turn_order(es_in_to):
     """render_entities must be run before this to update graphic positions"""
     current_actor = es_in_to[0]
-    if map_.current_map.is_visible(current_actor.get(game.MapPos)): 
+    if map_.current_map.is_visible(current_actor.get(game.MapPos)):
         if current_actor.get(game.Team).team_name == "player_team":
             g = current_actor.get(res.Graphic)
             g.render_other_texture("cursor_green")
@@ -156,7 +156,7 @@ def wait():
     controlled_entity.handle_event(game.PayFatigue(100))
     return True
 
-def look():
+def cursor():
     pos = controlled_entity.get(game.MapPos).copy()
     g   = res.load_graphic("cursor")
 
@@ -185,13 +185,32 @@ def look():
         render_at_pos(g, pos)
         res.render_present()
 
+    render()
+    bind_keys()
+
+    return pos
+
+def look():
+    pos = cursor()
     print("Endpos is: %s" % pos)
     for e in _world.entities:
         if e.has(game.MapPos):
             if e.get(game.MapPos) == pos:
                 print(str(e))
-    render()
+
+def choose_ability():
+    m_head = "Abilities."
+    m_choices = ["targeted ability.","selftargeted ability."]
+    m = menu.ChoiceMenu(200,150,300,200,m_head,m_choices)
+    choice =  m.choose()
     bind_keys()
+    render()
+
+    if choice == 0:
+        print("Target = %s" % cursor())
+    else:
+        print("Target thyself.")
+
 
 # Input for moving the map_view
 
@@ -208,17 +227,8 @@ def map_down():
     map_.current_map.root_pos.y += 1
     render()
 
-# Tests of unfinished stuff
-def menu_test():
-    head = "Example Header."
-    choices = ["Take this.", "Body Slam",
-               "I don't know anymore."]
-    m = menu.ChoiceMenu(200,200,200,200,head,choices)
-    print("You chose Nr: %s" % m.choose())
-    bind_keys()
-    render()
 
-# Debug 
+# Debug
 map_w,map_h = 20,15
 wall_chance = 42
 def regen_map():
@@ -266,7 +276,7 @@ def bind_keys():
     input_.add_handler(wait,            sdl2.SDLK_PERIOD)
     input_.add_handler(look,            sdl2.SDLK_COMMA)
 
-    input_.add_handler(menu_test,       sdl2.SDLK_m)
+    input_.add_handler(choose_ability,  sdl2.SDLK_a)
 
 
 _world = None
