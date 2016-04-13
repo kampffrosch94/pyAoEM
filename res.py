@@ -103,7 +103,8 @@ class Graphic(object):
         sdl2.SDL_SetRenderTarget(renderer, self.texture)
 
     def corpsify(self): #placeholder
-        self.texture = load_graphic("blood0").texture
+        self.texture_name = "blood0"
+        self.texture, _ = _load_texture("blood0")
         self.z = 0
 
     def __repr__(self):
