@@ -118,43 +118,22 @@ def render():
 
 # Keybindings
 
-# Input for a controlled entity on the map
 
-def move_right():
-    d = utility.Direction(1,0)
-    return movement.attack_or_move(controlled_entity,d)
+def player_move_dir_f(x,y):
+    d = utility.Direction(x,y)
+    return lambda: movement.attack_or_move(controlled_entity,d)
 
-def move_left():
-    d = utility.Direction(-1,0)
-    return movement.attack_or_move(controlled_entity,d)
-
-def move_up():
-    d = utility.Direction(0,-1)
-    return movement.attack_or_move(controlled_entity,d)
-
-def move_down():
-    d = utility.Direction(0,1)
-    return movement.attack_or_move(controlled_entity,d)
-
-def move_right_up():
-    d = utility.Direction(1,-1)
-    return movement.attack_or_move(controlled_entity,d)
-
-def move_right_down():
-    d = utility.Direction(1,1)
-    return movement.attack_or_move(controlled_entity,d)
-
-def move_left_up():
-    d = utility.Direction(-1,-1)
-    return movement.attack_or_move(controlled_entity,d)
-
-def move_left_down():
-    d = utility.Direction(-1,1)
-    return movement.attack_or_move(controlled_entity,d)
+def map_move_dir_f(x,y):
+    def f():
+        map_.current_map.root_pos.apply_direction(utility.Direction(x,y))
+        render()
+    return f
 
 def wait():
     controlled_entity.handle_event(game.PayFatigue(100))
     return True
+
+# Subscenes
 
 def cursor(trail = False):
     pos = controlled_entity.get(game.MapPos).copy()
@@ -230,26 +209,10 @@ def choose_ability():
         print("Target thyself.")
 
 
-# Input for moving the map_view
-
-def map_left():
-    map_.current_map.root_pos.x -= 1
-    render()
-def map_right():
-    map_.current_map.root_pos.x += 1
-    render()
-def map_up():
-    map_.current_map.root_pos.y -= 1
-    render()
-def map_down():
-    map_.current_map.root_pos.y += 1
-    render()
-
-
-# Debug
-map_w,map_h = 20,15
-wall_chance = 42
+# Debugkeybindings
 def regen_map():
+    map_w,map_h = 20,15
+    wall_chance = 42
     map_.current_map = map_.TileMap(map_w,map_h,wall_chance)
     render()
 
@@ -276,21 +239,21 @@ def bind_keys():
     input_.add_handler(quit_, sdl2.SDLK_q)
     input_.add_handler(go_interpreter,sdl2.SDLK_y)
 
-    input_.add_handler(map_right,sdl2.SDLK_l,sdl2.KMOD_SHIFT)
-    input_.add_handler(map_left ,sdl2.SDLK_h,sdl2.KMOD_SHIFT)
-    input_.add_handler(map_up   ,sdl2.SDLK_k,sdl2.KMOD_SHIFT)
-    input_.add_handler(map_down ,sdl2.SDLK_j,sdl2.KMOD_SHIFT)
+    input_.add_handler(map_move_dir_f(-1,0), sdl2.SDLK_h, sdl2.KMOD_SHIFT)
+    input_.add_handler(map_move_dir_f(+1,0), sdl2.SDLK_l, sdl2.KMOD_SHIFT)
+    input_.add_handler(map_move_dir_f(0,-1), sdl2.SDLK_k, sdl2.KMOD_SHIFT)
+    input_.add_handler(map_move_dir_f(0,+1), sdl2.SDLK_j, sdl2.KMOD_SHIFT)
 
     input_.add_handler(regen_map,sdl2.SDLK_F1)
 
-    input_.add_handler(move_right,      sdl2.SDLK_l)
-    input_.add_handler(move_left,       sdl2.SDLK_h)
-    input_.add_handler(move_up,         sdl2.SDLK_k)
-    input_.add_handler(move_down,       sdl2.SDLK_j)
-    input_.add_handler(move_right_up,   sdl2.SDLK_u)
-    input_.add_handler(move_right_down, sdl2.SDLK_n)
-    input_.add_handler(move_left_up,    sdl2.SDLK_z)
-    input_.add_handler(move_left_down,  sdl2.SDLK_b)
+    input_.add_handler(player_move_dir_f(-1,0),  sdl2.SDLK_h)
+    input_.add_handler(player_move_dir_f(+1,0),  sdl2.SDLK_l)
+    input_.add_handler(player_move_dir_f(0,-1),  sdl2.SDLK_k)
+    input_.add_handler(player_move_dir_f(0,+1),  sdl2.SDLK_j)
+    input_.add_handler(player_move_dir_f(+1,-1), sdl2.SDLK_u)
+    input_.add_handler(player_move_dir_f(+1,+1), sdl2.SDLK_n)
+    input_.add_handler(player_move_dir_f(-1,-1), sdl2.SDLK_z)
+    input_.add_handler(player_move_dir_f(-1,+1), sdl2.SDLK_b)
     input_.add_handler(wait,            sdl2.SDLK_PERIOD)
     input_.add_handler(look,            sdl2.SDLK_COMMA)
 
