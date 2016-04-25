@@ -38,6 +38,9 @@ class Rectangle:
         return (pos.x >= self.x and pos.x < self.xe and
                 pos.y >= self.y and pos.y < self.ye)
 
+def distance(start, end):
+    return max(abs(start.x - end.x), abs(start.y - end.y))
+
 def get_line(start, end):
     """Bresenham's Line Algorithm
     Produces a list of tuples from start and end
