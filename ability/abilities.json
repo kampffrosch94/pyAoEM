@@ -1,0 +1,60 @@
+{
+    "throw stone" : {
+        "desc"   : "Hits first target in the way.",
+        "range"  : 5,
+        "fly"  : true,
+        "dmg"    : {
+            "base"    : 1,
+            "scaling" : 1
+        }
+    },
+    "fireball" : {
+        "desc"   : "Hits first target in the way and explodes.",
+        "range"  : 5,
+        "radius" : 1,
+        "fly"  : true,
+        "dmg"    : {
+            "base"    : 2,
+            "scaling" : 0.7
+        }
+    },
+    "flamethrower" : {
+        "desc"  : "Roasts anything in it's path." ,
+        "range" : 5 ,
+        "line"  : true,
+        "dmg"   : {
+            "base" : 3
+        }
+    },
+    "hand of flame" : {
+        "desc"     : "Let flames burst forth in an arc.",
+        "range"    : 2,
+        "spread"   : 1,
+        "dmg"      : {
+            "base" : 3
+        }
+    },
+    "flashsmog" : {
+        "desc" : "A quickly dissipating smok. Damages the lungs.",
+        "range" : 7 ,
+        "flood_fill" : 9 ,
+        "dmg"   : {
+            "base" : 3
+        }
+    },
+    "simple heal" : {
+        "desc"  : "Heal somebody. Smite Targeting",
+        "range" : 4,
+        "heal"  : {
+            "base"    : 3 ,
+            "scaling" : 0.5
+        }
+    },
+    "whirlwind" : {
+        "desc"  : "Spin and hit everyone around you.",
+        "blast" : 1,
+        "dmg"   : {
+            "scaling" : 1
+        }
+    }
+}
