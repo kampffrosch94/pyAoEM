@@ -89,7 +89,7 @@ def get_line(start, end):
     y = y1
     points = []
     for x in range(x1, x2 + 1):
-        coord = Position(y, x) if is_steep else Position(x, y)
+        coord = (y, x) if is_steep else (x, y)
         points.append(coord)
         error -= abs(dy)
         if error < 0:

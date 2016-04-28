@@ -8,6 +8,7 @@ import movement
 import utility
 import battle_log
 import menu
+import ability
 
 # the canvas for the scene
 
@@ -135,13 +136,12 @@ def wait():
 
 # Subscenes
 
-def cursor(trail = False):
-    pos = controlled_entity.get(game.MapPos).copy()
+def cursor(target_f = None):
+    start = controlled_entity.get(game.MapPos)
+    pos = start.copy()
     g   = res.load_graphic("cursor")
 
-    if trail:
-        start = pos.copy()
-        trail_g = res.load_graphic("ray")
+    trail_g = res.load_graphic("ray")
 
     def move_dir_f(x,y):
         return lambda: pos.apply_direction(utility.Direction(x,y))
@@ -167,9 +167,10 @@ def cursor(trail = False):
         render()
         render_at_pos(g, pos)
 
-        if trail:
-            for p in utility.get_line(start.to_tuple(), pos.to_tuple())[1::]:
-                render_at_pos(trail_g, p)
+        if target_f is not None:
+            for p in target_f(map_.current_map, start.to_tuple(), 
+                              pos.to_tuple()):
+                render_at_pos(trail_g, utility.Position(p[0], p[1]))
 
         res.render_present()
 
@@ -188,25 +189,23 @@ def look():
 
 def choose_ability():
     m_head = "Abilities."
-    m_choices = ["targeted ability.","selftargeted ability."]
-    m = menu.ChoiceMenu(200,150,300,200,m_head,m_choices)
+    m_choices = list(ability.abilities.keys())
+    m = menu.ChoiceMenu(200, 150, 300, 200, m_head, m_choices)
     choice =  m.choose()
+    ab = ability.abilities[m_choices[choice]]
     bind_keys()
     render()
 
-    if choice == 0:
-        target_pos = cursor(trail = True);
-        actors = _world.get_system_entities(game.TurnOrderSystem)
-        target = None
-        for e in actors:
-            if e.get(game.MapPos) == target_pos: 
-                target = e
-        if target is not None:
-            print("Target is: \n %s" % target)
-        else:
-            print("No target at %s" % target_pos)
+    target_pos = cursor(ab.target);
+    actors = _world.get_system_entities(game.TurnOrderSystem)
+    target = None
+    for e in actors:
+        if e.get(game.MapPos) == target_pos: 
+            target = e
+    if target is not None:
+        print("Target is: \n %s" % target)
     else:
-        print("Target thyself.")
+        print("No target at %s" % target_pos)
 
 
 # Debugkeybindings

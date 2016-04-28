@@ -24,14 +24,19 @@ class Team(object):
 # Events
 
 class TakeDamage(object):
-    def __init__(self, dmg_event):
-        self.amount = dmg_event.amount
+    def __init__(self, deal_dmg_event):
+        self.amount = deal_dmg_event.amount
         self.handler_name = "take_damage"
 
 class DealDamage(object):
     def __init__(self, amount=0):
         self.amount = amount
         self.handler_name = "deal_damage"
+
+class GetHealed:
+    def __init__(self, amount):
+        self.amount = amount
+        self.handler_name = "get_healed"
 
 class Act(object):
     def __init__(self):
@@ -42,7 +47,7 @@ class PayFatigue(object):
         self.amount = amount
         self.handler_name = "pay_fatigue"
 
-###Eventhandling components
+# Eventhandling components
 
 class Health(object):
     def __init__(self,entity,max_hp):
@@ -55,6 +60,11 @@ class Health(object):
         self.hp -= event.amount
         if self.hp <= 0:
             kill(self.entity)
+
+    def get_healed(self, event : GetHealed):
+        self.hp += event.amount
+        if self.hp > self.max_hp:
+            self.hp = self.max_hp
 
     def __repr__(self):
         return "%s/%s" % (self.hp, self.max_hp)
