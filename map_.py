@@ -1,6 +1,7 @@
 import res
 import dungeon_gen
 import utility
+import game
 
 MAP_WIDTH  = 20
 MAP_HEIGHT = 15
@@ -12,6 +13,16 @@ current_map = None
 map_graphic = res.create_graphic(0,0,640,480)
 default_floor = res.load_graphic("cobble_blood1")
 default_wall = res.load_graphic("lair0")
+
+def pos_entity_dict(entities):
+    """Turns list of entities into dict: pos->entity"""
+    result = {}
+    for e in entities:
+        pos = e.get(game.MapPos).to_tuple()
+        if pos in result:
+            raise ValueError("Multiple entities with same pos.")
+        result[pos] = e
+    return result
 
 class TileMap(object):
     """A map which holds tiles.
