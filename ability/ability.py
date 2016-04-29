@@ -14,9 +14,12 @@ class Ability:
 
     def fire(self, map_, relevant_entities, user, goal_pos):
         target_poss = self.target(map_, user.get(game.MapPos).to_tuple(),
-                                  goal_pos)
+                                  goal_pos.to_tuple())
+
         for effect in self._effects:
-            effect.fire(map_, user, relevant_entities, target_poss)
+            # send copy of relevant_entities, else one dies and vanishes
+            # from the list while it is iterated over
+            effect.fire(map_, user, relevant_entities[:], target_poss)
 
     def __repr__(self):
         return "\n %s : %s\n Range: %s\n Targeting_f: %s\n Effects: \n   %s" % (
@@ -83,7 +86,7 @@ class HealEffect:
                 dmg_ev = game.DealDamage()
                 user.handle_event(dmg_ev)
                 heal_amount = self.scaling * dmg_ev.amount + self.base
-                user.handle_event(game.GetHealed(heal_amount))
+                e.handle_event(game.GetHealed(heal_amount))
 
     def __repr__(self):
         return "%s: Base: %s Scaling: %s" % (self.__class__.__name__,
@@ -111,7 +114,8 @@ class DmgEffect:
                 user.handle_event(dmg_ev)
                 dmg_ev.amount *= self.scaling
                 dmg_ev.amount += self.base
-                user.handle_event(game.TakeDamage(dmg_ev))
+                e.handle_event(game.TakeDamage(dmg_ev))
+                print("DMG to: %s" % e.name)
 
 def _parse_effects(ability_data):
     effects = []

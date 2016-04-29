@@ -119,7 +119,8 @@ class TurnOrderSystem(ecs.System):
 # transformations
 def active_take_turn(turn_order):
     actor = turn_order[0]
-    print("%s turn" % turn_order[0].name)
+    # TODO debuglog this
+    # print("%s turn" % turn_order[0].name)
     actor.handle_event(Act())
     del turn_order[0]
     turn_order.append(actor)

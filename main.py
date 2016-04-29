@@ -22,7 +22,7 @@ world.add_system(battle.HealthRenderSystem())
 factory.world = world
 
 player_number = random.randint(1,3)
-enemy_number = random.randint(1,2)
+enemy_number = random.randint(5,8)
 pcs = []
 enemies = []
 for i in range(player_number):

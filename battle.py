@@ -198,14 +198,18 @@ def choose_ability():
 
     target_pos = cursor(ab.target);
     actors = _world.get_system_entities(game.TurnOrderSystem)
-    target = None
-    for e in actors:
-        if e.get(game.MapPos) == target_pos: 
-            target = e
-    if target is not None:
-        print("Target is: \n %s" % target)
-    else:
-        print("No target at %s" % target_pos)
+    ab.fire(map_.current_map, actors, actors[0], target_pos)
+    render()
+
+    # debug info TODO remove this when done
+    #target = None
+    #for e in actors:
+    #    if e.get(game.MapPos) == target_pos: 
+    #        target = e
+    #if target is not None:
+    #    print("Target is: \n %s" % target)
+    #else:
+    #    print("No target at %s" % target_pos)
 
 
 # Debugkeybindings
