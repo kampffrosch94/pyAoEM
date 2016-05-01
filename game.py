@@ -3,65 +3,74 @@ import res
 import battle_log
 import utility
 
-###simple components
-class Blocking(object):
+
+# simple components
+class Blocking:
     """Only one blocking entity can be at a map_pos."""
     pass
+
 
 class MapPos(utility.Position):
     """The position of an entity on the map."""
 
-class Team(object):
-    def __init__(self,team_name):
+
+class Team:
+    def __init__(self, team_name):
         self.team_name = team_name
 
-    def __eq__(self,other):
+    def __eq__(self, other):
         return self.team_name == other.team_name
 
     def __repr__(self):
         return self.team_name
 
+
 # Events
 
-class TakeDamage(object):
+class TakeDamage:
     def __init__(self, deal_dmg_event):
         self.amount = deal_dmg_event.amount
         self.handler_name = "take_damage"
 
-class DealDamage(object):
+
+class DealDamage:
     def __init__(self, amount=0):
         self.amount = amount
         self.handler_name = "deal_damage"
+
 
 class GetHealed:
     def __init__(self, amount):
         self.amount = amount
         self.handler_name = "get_healed"
 
-class Act(object):
+
+class Act:
     def __init__(self):
         self.handler_name = "act"
 
-class PayFatigue(object):
+
+class PayFatigue:
     def __init__(self, amount):
         self.amount = amount
         self.handler_name = "pay_fatigue"
 
+
 # Eventhandling components
 
-class Health(object):
-    def __init__(self,entity,max_hp):
+class Health:
+    def __init__(self, entity, max_hp):
         self.entity = entity
         self.max_hp = max_hp
         self.hp = max_hp
         self.priority = 0
 
-    def take_damage(self,event : TakeDamage):
+    def take_damage(self, event: TakeDamage):
         self.hp -= event.amount
         if self.hp <= 0:
             kill(self.entity)
 
-    def get_healed(self, event : GetHealed):
+    def get_healed(self, event: GetHealed):
         self.hp += event.amount
         if self.hp > self.max_hp:
             self.hp = self.max_hp
@@ -69,52 +78,60 @@ class Health(object):
     def __repr__(self):
         return "%s/%s" % (self.hp, self.max_hp)
 
-class Offensive(object):
-    def __init__(self,dmg):
+
+class Offensive:
+    def __init__(self, dmg):
         self.dmg = dmg
         self.priority = 0
 
-    def deal_damage(self,event : DealDamage):
+    def deal_damage(self, event: DealDamage):
         event.amount += self.dmg
 
     def __repr__(self):
         return "dmg: %s" % self.dmg
 
-class AI(object):
+
+class AI:
     """Component for AI controlled entities."""
+
     def __init__(self, entity):
         self.entity = entity
         self.priority = 0
 
-    def act(self, event : Act):
+    def act(self, event: Act):
         import movement
         movement.ai_move(self.entity)
 
-class Fatigue(object):
+
+class Fatigue:
     def __init__(self, value=0):
         self.value = value
         self.priority = 0
 
-    def pay_fatigue(self, event : PayFatigue):
+    def pay_fatigue(self, event: PayFatigue):
         self.value += event.amount
 
     def __repr__(self):
         return "%s" % self.value
 
+
 # Systems
 
 class BlockingSystem(ecs.System):
     """Just for holding blocking entities."""
+
     def __init__(self):
-        ecs.System.__init__(self,[MapPos, Blocking])
+        ecs.System.__init__(self, [MapPos, Blocking])
         self.active = False
+
 
 class TurnOrderSystem(ecs.System):
     def __init__(self):
-        ecs.System.__init__(self,[Fatigue,Team])
+        ecs.System.__init__(self, [Fatigue, Team])
 
     def process(self, entities):
         entities.sort(key=(lambda e: e.get(Fatigue).value))
+
 
 # transformations
 def active_take_turn(turn_order):
@@ -125,19 +142,21 @@ def active_take_turn(turn_order):
     del turn_order[0]
     turn_order.append(actor)
 
+
 def kill(entity):
     entity.delete(Blocking)
     entity.delete(Fatigue)
     entity.get(res.Graphic).corpsify()
     battle_log.add_msg("%s dies." % entity.name)
 
-    #check game over
+    # check game over
     entities = entity.world.get_system_entities(TurnOrderSystem)
     if all(entities[0].get(Team) == e.get(Team) for e in entities):
-        game_over(entities[0].get(Team).team_name=="player_team")
+        game_over(entities[0].get(Team).team_name == "player_team")
+
 
 # transitions
-#TODO make a proper game_over screen and cleanup
+# TODO make a proper game_over screen and cleanup
 def game_over(victory):
     import game_over
     game_over.activate(victory)
