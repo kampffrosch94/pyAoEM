@@ -7,20 +7,23 @@ import operator
 import utility
 import game
 
-def get_blocker_at_pos(world,pos):
+
+def get_blocker_at_pos(world, pos):
     blocking_es = world.get_system_entities(BlockingSystem)
     for e in blocking_es:
         if e.get(game.MapPos).to_tuple() == pos:
             return e
     return None
 
+
 def pos_is_free(world,pos):
     if map_.current_map.is_wall(pos):
         return False
     target = get_blocker_at_pos(world,pos)
-    if not target == None:
+    if target is not None:
         return False
     return True
+
 
 def attack_or_move(entity,direction):
     """returns True on success, False on failure"""
@@ -30,7 +33,7 @@ def attack_or_move(entity,direction):
     if map_.current_map.is_wall(new_pos):
         return False
     target = get_blocker_at_pos(entity.world,new_pos)
-    if target == None: #move
+    if target is None:  # move
         mp = entity.get(game.MapPos)
         mp.apply_direction(direction)
         entity.handle_event(PayFatigue(100))
@@ -45,20 +48,21 @@ def attack_or_move(entity,direction):
         return True
     return False
 
+
 def ai_move(entity):
     world = entity.world
     team = entity.get(game.Team)
     acting_es = world.get_system_entities(TurnOrderSystem)
-    enemy_pos  = []
+    enemy_pos = []
     for e in acting_es:
         if not e.get(Team) == entity.get(Team):
             enemy_pos.append(e.get(game.MapPos).to_tuple())
 
     d_map = map_.current_map.djikstra_map(enemy_pos)
     pos = entity.get(game.MapPos).to_tuple()
-    d_map[pos] += 1 #don't stand around if you can help it
+    d_map[pos] += 1  # don't stand around if you can help it
     goal_pos = pos
-    #neighbors doesn't include walls
+    # neighbors doesn't include walls
     for n_pos in map_.current_map.neighbors(pos):
         if d_map[goal_pos] > d_map[n_pos]:
             if pos_is_free(world, n_pos):
