@@ -1,47 +1,55 @@
+import typing
+
+
 class Position:
-    def __init__(self,x,y):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
 
     def __hash__(self):
-        return hash((self.x,self.y))
+        return hash((self.x, self.y))
 
-    def __eq__(self,other):
+    def __eq__(self, other):
         return hash(self) == hash(other)
 
     def __repr__(self):
-        return ("x: %r y: %r" % (self.x,self.y))
+        return "x: %r y: %r" % (self.x, self.y)
 
-    def apply_direction(self,direction):
+    def apply_direction(self, direction):
         self.x += direction.dx
         self.y += direction.dy
 
     def copy(self):
-        return Position(self.x,self.y)
+        return Position(self.x, self.y)
 
-    def to_tuple(self):
-        return (self.x,self.y)
+    def to_tuple(self) -> typing.Tuple[int, int]:
+        return self.x, self.y
+
 
 class Direction:
-    def __init__(self,dx,dy):
+    def __init__(self, dx, dy):
         self.dx = dx
         self.dy = dy
 
+
 class Rectangle:
-    def __init__(self,x,y,w,h):
-        self.x  = x
-        self.y  = y
+    def __init__(self, x, y, w, h):
+        self.x = x
+        self.y = y
         self.xe = x + w
         self.ye = y + h
 
-    def in_bounds(self,pos):
-        return (pos.x >= self.x and pos.x < self.xe and
-                pos.y >= self.y and pos.y < self.ye)
+    def in_bounds(self, pos):
+        return (self.x <= pos.x < self.xe and
+                self.y <= pos.y < self.ye)
+
 
 def distance(start, end):
     return max(abs(start.x - end.x), abs(start.y - end.y))
 
-def get_line(start, end):
+
+def get_line(start: typing.Tuple[int, int], end: typing.Tuple[int, int]
+             ) -> typing.List[typing.Tuple[int, int]]:
     """Bresenham's Line Algorithm
     Produces a list of tuples from start and end
 
@@ -61,30 +69,30 @@ def get_line(start, end):
     x2, y2 = end
     dx = x2 - x1
     dy = y2 - y1
- 
+
     # Determine how steep the line is
     is_steep = abs(dy) > abs(dx)
- 
+
     # Rotate line
     if is_steep:
         x1, y1 = y1, x1
         x2, y2 = y2, x2
- 
+
     # Swap start and end points if necessary and store swap state
     swapped = False
     if x1 > x2:
         x1, x2 = x2, x1
         y1, y2 = y2, y1
         swapped = True
- 
+
     # Recalculate differentials
     dx = x2 - x1
     dy = y2 - y1
- 
+
     # Calculate error
     error = int(dx / 2.0)
     ystep = 1 if y1 < y2 else -1
- 
+
     # Iterate over bounding box generating points between start and end
     y = y1
     points = []
@@ -95,7 +103,7 @@ def get_line(start, end):
         if error < 0:
             y += ystep
             error += dx
- 
+
     # Reverse the list if the coordinates were swapped
     if swapped:
         points.reverse()
