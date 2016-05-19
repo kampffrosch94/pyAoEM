@@ -1,9 +1,10 @@
 import ctypes
 import sdl2
+from typing import Callable
 
 # general input
 
-key_handlers = {}
+key_handlers = {} # type: Dict[str, Callable]
 
 def _missing_quit():
     raise NotImplementedError("Override the quit_handler")

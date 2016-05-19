@@ -1,13 +1,13 @@
-from ecs import Entity
+import ecs
 from game import (Health,Blocking,Offensive,Fatigue,Team,AI)
 import game
 import res
 import battle
 
-world = None
+world = None # type: ecs.World
 
 def create_creature(name,texture,pos,mhp,dmg):
-    creature = Entity(world)
+    creature = ecs.Entity(world)
     creature.name = name
 
     pos_x,pos_y = pos

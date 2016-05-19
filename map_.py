@@ -2,6 +2,7 @@ import res
 import dungeon_gen
 import utility
 import game
+from typing import Iterable
 
 MAP_WIDTH  = 20
 MAP_HEIGHT = 15
@@ -9,7 +10,7 @@ TILE_HEIGHT= 32
 TILE_WIDTH = 32
 dungeon_gen.seed()
 
-current_map = None
+current_map = None # type: TileMap
 map_graphic = res.create_graphic(0,0,640,480)
 default_floor = res.load_graphic("cobble_blood1")
 default_wall = res.load_graphic("lair0")
@@ -46,7 +47,7 @@ class TileMap(object):
         return (self.root_pos.x <= pos.x < self.root_pos.x + MAP_WIDTH and
                 self.root_pos.y <= pos.y < self.root_pos.y + MAP_HEIGHT)
 
-    def djikstra_map(self,start_positions : iter):
+    def djikstra_map(self,start_positions : Iterable):
         return dungeon_gen.djikstra_map(self.wall_map,start_positions)
 
     def neighbors(self,pos):

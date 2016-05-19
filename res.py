@@ -2,6 +2,7 @@ import sdl2
 import sdl2.sdlimage as sdlimage
 import sdl2.sdlttf as sdlttf
 import atexit
+from typing import Tuple
 
 WINDOW_W = 640
 WINDOW_H = 640
@@ -15,7 +16,7 @@ window = sdl2.SDL_CreateWindow(b"AoEM",0,0,WINDOW_W,WINDOW_H,
                                sdl2.SDL_SWSURFACE)
 
 renderer = sdl2.SDL_CreateRenderer(window,-1,sdl2.SDL_RENDERER_ACCELERATED)
-if renderer == None:
+if renderer is None:
     raise SDL_Exception()
 
 font = sdlttf.TTF_OpenFont(b"fonts/VeraMono.ttf",FONT_SIZE)
@@ -37,8 +38,8 @@ img_paths = {
     "ray"             : b"gfx/ray.png",
 }
 
-loaded_textures = {}
-loaded_textures_properties = {}
+loaded_textures = {} # type: Dict[str, sdl2.SDL_Texture]
+loaded_textures_properties = {} # type: Dict[str, Tuple[int, int, int, int]]
 
 def reset_render_target():
     sdl2.SDL_SetRenderTarget(renderer, None)

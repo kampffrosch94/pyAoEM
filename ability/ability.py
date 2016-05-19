@@ -147,7 +147,7 @@ class DmgEffect(Effect):
 
 def _parse_effects(ability_data: typing.Dict[str, object]
                    ) -> typing.List[Effect]:
-    effects = []
+    effects = [] # type: List[Effect]
     for name, effect_data in ability_data.items():
         if name == "heal":
             assert isinstance(effect_data, dict)
