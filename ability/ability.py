@@ -3,19 +3,22 @@ import json
 import game
 import map_
 import utility
-import typing
 import ecs
+
+from typing import Callable, Tuple, List, Dict
 
 
 class Ability:
     def __init__(self,
                  name: str,
                  range_: int,
-                 targeting_f: typing.Callable[
-                     [map_.TileMap, typing.Tuple[int, int],
-                      typing.Tuple[int, int]],
-                     typing.List[typing.Tuple[int, int]]],
-                 effects: typing.List['Effect']) -> None:
+                 targeting_f: Callable[
+                     [map_.TileMap,
+                      List[ecs.Entity],
+                      Tuple[int, int],
+                      Tuple[int, int]],
+                     List[Tuple[int, int]]],
+                 effects: List['Effect']) -> None:
         self.name = name
         self.range_ = range_
         self.target = targeting_f
@@ -24,10 +27,11 @@ class Ability:
 
     def fire(self,
              tmap: map_.TileMap,
-             relevant_entities: typing.List[ecs.Entity],
+             relevant_entities: List[ecs.Entity],
              user: ecs.Entity,
              goal_pos: utility.Position) -> None:
-        target_poss = self.target(tmap, user.get(game.MapPos).to_tuple(),
+        target_poss = self.target(tmap, relevant_entities,
+                                  user.get(game.MapPos).to_tuple(),
                                   goal_pos.to_tuple())
 
         for effect in self._effects:
@@ -45,17 +49,39 @@ class Ability:
 
 
 # noinspection PyUnusedLocal
-def _smite_target_f(tmap, user_pos, goal_pos):
+def _smite_target_f(tmap: map_.TileMap,
+                    relevant_entities: List[ecs.Entity],
+                    user_pos: Tuple[int, int],
+                    goal_pos: Tuple[int, int]
+                    ) -> List[Tuple[int, int]]:
     return [goal_pos]
 
 
 # noinspection PyUnusedLocal
 def _line_target_f(tmap: map_.TileMap,
-                   user_pos: typing.Tuple[int, int],
-                   goal_pos: typing.Tuple[int, int]
-                   ) -> typing.List[typing.Tuple[int, int]]:
+                   relevant_entities: List[ecs.Entity],
+                   user_pos: Tuple[int, int],
+                   goal_pos: Tuple[int, int]
+                   ) -> List[Tuple[int, int]]:
     line = utility.get_line(user_pos, goal_pos)
     return line[1:]
+
+
+# noinspection PyUnusedLocal
+def _fly_target_f(tmap: map_.TileMap,
+                  relevant_entities: List[ecs.Entity],
+                  user_pos: Tuple[int, int],
+                  goal_pos: Tuple[int, int]
+                  ) -> List[Tuple[int, int]]:
+    line = utility.get_line(user_pos, goal_pos)
+    line_to_first_blocking = []
+    entity_dict = map_.pos_entity_dict(relevant_entities)
+    for pos in line[1:]:
+        line_to_first_blocking.append(pos)
+        if tmap.is_wall(pos) or (
+                pos in entity_dict and entity_dict[pos].has(game.Blocking)):
+            break
+    return line_to_first_blocking
 
 
 def _parse_target_f(ability_data):
@@ -75,8 +101,7 @@ def _parse_target_f(ability_data):
             pass
             return None, None
         else:
-            pass
-            return None, None
+            return _fly_target_f, ability_data["range"]
     else:  # regular old smite targeting
         if "radius" in ability_data:
             return None, None
@@ -145,9 +170,9 @@ class DmgEffect(Effect):
                 e.handle_event(game.TakeDamage(dmg_ev))
 
 
-def _parse_effects(ability_data: typing.Dict[str, object]
-                   ) -> typing.List[Effect]:
-    effects = [] # type: List[Effect]
+def _parse_effects(ability_data: Dict[str, object]
+                   ) -> List[Effect]:
+    effects = []  # type: List[Effect]
     for name, effect_data in ability_data.items():
         if name == "heal":
             assert isinstance(effect_data, dict)
@@ -155,12 +180,12 @@ def _parse_effects(ability_data: typing.Dict[str, object]
         elif name == "dmg":
             assert isinstance(effect_data, dict)
             effects.append(DmgEffect(effect_data))
-        # else no recognized effect => ignore
+            # else no recognized effect => ignore
     return effects
 
 
-def _parse_abilities(abilities_data: typing.Dict[str, typing.Dict[str, object]]
-                     ) -> typing.Dict[str, Ability]:
+def _parse_abilities(abilities_data: Dict[str, Dict[str, object]]
+                     ) -> Dict[str, Ability]:
     parsed_abilities = {}
     for name, ability_data in abilities_data.items():
         # find out what kind of targeting method this ability uses

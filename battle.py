@@ -10,6 +10,7 @@ import menu
 import movement
 import res
 import utility
+from typing import List, Callable, Tuple, Optional
 
 # the canvas for the scene
 
@@ -150,7 +151,8 @@ def wait():
 
 # Sub_scenes
 
-def cursor(target_f=None):
+def cursor(target_f: Optional[Callable] = None,
+           relevant_entities: object = None) -> object:
     start = controlled_entity.get(game.MapPos)
     pos = start.copy()
     g = res.load_graphic("cursor")
@@ -182,7 +184,9 @@ def cursor(target_f=None):
         render_at_pos(g, pos)
 
         if target_f is not None:
-            for p in target_f(map_.current_map, start.to_tuple(),
+            for p in target_f(map_.current_map,
+                              relevant_entities,
+                              start.to_tuple(),
                               pos.to_tuple()):
                 render_at_pos(trail_g, utility.Position(p[0], p[1]))
 
@@ -212,20 +216,10 @@ def choose_ability():
     bind_keys()
     render()
 
-    target_pos = cursor(ab.target);
     actors = _world.get_system_entities(game.TurnOrderSystem)
+    target_pos = cursor(ab.target, actors)
     ab.fire(map_.current_map, actors, actors[0], target_pos)
     render()
-
-    # debug info TODO remove this when done
-    # target = None
-    # for e in actors:
-    #    if e.get(game.MapPos) == target_pos: 
-    #        target = e
-    # if target is not None:
-    #    print("Target is: \n %s" % target)
-    # else:
-    #    print("No target at %s" % target_pos)
 
 
 # Debug keybindings

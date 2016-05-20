@@ -2,7 +2,8 @@ import res
 import dungeon_gen
 import utility
 import game
-from typing import Iterable
+import ecs
+from typing import Iterable, Dict, Tuple
 
 MAP_WIDTH = 20
 MAP_HEIGHT = 15
@@ -16,9 +17,10 @@ default_floor = res.load_graphic("cobble_blood1")
 default_wall = res.load_graphic("lair0")
 
 
-def pos_entity_dict(entities):
+def pos_entity_dict(entities: Iterable[ecs.Entity]) \
+        -> Dict[Tuple[int, int], ecs.Entity]:
     """Turns list of entities into dict: pos->entity"""
-    result = {}
+    result = {}  # type: Dict[Tuple[int, int], ecs.Entity]
     for e in entities:
         pos = e.get(game.MapPos).to_tuple()
         if pos in result:
