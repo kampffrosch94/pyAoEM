@@ -1,7 +1,7 @@
 {
   "throw stone": {
     "desc": "Hits first target in the way.",
-    "range": 5,
+    "range": 7,
     "fly": true,
     "dmg": {
       "base": 1,
