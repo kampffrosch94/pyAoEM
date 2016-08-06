@@ -18,12 +18,16 @@ class Position:
     def apply_direction(self, direction):
         self.x += direction.dx
         self.y += direction.dy
+        return self
 
     def copy(self):
         return Position(self.x, self.y)
 
     def to_tuple(self) -> typing.Tuple[int, int]:
         return self.x, self.y
+
+    def distance(self, other: 'Position') -> int:
+        return pos_distance(self, other)
 
 
 class Direction:
@@ -44,7 +48,7 @@ class Rectangle:
                 self.y <= pos.y < self.ye)
 
 
-def distance(start, end):
+def pos_distance(start: Position, end: Position) -> int:
     return max(abs(start.x - end.x), abs(start.y - end.y))
 
 

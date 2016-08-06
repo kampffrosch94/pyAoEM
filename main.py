@@ -64,7 +64,8 @@ for pos in pos_list:
     if movement.pos_is_free(world,pos):
         e = enemies.pop()
         mp = e.get(game.MapPos)
-        mp.x,mp.y = pos
+        mp.x, mp.y = pos
+
 
 def end_world():
     world.end()
@@ -72,6 +73,7 @@ def end_world():
 input_.quit_handler = end_world
 
 start.activate(world)
+
 
 def main():
     battle_log.add_msg("Welcome to AoEM.")

@@ -152,15 +152,20 @@ def wait():
 # Sub_scenes
 
 def cursor(target_f: Optional[Callable] = None,
-           relevant_entities: object = None) -> object:
-    start = controlled_entity.get(game.MapPos)
+           relevant_entities: Optional[ecs.Entity] = None,
+           max_range=float("inf")) -> utility.Position:
+    start = controlled_entity.get(game.MapPos)  # type: game.MapPos
     pos = start.copy()
     g = res.load_graphic("cursor")
 
     trail_g = res.load_graphic("ray")
 
     def move_dir_f(x, y):
-        return lambda: pos.apply_direction(utility.Direction(x, y))
+        def move():
+            if start.distance(pos.copy().apply_direction(
+                    utility.Direction(x, y))) <= max_range:
+                pos.apply_direction(utility.Direction(x, y))
+        return move
 
     def stop():
         return True
@@ -209,6 +214,7 @@ def look():
 
 def choose_ability():
     m_head = "Abilities."
+    # TODO use abilities of current actor
     m_choices = list(ability.abilities.keys())
     m = menu.ChoiceMenu(200, 150, 300, 200, m_head, m_choices)
     choice = m.choose()
@@ -217,7 +223,7 @@ def choose_ability():
     render()
 
     actors = _world.get_system_entities(game.TurnOrderSystem)
-    target_pos = cursor(ab.target, actors)
+    target_pos = cursor(ab.target, actors, ab.range_)
     ab.fire(map_.current_map, actors, actors[0], target_pos)
     render()
 
