@@ -14,7 +14,7 @@ _CHOICE_CHARS = ["a", "b", "c", "d", "e", "f", "g"]
 
 
 class ChoiceMenu:
-    def __init__(self, x, y, w, h, header, choices):
+    def __init__(self, x, y, w, h, header, choices, cancel = False):
         if len(choices) > len(_CHOICE_KEYS):
             raise NotImplementedError("Not enough keys for this many choices")
         
@@ -29,12 +29,15 @@ class ChoiceMenu:
         self.choices = res.create_text_graphic(choice_text, 20, 50,
                                                max_width = w - 20)
         self.choice_count = i
+        self.cancel = cancel
 
     def bind_keys(self):
         input_.clear_handlers()
         for i in range(self.choice_count):
             f = (lambda i=i: i)
             input_.add_handler(f, _CHOICE_KEYS[i])
+        if self.cancel is True:
+            input_.add_handler(lambda: None, sdl2.SDLK_ESCAPE)
 
     def choose(self):
         self.update()

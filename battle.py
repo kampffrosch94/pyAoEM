@@ -227,16 +227,18 @@ def choose_ability():
     m_head = "Abilities."
     # TODO use abilities of current actor
     m_choices = list(ability.abilities.keys())
-    m = menu.ChoiceMenu(200, 150, 300, 200, m_head, m_choices)
+    m = menu.ChoiceMenu(200, 150, 300, 200, m_head, m_choices, cancel=True)
     choice = m.choose()
-    ab = ability.abilities[m_choices[choice]]
     bind_keys()
     render()
+    if choice is None:
+        return False  # dont end turn if selection was cancelled
+    ab = ability.abilities[m_choices[choice]]
 
     actors = _world.get_system_entities(game.TurnOrderSystem)
     target_pos = cursor(ab.target, actors, ab.range_)
     if target_pos is None:
-        return False  # dont end turn if selection was cancelled
+        return False  # dont end turn if cursor() was cancelled
     current_actor = actors[0]
     ab.fire(map_.current_map, actors, current_actor, target_pos)
     render()
