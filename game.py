@@ -2,6 +2,7 @@ import ecs
 import res
 import battle_log
 import utility
+from typing import List
 
 
 # simple components
@@ -115,6 +116,9 @@ class Fatigue:
     def __repr__(self):
         return "%s" % self.value
 
+    def __eq__(self, other: 'Fatigue'):
+        return self.value == other.value
+
 
 # Systems
 
@@ -141,11 +145,17 @@ class TurnOrderSystem(ecs.System):
 
 
 # transformations
-def active_take_turn(turn_order):
+def active_take_turn(turn_order: List[ecs.Entity]):
+    """Lets the actor first in the turnorder act."""
     actor = turn_order[0]
     # TODO debuglog this
     # print("%s turn" % turn_order[0].name)
-    actor.handle_event(Act())
+
+    # only costly actions end the turn
+    start_fatigue = actor.get(Fatigue).value
+    while start_fatigue == actor.get(Fatigue).value:
+        actor.handle_event(Act())
+
     # move actor to the end of the turnorder lis
     del turn_order[0]
     turn_order.append(actor)
