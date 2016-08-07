@@ -15,7 +15,9 @@ class Position:
     def __repr__(self):
         return "x: %r y: %r" % (self.x, self.y)
 
-    def apply_direction(self, direction):
+    def apply_direction(self, direction: 'Direction'):
+        """Modifies the Position in place.
+        Returns the position for function chaining"""
         self.x += direction.dx
         self.y += direction.dy
         return self
@@ -28,6 +30,13 @@ class Position:
 
     def distance(self, other: 'Position') -> int:
         return pos_distance(self, other)
+
+    def neighbors(self):
+        """Yields the 8 surrounding Positions of this Position."""
+        for dx in range(-1, 2):
+            for dy in range(-1, 2):
+                if not (dx == 0 and dy == 0):
+                    yield Position(self.x + dx, self.y + dy)
 
 
 class Direction:
