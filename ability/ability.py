@@ -170,6 +170,19 @@ class DmgEffect(Effect):
                 e.handle_event(game.TakeDamage(dmg_ev))
 
 
+class FatigueCostEffect(Effect):
+    """Effect which makes the user pay Fatigue for the used Ability"""
+    def __init__(self, cost: int):
+        self.cost = cost
+
+    def __repr__(self):
+        return "%s: Cost: %s" % (self.__class__.__name__, self.cost)
+
+    # noinspection PyUnusedLocal
+    def fire(self, tmap, user: ecs.Entity, relevant_entities, target_poss):
+        user.handle_event(game.PayFatigue(self.cost))
+
+
 def _parse_effects(ability_data: Dict[str, object]
                    ) -> List[Effect]:
     effects = []  # type: List[Effect]
@@ -180,6 +193,9 @@ def _parse_effects(ability_data: Dict[str, object]
         elif name == "dmg":
             assert isinstance(effect_data, dict)
             effects.append(DmgEffect(effect_data))
+        elif name == "fatigue_cost":
+            assert isinstance(effect_data, int)
+            effects.append(FatigueCostEffect(effect_data))
             # else no recognized effect => ignore
     return effects
 

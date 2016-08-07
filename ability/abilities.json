@@ -6,7 +6,8 @@
     "dmg": {
       "base": 1,
       "scaling": 1
-    }
+    },
+    "fatigue_cost": 100
   },
   "fireball": {
     "desc": "Hits first target in the way and explodes.",
@@ -24,7 +25,8 @@
     "line": true,
     "dmg": {
       "base": 3
-    }
+    },
+    "fatigue_cost": 200
   },
   "hand of flame": {
     "desc": "Let flames burst forth in an arc.",
@@ -48,7 +50,8 @@
     "heal": {
       "base": 3,
       "scaling": 0.5
-    }
+    },
+    "fatigue_cost": 200
   },
   "whirlwind": {
     "desc": "Spin and hit everyone around you.",

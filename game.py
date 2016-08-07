@@ -53,7 +53,7 @@ class Act:
 
 
 class PayFatigue:
-    def __init__(self, amount):
+    def __init__(self, amount: int):
         self.amount = amount
         self.handler_name = "pay_fatigue"
 
