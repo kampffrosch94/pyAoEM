@@ -1,8 +1,10 @@
 import uuid
+
 """Entity Component System"""
 
+
 class Entity(object):
-    def __init__(self,world):
+    def __init__(self, world):
         self.id = hash(uuid.uuid4())
         self.world = world
         world.entities.append(self)
@@ -11,18 +13,18 @@ class Entity(object):
         return self.id
 
     def __str__(self):
-        result =         "Entity(id = %r" % self.id
+        result = "Entity(id = %r" % self.id
         for e in self:
             result += "\n       %s = %r" % (e,
-                    self.world.components[e][self])
+                                            self.world.components[e][self])
         result += ")"
         return result
 
     def __repr__(self):
-        return  "Entity(id = %r)" % self.id
+        return "Entity(id = %r)" % self.id
 
     def __iter__(self):
-        for ct in self.world.componenttypes :
+        for ct in self.world.componenttypes:
             if self in self.world.components[ct]:
                 yield ct
 
@@ -30,22 +32,21 @@ class Entity(object):
         for ct in self:
             yield self.world.components[ct][self]
 
-    def event_handlers(self,event):
+    def event_handlers(self, event):
         h_components = []
         h_name = event.handler_name
         for c in self.components():
-            if hasattr(c,h_name) and callable(getattr(c,h_name)):
+            if hasattr(c, h_name) and callable(getattr(c, h_name)):
                 h_components.append(c)
-        h_components.sort(key = (lambda c: c.priority),reverse=True)
+        h_components.sort(key=(lambda c: c.priority), reverse=True)
         for c in h_components:
             yield c
 
-
-    def handle_event(self,event):
+    def handle_event(self, event):
         h_name = event.handler_name
         for c in self.event_handlers(event):
-            getattr(c,h_name)(event)
-            
+            getattr(c, h_name)(event)
+
     def __getattr__(self, name):
         """Gets the component data related to the Entity."""
         if name is "id":
@@ -55,7 +56,7 @@ class Entity(object):
         if (not name in self.world.componenttypes) or (
                 not self in self.world.components[name]):
             raise AttributeError("object '%r' has no attribute '%r'" % \
-                (self, name))
+                                 (self, name))
         return self.world.components[name][self]
 
     def __setattr__(self, name, value):
@@ -67,11 +68,11 @@ class Entity(object):
                 self.world.componenttypes.add(name)
                 self.world.components[name] = {}
             if self in self.world.components[name]:
-                raise AttributeError("%s is already an attribute of %r" % 
-                        (name,self))
+                raise AttributeError("%s is already an attribute of %r" %
+                                     (name, self))
             self.world.components[name][self] = value
 
-            system_keys = self.world.find_entity_systems_wct(self,name)
+            system_keys = self.world.find_entity_systems_wct(self, name)
             for sk in system_keys:
                 self.world.system_entities[sk].append(self)
 
@@ -81,18 +82,18 @@ class Entity(object):
             raise AttributeError("'%s' cannot be deleted.", name)
         if not self in self.world.components[name]:
             raise AttributeError("Entity '%r' has no attribute '%s'" % \
-                (self, name))
-        
+                                 (self, name))
+
         c = self.world.components[name][self]
 
-        system_keys = self.world.find_entity_systems_wct(self,name)
+        system_keys = self.world.find_entity_systems_wct(self, name)
         for sk in system_keys:
             self.world.system_entities[sk].remove(self)
 
         del self.world.components[name][self]
 
-    def set(self,attribute):
-        self.__setattr__(attribute.__class__.__name__,attribute)
+    def set(self, attribute):
+        self.__setattr__(attribute.__class__.__name__, attribute)
 
     def get(self, classobject):
         return self.__getattr__(classobject.__name__)
@@ -103,12 +104,12 @@ class Entity(object):
     def hasattr(self, name):
         """Don't check for world or id."""
         if (name in self.world.componenttypes) and (
-                self in self.world.components[name]):
+                    self in self.world.components[name]):
             return True
         else:
             return False
 
-    def has(self,classobject):
+    def has(self, classobject):
         """Don't check for world or id."""
         name = classobject.__name__
         return self.hasattr(name)
@@ -116,6 +117,7 @@ class Entity(object):
     def remove(self):
         """Removes the Entity from the world it belongs to."""
         self.world.remove_entity(self)
+
 
 class World(object):
     def __init__(self):
@@ -125,20 +127,20 @@ class World(object):
 
         self.systems = {}
         self.system_entities = {}
-        #The keys of systems which use a certain componenttype
-        self.componenttypes_to_system = {} 
+        # The keys of systems which use a certain componenttype
+        self.componenttypes_to_system = {}
 
         self.alive = True
         self.main_loop = None
 
-    def remove_entity(self, entity): 
+    def remove_entity(self, entity):
         """Removes an Entity from the World, including all its data."""
         for ct in entity:
             entity.__delattr__(ct)
         self.entities.remove(entity)
 
-    def add_system(self,system):
-        if not isinstance(system,System):
+    def add_system(self, system):
+        if not isinstance(system, System):
             raise ValueError("Only instances of System are allowed.")
         key = system.__class__.__name__
         if key in self.systems:
@@ -156,24 +158,26 @@ class World(object):
             self.system_entities[key] = []
         return system
 
-    def find_system_entities(self,system):
+    def find_system_entities(self, system):
         typerestriction = system.componenttypes
-        def condition(typerestriction,entity):
-            ecs = [ec for ec in entity] #all component_ts of entity
-            return typerestriction.issubset(ecs)
-        return [e for e in self.entities if condition(typerestriction,e)]
 
-    def get_system_entities(self,system_class):
+        def condition(typerestriction, entity):
+            ecs = [ec for ec in entity]  # all component_ts of entity
+            return typerestriction.issubset(ecs)
+
+        return [e for e in self.entities if condition(typerestriction, e)]
+
+    def get_system_entities(self, system_class):
         key = system_class.__name__
         return self.system_entities[key]
 
-    def find_entity_systems_wct(self,entity,ct):
-        ecs = [ec for ec in entity] #all component_ts of entity
-        return [key for key in self.systems 
-                  if (ct in self.systems[key].componenttypes) and 
-                      self.systems[key].componenttypes.issubset(ecs)]
+    def find_entity_systems_wct(self, entity, ct):
+        ecs = [ec for ec in entity]  # all component_ts of entity
+        return [key for key in self.systems
+                if (ct in self.systems[key].componenttypes) and
+                self.systems[key].componenttypes.issubset(ecs)]
 
-    def invoke_system(self,systemclass):
+    def invoke_system(self, systemclass):
         key = systemclass.__name__
         s = self.systems[key]
         if s.active:
@@ -183,16 +187,17 @@ class World(object):
         self.alive = False
 
     def destroy(self):
-        entities = self.entities.copy() #avoid del in the list we are
-                                        #operating on
+        entities = self.entities.copy()  # avoid del in the list we are
+        # operating on
         for entity in entities:
             self.remove_entity(entity)
 
-        for key,system in self.systems.items():
-            if hasattr(system,"destroy") and hasattr(
-                    system.destroy,"__call__"):
+        for key, system in self.systems.items():
+            if hasattr(system, "destroy") and hasattr(
+                    system.destroy, "__call__"):
                 system.destroy()
-            
+
+
 class System(object):
     """System which runs the code in a world.
 
@@ -204,13 +209,13 @@ class System(object):
     
     if active==False then process() wont be called"""
 
-    def __init__(self,componentclasses = None):
+    def __init__(self, componentclasses=None):
         if componentclasses is None:
             componentclasses = []
         self.componenttypes = set(c.__name__ for c in componentclasses)
         self.active = True
 
-    def process(self,entities):
+    def process(self, entities):
         raise NotImplementedError("Must be implemented by a Subclass.")
 
     def __hash__(self):

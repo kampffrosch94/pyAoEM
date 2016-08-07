@@ -46,6 +46,7 @@ class GetHealed:
 
 
 class Act:
+    """"Event which says the entity should act."""
     def __init__(self):
         self.handler_name = "act"
 
@@ -120,12 +121,18 @@ class Fatigue:
 class BlockingSystem(ecs.System):
     """Just for holding blocking entities."""
 
+    def process(self, entities):
+        raise ReferenceError("BlockingSystem can't process()")
+
     def __init__(self):
         ecs.System.__init__(self, [MapPos, Blocking])
         self.active = False
 
 
 class TurnOrderSystem(ecs.System):
+    """Orders all the entities which can act in TurnOrder
+    the actual turn is executed from the battle.main_loop() in
+    active_take_turn()"""
     def __init__(self):
         ecs.System.__init__(self, [Fatigue, Team])
 
@@ -139,6 +146,7 @@ def active_take_turn(turn_order):
     # TODO debuglog this
     # print("%s turn" % turn_order[0].name)
     actor.handle_event(Act())
+    # move actor to the end of the turnorder lis
     del turn_order[0]
     turn_order.append(actor)
 

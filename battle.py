@@ -253,7 +253,7 @@ def go_interpreter():
 
         print(str(functools.reduce(concat, map(str, actors))))
 
-    import IPython;
+    import IPython
     IPython.embed()
 
 
