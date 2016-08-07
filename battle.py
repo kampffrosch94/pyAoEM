@@ -22,13 +22,14 @@ controlled_entity = None
 
 
 class Input(object):
-    """Component for Player controlled entities."""
+    """Component for Player controlled entities.
+    Handles game.Act Events."""
 
     def __init__(self, entity):
         self.entity = entity
         self.priority = 0
 
-    def act(self, event):
+    def act(self, _):
         global controlled_entity
         controlled_entity = self.entity
         while not input_.handle_event():
@@ -154,6 +155,7 @@ def wait():
 def cursor(target_f: Optional[Callable] = None,
            relevant_entities: Optional[ecs.Entity] = None,
            max_range=float("inf")) -> utility.Position:
+    """returns Position selected with the cursor or None if cancelled"""
     start = controlled_entity.get(game.MapPos)  # type: game.MapPos
     pos = start.copy()
     g = res.load_graphic("cursor")
@@ -167,12 +169,15 @@ def cursor(target_f: Optional[Callable] = None,
                 pos.apply_direction(utility.Direction(x, y))
         return move
 
-    def stop():
+    def stop_with_target():
+        return False
+
+    def cancel():
         return True
 
     input_.clear_handlers()
-    input_.add_handler(stop, sdl2.SDLK_ESCAPE)
-    input_.add_handler(stop, sdl2.SDLK_RETURN)
+    input_.add_handler(cancel, sdl2.SDLK_ESCAPE)
+    input_.add_handler(stop_with_target, sdl2.SDLK_RETURN)
     input_.add_handler(move_dir_f(-1, 0), sdl2.SDLK_h)
     input_.add_handler(move_dir_f(+1, 0), sdl2.SDLK_l)
     input_.add_handler(move_dir_f(0, -1), sdl2.SDLK_k)
@@ -183,8 +188,8 @@ def cursor(target_f: Optional[Callable] = None,
     input_.add_handler(move_dir_f(-1, +1), sdl2.SDLK_b)
     render_at_pos(g, pos)
     res.render_present()
-
-    while not input_.handle_event():
+    is_cancelled = input_.handle_event()
+    while is_cancelled is None:
         render()
         render_at_pos(g, pos)
 
@@ -196,15 +201,21 @@ def cursor(target_f: Optional[Callable] = None,
                 render_at_pos(trail_g, utility.Position(p[0], p[1]))
 
         res.render_present()
+        is_cancelled = input_.handle_event()
 
     render()
     bind_keys()
 
-    return pos
+    if is_cancelled:
+        return None
+    else:
+        return pos
 
 
 def look():
     pos = cursor()
+    if pos is None:
+        return
     print("Endpos is: %s" % pos)
     for e in _world.entities:
         if e.has(game.MapPos):
@@ -224,8 +235,12 @@ def choose_ability():
 
     actors = _world.get_system_entities(game.TurnOrderSystem)
     target_pos = cursor(ab.target, actors, ab.range_)
-    ab.fire(map_.current_map, actors, actors[0], target_pos)
+    if target_pos is None:
+        return False  # dont end turn if selection was cancelled
+    current_actor = actors[0]
+    ab.fire(map_.current_map, actors, current_actor, target_pos)
     render()
+    return True  # end turn after using ability
 
 
 # Debug keybindings
