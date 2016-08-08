@@ -1,3 +1,6 @@
+import time
+from typing import Callable, Optional
+
 import sdl2
 
 import ability
@@ -10,7 +13,6 @@ import menu
 import movement
 import res
 import utility
-from typing import List, Callable, Tuple, Optional
 
 # the canvas for the scene
 
@@ -44,11 +46,18 @@ def render_at_pos(graphic: res.Graphic, pos):
         graphic.render()
 
 
-def update_graphic_pos(e):
-    """returns True if graphic is visible else False"""
+def update_entity_graphic_pos(e):
+    """Updates Graphic.(x,y) of an entity according to its position
+    returns True if graphic is visible else False"""
     mp = e.get(game.MapPos)
+    g = e.get(res.Graphic)
+    return update_graphic_pos(g, mp)
+
+
+def update_graphic_pos(g: res.Graphic, mp: game.MapPos):
+    """Updates Graphic.(x,y) according to map_pos
+    returns True if graphic is visible else False"""
     if map_.current_map.is_visible(mp):
-        g = e.get(res.Graphic)
         g.x = map_.TILE_WIDTH * (mp.x - map_.current_map.root_pos.x)
         g.y = map_.TILE_HEIGHT * (mp.y - map_.current_map.root_pos.y)
         return True
@@ -56,13 +65,16 @@ def update_graphic_pos(e):
 
 
 class EntityRenderSystem(ecs.System):
+    """Renders enitities on the screen.
+    Converts their MapPos into an appropriate Grapic.(x,y)"""
+
     def __init__(self):
         super().__init__([res.Graphic, game.MapPos])
 
     def process(self, entities):
         graphics = []
         for e in entities:
-            if update_graphic_pos(e):
+            if update_entity_graphic_pos(e):
                 graphics.append(e.get(res.Graphic))
 
         z0 = [g for g in graphics if g.z == 0]
@@ -74,6 +86,8 @@ class EntityRenderSystem(ecs.System):
 
 
 class HealthRenderSystem(ecs.System):
+    """Renders the health of actors on the screen."""
+
     def __init__(self):
         super().__init__([res.Graphic, game.MapPos, game.Health, game.Fatigue])
 
@@ -167,6 +181,7 @@ def cursor(target_f: Optional[Callable] = None,
             if start.distance(pos.copy().apply_direction(
                     utility.Direction(x, y))) <= max_range:
                 pos.apply_direction(utility.Direction(x, y))
+
         return move
 
     def stop_with_target():
@@ -240,6 +255,18 @@ def choose_ability():
     if target_pos is None:
         return False  # dont end turn if cursor() was cancelled
     current_actor = actors[0]
+
+    # TODO tmp animation block -> proper handling
+    target_poss = ab.target(map_.current_map, actors,
+                            current_actor.get(game.MapPos).to_tuple(),
+                            target_pos.to_tuple())
+    ability_graphic = res.load_graphic("ab_fire_bolt")
+    for pos in target_poss:
+        update_graphic_pos(ability_graphic, game.MapPos(*pos))
+        ability_graphic.render()
+    res.render_present()
+    time.sleep(0.3)
+
     ab.fire(map_.current_map, actors, current_actor, target_pos)
     render()
     return True  # end turn after using ability

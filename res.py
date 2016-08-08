@@ -36,6 +36,7 @@ img_paths = {
     "dmg_almost_dead": b"gfx/dmg/mdam_almost_dead.png",
     "cursor": b"gfx/cursor.png",
     "ray": b"gfx/ray.png",
+    "ab_fire_bolt": b"gfx/abilities/bolt04.png",
 }
 
 loaded_textures = {}  # type: Dict[str, sdl2.SDL_Texture]
@@ -147,6 +148,7 @@ def _load_texture(texture_name):
 
 
 def load_graphic(texture_name):
+    """Use this to load sprites."""
     texture, properties = _load_texture(texture_name)
     return Graphic(texture, *properties, texture_name=texture_name)
 
