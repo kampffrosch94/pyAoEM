@@ -20,7 +20,7 @@ def clear_handlers():
 
 def add_handler(handlerfunc, key, mod=sdl2.KMOD_NONE):
     if (key, mod) in key_handlers:
-        raise KeyError("Key %s already in mode %s" % (key, mode))
+        raise KeyError("Key %s already in mode %s" % (key, mod))
     if not mod == sdl2.KMOD_SHIFT:
         key_handlers[(key, mod)] = handlerfunc
     else:
@@ -35,8 +35,7 @@ def handle_event():
     event = sdl2.SDL_Event()
     while True:
         if sdl2.SDL_WaitEvent(ctypes.byref(event)) == 0:
-            import res
-            raise res.SDL_Exception()
+            raise Exception(sdl2.SDL_GetError())
         if event.type == sdl2.SDL_QUIT:
             quit_handler()
             return True
