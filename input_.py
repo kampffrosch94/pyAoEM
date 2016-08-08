@@ -39,7 +39,7 @@ def handle_event():
             raise res.SDL_Exception()
         if event.type == sdl2.SDL_QUIT:
             quit_handler()
-            break
+            return True
         elif event.type == sdl2.SDL_KEYDOWN:
             key = event.key.keysym.sym
             mod = event.key.keysym.mod

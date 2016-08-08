@@ -153,7 +153,7 @@ def active_take_turn(turn_order: List[ecs.Entity]):
 
     # only costly actions end the turn
     start_fatigue = actor.get(Fatigue).value
-    while start_fatigue == actor.get(Fatigue).value:
+    while start_fatigue == actor.get(Fatigue).value and actor.world.alive:
         actor.handle_event(Act())
 
     # move actor to the end of the turnorder lis
