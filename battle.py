@@ -1,5 +1,5 @@
 import time
-from typing import Callable, Optional
+from typing import Callable, Optional, List
 
 import sdl2
 
@@ -110,13 +110,24 @@ class HealthRenderSystem(ecs.System):
                         g.render_other_texture("dmg_light")
 
 
-def render_turn_order(es_in_to):
+def render_turn_order(es_in_to: List[ecs.Entity]):
     """render_entities must be run before this to update graphic positions"""
+    # place green cursor around controlled pc
     current_actor = es_in_to[0]
     if map_.current_map.is_visible(current_actor.get(game.MapPos)):
         if current_actor.get(game.Team).team_name == "player_team":
             g = current_actor.get(res.Graphic)
             g.render_other_texture("cursor_green")
+
+    # TODO cache turnorder graphic
+    for i in range(1, min(len(es_in_to), 10)):  # next 9 in turnorder
+        actor = es_in_to[i]
+        if map_.current_map.is_visible(actor.get(game.MapPos)):
+            g = actor.get(res.Graphic)  # type: res.Graphic
+            tg = res.create_text_graphic(str(i))
+            tg.x, tg.y = g.x, g.y
+            tg.render()
+            tg.destroy()
 
 
 def render():
