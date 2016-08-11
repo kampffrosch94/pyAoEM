@@ -79,9 +79,33 @@ def _fly_target_f(tmap: map_.TileMap,
     for pos in line[1:]:
         line_to_first_blocking.append(pos)
         if tmap.is_wall(pos) or (
-                pos in entity_dict and entity_dict[pos].has(game.Blocking)):
+                        pos in entity_dict and entity_dict[pos].has(
+                            game.Blocking)):
             break
     return line_to_first_blocking
+
+
+def _create_aoe_smite_f(spread: int):
+    def smite_target_f(tmap: map_.TileMap,
+                       relevant_entities: List[ecs.Entity],
+                       user_pos: Tuple[int, int],
+                       goal_pos: Tuple[int, int]
+                       ) -> List[Tuple[int, int]]:
+        line = utility.get_line(user_pos, goal_pos)
+        line_to_first_blocking = []
+        entity_dict = map_.pos_entity_dict(relevant_entities)
+        for pos in line[1:]:
+            line_to_first_blocking.append(pos)
+            if tmap.is_wall(pos) or (
+                            pos in entity_dict and entity_dict[pos].has(
+                        game.Blocking)):
+                break
+        return line_to_first_blocking
+
+    return smite_target_f
+
+
+_create_aoe_smite_f(5)
 
 
 def _parse_target_f(ability_data):
@@ -172,6 +196,7 @@ class DmgEffect(Effect):
 
 class FatigueCostEffect(Effect):
     """Effect which makes the user pay Fatigue for the used Ability"""
+
     def __init__(self, cost: int):
         self.cost = cost
 

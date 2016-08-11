@@ -164,7 +164,7 @@ def player_move_dir_f(x, y):
 
 def map_move_dir_f(x, y):
     def f():
-        map_.current_map.root_pos.apply_direction(utility.Direction(x, y))
+        map_.current_map.root_pos.move(utility.Direction(x, y))
         render()
 
     return f
@@ -189,9 +189,9 @@ def cursor(target_f: Optional[Callable] = None,
 
     def move_dir_f(x, y):
         def move():
-            if start.distance(pos.copy().apply_direction(
+            if start.distance(pos.copy().move(
                     utility.Direction(x, y))) <= max_range:
-                pos.apply_direction(utility.Direction(x, y))
+                pos.move(utility.Direction(x, y))
 
         return move
 

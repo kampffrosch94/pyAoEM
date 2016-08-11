@@ -28,13 +28,13 @@ def attack_or_move(entity: ecs.Entity, direction: utility.Direction) -> bool:
     """returns True on success, False on failure"""
     pos = entity.get(game.MapPos)
     new_pos = pos.copy()
-    new_pos.apply_direction(direction)
+    new_pos.move(direction)
     if map_.current_map.is_wall(new_pos):
         return False
     target = get_blocker_at_pos(entity.world, new_pos)
     if target is None:  # move
         mp = entity.get(game.MapPos)
-        mp.apply_direction(direction)
+        mp.move(direction)
         entity.handle_event(game.PayFatigue(100))
         return True
     elif target.has(game.Health) and not entity.get(game.Team) == target.get(game.Team):

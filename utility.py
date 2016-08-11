@@ -1,4 +1,5 @@
 import typing
+from typing import List
 
 
 class Position:
@@ -15,7 +16,7 @@ class Position:
     def __repr__(self):
         return "x: %r y: %r" % (self.x, self.y)
 
-    def apply_direction(self, direction: 'Direction'):
+    def move(self, direction: 'Direction'):
         """Modifies the Position in place.
         Returns the position for function chaining"""
         self.x += direction.dx
@@ -29,14 +30,34 @@ class Position:
         return self.x, self.y
 
     def distance(self, other: 'Position') -> int:
-        return pos_distance(self, other)
+        return max(abs(self.x - other.x), abs(self.y - other.y))
+
+    def circle(self, radius: int) -> List['Position']:
+        """Returns a circle around this Position.
+        radius must be >= 1"""
+        circle_list = []  # type: List[Position]
+
+        y = self.y + radius
+        for x in range(self.x - radius, self.x + radius + 1):
+            circle_list.append(Position(x, y))
+
+        y = self.y - radius
+        for x in range(self.x - radius, self.x + radius + 1):
+            circle_list.append(Position(x, y))
+
+        x = self.x + radius
+        for y in range(self.y - radius + 1, self.y + radius):
+            circle_list.append(Position(x, y))
+
+        x = self.x - radius
+        for y in range(self.y - radius + 1, self.y + radius):
+            circle_list.append(Position(x, y))
+
+        return circle_list
 
     def neighbors(self):
-        """Yields the 8 surrounding Positions of this Position."""
-        for dx in range(-1, 2):
-            for dy in range(-1, 2):
-                if not (dx == 0 and dy == 0):
-                    yield Position(self.x + dx, self.y + dy)
+        """Returns the 8 surrounding Positions of this Position."""
+        return self.circle(1)
 
 
 class Direction:
