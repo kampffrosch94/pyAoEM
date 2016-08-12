@@ -212,9 +212,8 @@ def cursor(target_f: Optional[Callable] = None,
     input_.add_handler(move_dir_f(+1, +1), sdl2.SDLK_n)
     input_.add_handler(move_dir_f(-1, -1), sdl2.SDLK_z)
     input_.add_handler(move_dir_f(-1, +1), sdl2.SDLK_b)
-    render_at_pos(g, pos)
-    res.render_present()
-    is_cancelled = input_.handle_event()
+
+    is_cancelled = None
     while is_cancelled is None:
         render()
         render_at_pos(g, pos)
