@@ -22,7 +22,7 @@ def pos_entity_dict(entities: Iterable[ecs.Entity]) \
     """Turns list of entities into dict: pos->entity"""
     result = {}  # type: Dict[Tuple[int, int], ecs.Entity]
     for e in entities:
-        pos = e.get(game.MapPos).to_tuple()
+        pos = e.get(utility.Position).to_tuple()
         if pos in result:
             raise ValueError("Multiple entities with same pos.")
         result[pos] = e

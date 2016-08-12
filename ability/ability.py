@@ -31,7 +31,7 @@ class Ability:
              user: ecs.Entity,
              goal_pos: util.Position) -> None:
         target_poss = self.target(tmap, relevant_entities,
-                                  user.get(game.MapPos),
+                                  user.get(util.Position),
                                   goal_pos)
 
         for effect in self._effects:
@@ -144,7 +144,7 @@ class HealEffect(Effect):
 
     def fire(self, tmap, user, relevant_entities, target_poss):
         for e in relevant_entities:
-            if e.get(game.MapPos).to_tuple() in target_poss:
+            if e.get(util.Position).to_tuple() in target_poss:
                 # use dmg stats for now TODO change later
                 dmg_ev = game.DealDamage()
                 user.handle_event(dmg_ev)
@@ -175,7 +175,7 @@ class DmgEffect(Effect):
     def fire(self, tmap, user, relevant_entities,
              target_poss: List[util.Position]):
         for e in relevant_entities:
-            if e.get(game.MapPos) in target_poss:
+            if e.get(util.Position) in target_poss:
                 dmg_ev = game.DealDamage()
                 user.handle_event(dmg_ev)
                 dmg_ev.amount *= self.scaling

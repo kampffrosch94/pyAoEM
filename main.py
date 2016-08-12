@@ -1,14 +1,15 @@
 import random
-import sdl2
+
+import battle
+import battle_log
+import ecs
+import factory
+import game
 import input_
 import map_
-import ecs
-import game
-import factory
 import movement
-import battle_log
-import battle
 import start
+import utility
 
 world = ecs.World()
 
@@ -55,15 +56,15 @@ for pos in pos_list:
         break
     if movement.pos_is_free(world,pos):
         e = pcs.pop()
-        mp = e.get(game.MapPos)
-        mp.x,mp.y = pos
+        mp = e.get(utility.Position)
+        mp.x, mp.y = pos
 pos_list.reverse()
 for pos in pos_list:
     if len(enemies) == 0:
         break
     if movement.pos_is_free(world,pos):
         e = enemies.pop()
-        mp = e.get(game.MapPos)
+        mp = e.get(utility.Position)
         mp.x, mp.y = pos
 
 

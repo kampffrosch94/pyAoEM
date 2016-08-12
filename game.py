@@ -11,10 +11,6 @@ class Blocking:
     pass
 
 
-class MapPos(utility.Position):
-    """The position of an entity on the map."""
-
-
 class Team:
     def __init__(self, team_name):
         self.team_name = team_name
@@ -129,7 +125,7 @@ class BlockingSystem(ecs.System):
         raise ReferenceError("BlockingSystem can't process()")
 
     def __init__(self):
-        ecs.System.__init__(self, [MapPos, Blocking])
+        ecs.System.__init__(self, [utility.Position, Blocking])
         self.active = False
 
 
