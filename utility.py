@@ -59,6 +59,12 @@ class Position:
         """Returns the 8 surrounding Positions of this Position."""
         return self.circle(1)
 
+    def line_to(self, goal: 'Position') -> List['Position']:
+        line = []  # type: List['Position']
+        for x, y in _bresenham(self.to_tuple(), goal.to_tuple()):
+            line.append(Position(x, y))
+        return line
+
 
 class Direction:
     def __init__(self, dx, dy):
@@ -78,11 +84,7 @@ class Rectangle:
                 self.y <= pos.y < self.ye)
 
 
-def pos_distance(start: Position, end: Position) -> int:
-    return max(abs(start.x - end.x), abs(start.y - end.y))
-
-
-def get_line(start: typing.Tuple[int, int], end: typing.Tuple[int, int]
+def _bresenham(start: typing.Tuple[int, int], end: typing.Tuple[int, int]
              ) -> typing.List[typing.Tuple[int, int]]:
     """Bresenham's Line Algorithm
     Produces a list of tuples from start and end
@@ -90,12 +92,12 @@ def get_line(start: typing.Tuple[int, int], end: typing.Tuple[int, int]
     Taken from:
     http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
  
-    >>> points1 = get_line((0, 0), (3, 4))
-    >>> points2 = get_line((3, 4), (0, 0))
+    >>> points1 = _bresenham((0, 0), (3, 4))
+    >>> points2 = _bresenham((3, 4), (0, 0))
     >>> assert(set(points1) == set(points2))
-    >>> print points1
+    >>> print (points1)
     [(0, 0), (1, 1), (1, 2), (2, 3), (3, 4)]
-    >>> print points2
+    >>> print (points2)
     [(3, 4), (2, 3), (1, 2), (1, 1), (0, 0)]
     """
     # Setup initial conditions

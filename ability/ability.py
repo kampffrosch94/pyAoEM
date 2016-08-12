@@ -2,10 +2,10 @@ import json
 
 import game
 import map_
-import utility
+import utility as util
 import ecs
 
-from typing import Callable, Tuple, List, Dict
+from typing import Callable, List, Dict
 
 
 class Ability:
@@ -15,9 +15,9 @@ class Ability:
                  targeting_f: Callable[
                      [map_.TileMap,
                       List[ecs.Entity],
-                      Tuple[int, int],
-                      Tuple[int, int]],
-                     List[Tuple[int, int]]],
+                      util.Position,
+                      util.Position],
+                     List[util.Position]],
                  effects: List['Effect']) -> None:
         self.name = name
         self.range_ = range_
@@ -29,10 +29,10 @@ class Ability:
              tmap: map_.TileMap,
              relevant_entities: List[ecs.Entity],
              user: ecs.Entity,
-             goal_pos: utility.Position) -> None:
+             goal_pos: util.Position) -> None:
         target_poss = self.target(tmap, relevant_entities,
-                                  user.get(game.MapPos).to_tuple(),
-                                  goal_pos.to_tuple())
+                                  user.get(game.MapPos),
+                                  goal_pos)
 
         for effect in self._effects:
             # send copy of relevant_entities, else one dies and vanishes
@@ -51,29 +51,29 @@ class Ability:
 # noinspection PyUnusedLocal
 def _smite_target_f(tmap: map_.TileMap,
                     relevant_entities: List[ecs.Entity],
-                    user_pos: Tuple[int, int],
-                    goal_pos: Tuple[int, int]
-                    ) -> List[Tuple[int, int]]:
+                    user_pos: util.Position,
+                    goal_pos: util.Position
+                    ) -> List[util.Position]:
     return [goal_pos]
 
 
 # noinspection PyUnusedLocal
 def _line_target_f(tmap: map_.TileMap,
                    relevant_entities: List[ecs.Entity],
-                   user_pos: Tuple[int, int],
-                   goal_pos: Tuple[int, int]
-                   ) -> List[Tuple[int, int]]:
-    line = utility.get_line(user_pos, goal_pos)
+                   user_pos: util.Position,
+                   goal_pos: util.Position
+                   ) -> List[util.Position]:
+    line = user_pos.line_to(goal_pos)
     return line[1:]
 
 
 # noinspection PyUnusedLocal
 def _fly_target_f(tmap: map_.TileMap,
                   relevant_entities: List[ecs.Entity],
-                  user_pos: Tuple[int, int],
-                  goal_pos: Tuple[int, int]
-                  ) -> List[Tuple[int, int]]:
-    line = utility.get_line(user_pos, goal_pos)
+                  user_pos: util.Position,
+                  goal_pos: util.Position
+                  ) -> List[util.Position]:
+    line = user_pos.line_to(goal_pos)
     line_to_first_blocking = []
     entity_dict = map_.pos_entity_dict(relevant_entities)
     for pos in line[1:]:
@@ -86,26 +86,16 @@ def _fly_target_f(tmap: map_.TileMap,
 
 
 def _create_aoe_smite_f(spread: int):
-    def smite_target_f(tmap: map_.TileMap,
-                       relevant_entities: List[ecs.Entity],
-                       user_pos: Tuple[int, int],
-                       goal_pos: Tuple[int, int]
-                       ) -> List[Tuple[int, int]]:
-        line = utility.get_line(user_pos, goal_pos)
-        line_to_first_blocking = []
-        entity_dict = map_.pos_entity_dict(relevant_entities)
-        for pos in line[1:]:
-            line_to_first_blocking.append(pos)
-            if tmap.is_wall(pos) or (
-                            pos in entity_dict and entity_dict[pos].has(
-                        game.Blocking)):
-                break
-        return line_to_first_blocking
+    # noinspection PyUnusedLocal
+    def aoe_smite_target_f(tmap: map_.TileMap,
+                           relevant_entities: List[ecs.Entity],
+                           user_pos: util.Position,
+                           goal_pos: util.Position
+                           ) -> List[util.Position]:
+        # TODO use Position.circle() here
+        raise NotImplementedError
 
-    return smite_target_f
-
-
-_create_aoe_smite_f(5)
+    return aoe_smite_target_f
 
 
 def _parse_target_f(ability_data):
@@ -182,9 +172,10 @@ class DmgEffect(Effect):
                                              self.base, self.scaling)
 
     # noinspection PyUnusedLocal
-    def fire(self, tmap, user, relevant_entities, target_poss):
+    def fire(self, tmap, user, relevant_entities,
+             target_poss: List[util.Position]):
         for e in relevant_entities:
-            if e.get(game.MapPos).to_tuple() in target_poss:
+            if e.get(game.MapPos) in target_poss:
                 dmg_ev = game.DealDamage()
                 user.handle_event(dmg_ev)
                 dmg_ev.amount *= self.scaling

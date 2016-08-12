@@ -222,9 +222,9 @@ def cursor(target_f: Optional[Callable] = None,
         if target_f is not None:
             for p in target_f(map_.current_map,
                               relevant_entities,
-                              start.to_tuple(),
-                              pos.to_tuple()):
-                render_at_pos(trail_g, utility.Position(p[0], p[1]))
+                              start,
+                              pos):
+                render_at_pos(trail_g, p)
 
         res.render_present()
         is_cancelled = input_.handle_event()
@@ -269,11 +269,11 @@ def choose_ability():
 
     # TODO tmp animation block -> proper handling
     target_poss = ab.target(map_.current_map, actors,
-                            current_actor.get(game.MapPos).to_tuple(),
-                            target_pos.to_tuple())
+                            current_actor.get(game.MapPos),
+                            target_pos)
     ability_graphic = res.load_graphic("ab_fire_bolt")
     for pos in target_poss:
-        update_graphic_pos(ability_graphic, game.MapPos(*pos))
+        update_graphic_pos(ability_graphic, pos)
         ability_graphic.render()
     res.render_present()
     time.sleep(0.3)
