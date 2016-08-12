@@ -1,7 +1,7 @@
 import battle
 import ecs
 import res
-import utility
+import util
 from game import (Health, Blocking, Offensive, Fatigue, Team, AI)
 
 world = None  # type: ecs.World
@@ -12,7 +12,7 @@ def create_creature(name, texture, pos, mhp, dmg):
     creature.name = name
 
     pos_x, pos_y = pos
-    creature.set(utility.Position(pos_x, pos_y))
+    creature.set(util.Position(pos_x, pos_y))
     creature.set(res.load_graphic(texture))
 
     creature.set(Blocking())

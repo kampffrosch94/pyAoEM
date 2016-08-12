@@ -2,7 +2,7 @@ import json
 
 import game
 import map_
-import utility as util
+import util as util
 import ecs
 
 from typing import Callable, List, Dict

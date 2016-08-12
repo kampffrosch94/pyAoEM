@@ -1,6 +1,6 @@
 import res
 import dungeon_gen
-import utility
+import util
 import game
 import ecs
 from typing import Iterable, Dict, Tuple
@@ -22,7 +22,7 @@ def pos_entity_dict(entities: Iterable[ecs.Entity]) \
     """Turns list of entities into dict: pos->entity"""
     result = {}  # type: Dict[Tuple[int, int], ecs.Entity]
     for e in entities:
-        pos = e.get(utility.Position).to_tuple()
+        pos = e.get(util.Position).to_tuple()
         if pos in result:
             raise ValueError("Multiple entities with same pos.")
         result[pos] = e
@@ -43,7 +43,7 @@ class TileMap(object):
         self.wall_map = g_map
         self.tiles = g_map  # needs more variety
         self.tile_graphics = [default_floor, default_wall]
-        self.root_pos = utility.Position(0, 0)
+        self.root_pos = util.Position(0, 0)
 
     def is_wall(self, pos):
         return self.wall_map[pos]

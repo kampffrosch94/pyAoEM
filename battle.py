@@ -12,7 +12,7 @@ import map_
 import menu
 import movement
 import res
-import utility
+import util
 
 # the canvas for the scene
 
@@ -49,12 +49,12 @@ def render_at_pos(graphic: res.Graphic, pos):
 def update_entity_graphic_pos(e):
     """Updates Graphic.(x,y) of an entity according to its position
     returns True if graphic is visible else False"""
-    mp = e.get(utility.Position)
+    mp = e.get(util.Position)
     g = e.get(res.Graphic)
     return update_graphic_pos(g, mp)
 
 
-def update_graphic_pos(g: res.Graphic, mp: utility.Position):
+def update_graphic_pos(g: res.Graphic, mp: util.Position):
     """Updates Graphic.(x,y) according to map_pos
     returns True if graphic is visible else False"""
     if map_.current_map.is_visible(mp):
@@ -69,7 +69,7 @@ class EntityRenderSystem(ecs.System):
     Converts their MapPos into an appropriate Grapic.(x,y)"""
 
     def __init__(self):
-        super().__init__([res.Graphic, utility.Position])
+        super().__init__([res.Graphic, util.Position])
 
     def process(self, entities):
         graphics = []
@@ -89,11 +89,11 @@ class HealthRenderSystem(ecs.System):
     """Renders the health of actors on the screen."""
 
     def __init__(self):
-        super().__init__([res.Graphic, utility.Position, game.Health, game.Fatigue])
+        super().__init__([res.Graphic, util.Position, game.Health, game.Fatigue])
 
     def process(self, entities):
         for e in entities:
-            mp = e.get(utility.Position)
+            mp = e.get(util.Position)
             if map_.current_map.is_visible(mp):
                 hc = e.get(game.Health)
                 g = e.get(res.Graphic)
@@ -114,7 +114,7 @@ def render_turn_order(es_in_to: List[ecs.Entity]):
     """render_entities must be run before this to update graphic positions"""
     # place green cursor around controlled pc
     current_actor = es_in_to[0]
-    if map_.current_map.is_visible(current_actor.get(utility.Position)):
+    if map_.current_map.is_visible(current_actor.get(util.Position)):
         if current_actor.get(game.Team).team_name == "player_team":
             g = current_actor.get(res.Graphic)
             g.render_other_texture("cursor_green")
@@ -122,7 +122,7 @@ def render_turn_order(es_in_to: List[ecs.Entity]):
     # TODO cache turnorder graphic
     for i in range(1, min(len(es_in_to), 10)):  # next 9 in turnorder
         actor = es_in_to[i]
-        if map_.current_map.is_visible(actor.get(utility.Position)):
+        if map_.current_map.is_visible(actor.get(util.Position)):
             g = actor.get(res.Graphic)  # type: res.Graphic
             tg = res.create_text_graphic(str(i))
             tg.x, tg.y = g.x, g.y
@@ -158,13 +158,13 @@ def render():
 
 
 def player_move_dir_f(x, y):
-    d = utility.Direction(x, y)
+    d = util.Direction(x, y)
     return lambda: movement.attack_or_move(controlled_entity, d)
 
 
 def map_move_dir_f(x, y):
     def f():
-        map_.current_map.root_pos.move(utility.Direction(x, y))
+        map_.current_map.root_pos.move(util.Direction(x, y))
         render()
 
     return f
@@ -179,9 +179,9 @@ def wait():
 
 def cursor(target_f: Optional[Callable] = None,
            relevant_entities: Optional[ecs.Entity] = None,
-           max_range=float("inf")) -> utility.Position:
+           max_range=float("inf")) -> util.Position:
     """returns Position selected with the cursor or None if cancelled"""
-    start = controlled_entity.get(utility.Position)  # type: utility.Position
+    start = controlled_entity.get(util.Position)  # type: util.Position
     pos = start.copy()
     g = res.load_graphic("cursor")
 
@@ -190,8 +190,8 @@ def cursor(target_f: Optional[Callable] = None,
     def move_dir_f(x, y):
         def move():
             if start.distance(pos.copy().move(
-                    utility.Direction(x, y))) <= max_range:
-                pos.move(utility.Direction(x, y))
+                    util.Direction(x, y))) <= max_range:
+                pos.move(util.Direction(x, y))
 
         return move
 
@@ -244,8 +244,8 @@ def look():
         return
     print("Endpos is: %s" % pos)
     for e in _world.entities:
-        if e.has(utility.Position):
-            if e.get(utility.Position) == pos:
+        if e.has(util.Position):
+            if e.get(util.Position) == pos:
                 print(str(e))
 
 
@@ -269,7 +269,7 @@ def choose_ability():
 
     # TODO tmp animation block -> proper handling
     target_poss = ab.target(map_.current_map, actors,
-                            current_actor.get(utility.Position),
+                            current_actor.get(util.Position),
                             target_pos)
     ability_graphic = res.load_graphic("ab_fire_bolt")
     for pos in target_poss:

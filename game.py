@@ -1,7 +1,7 @@
 import ecs
 import res
 import battle_log
-import utility
+import util
 from typing import List
 
 
@@ -125,7 +125,7 @@ class BlockingSystem(ecs.System):
         raise ReferenceError("BlockingSystem can't process()")
 
     def __init__(self):
-        ecs.System.__init__(self, [utility.Position, Blocking])
+        ecs.System.__init__(self, [util.Position, Blocking])
         self.active = False
 
 

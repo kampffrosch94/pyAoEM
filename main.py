@@ -9,7 +9,7 @@ import input_
 import map_
 import movement
 import start
-import utility
+import util
 
 world = ecs.World()
 
@@ -56,7 +56,7 @@ for pos in pos_list:
         break
     if movement.pos_is_free(world,pos):
         e = pcs.pop()
-        mp = e.get(utility.Position)
+        mp = e.get(util.Position)
         mp.x, mp.y = pos
 pos_list.reverse()
 for pos in pos_list:
@@ -64,7 +64,7 @@ for pos in pos_list:
         break
     if movement.pos_is_free(world,pos):
         e = enemies.pop()
-        mp = e.get(utility.Position)
+        mp = e.get(util.Position)
         mp.x, mp.y = pos
 
 
