@@ -85,7 +85,7 @@ class Rectangle:
 
 
 def _bresenham(start: typing.Tuple[int, int], end: typing.Tuple[int, int]
-             ) -> typing.List[typing.Tuple[int, int]]:
+               ) -> typing.List[typing.Tuple[int, int]]:
     """Bresenham's Line Algorithm
     Produces a list of tuples from start and end
 

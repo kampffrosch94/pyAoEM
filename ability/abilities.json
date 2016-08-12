@@ -59,5 +59,15 @@
     "dmg": {
       "scaling": 1
     }
+  },
+  "punishment": {
+    "desc": "Big AoE",
+    "range": 5,
+    "radius": 2,
+    "dmg": {
+      "base": 2,
+      "scaling": 0.7
+    },
+    "fatigue_cost": 500
   }
 }

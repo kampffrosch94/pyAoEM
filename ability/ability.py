@@ -80,7 +80,7 @@ def _fly_target_f(tmap: map_.TileMap,
         line_to_first_blocking.append(pos)
         if tmap.is_wall(pos) or (
                         pos in entity_dict and entity_dict[pos].has(
-                            game.Blocking)):
+                    game.Blocking)):
             break
     return line_to_first_blocking
 
@@ -92,8 +92,10 @@ def _create_aoe_smite_f(spread: int):
                            user_pos: util.Position,
                            goal_pos: util.Position
                            ) -> List[util.Position]:
-        # TODO use Position.circle() here
-        raise NotImplementedError
+        result = [goal_pos]  # type: List[util.Position]
+        for r in range(1, spread + 1):
+            result.extend(goal_pos.circle(r))
+        return result
 
     return aoe_smite_target_f
 
@@ -118,7 +120,8 @@ def _parse_target_f(ability_data):
             return _fly_target_f, ability_data["range"]
     else:  # regular old smite targeting
         if "radius" in ability_data:
-            return None, None
+            return _create_aoe_smite_f(ability_data["radius"]), ability_data[
+                "range"]
         else:
             return _smite_target_f, ability_data["range"]
 
