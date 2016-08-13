@@ -26,6 +26,14 @@ def create_player_creature(name, texture, pos, mhp, dmg):
     pc = create_creature(name, texture, pos, mhp, dmg)
     pc.set(Team("player_team"))
     pc.set(battle.Input(pc))
+
+    test_armour = ecs.Entity(world)
+    g = res.load_graphic("armour_gold_dragon")
+    g.z = 1
+    test_armour.set(g)
+    test_armour.set(battle.BoundPosition(pc))
+    test_armour.set(util.Position(0, 0))
+
     return pc
 
 

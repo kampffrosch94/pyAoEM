@@ -19,6 +19,7 @@ world.add_system(game.BlockingSystem())
 world.add_system(battle.EntityRenderSystem())
 world.add_system(game.TurnOrderSystem())
 world.add_system(battle.HealthRenderSystem())
+world.add_system(battle.BoundPositionSystem())
 
 factory.world = world
 

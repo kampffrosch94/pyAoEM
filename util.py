@@ -26,6 +26,10 @@ class Position:
     def copy(self):
         return Position(self.x, self.y)
 
+    def update(self, other: 'Position'):
+        """Copies Coordinates from other Position into this one."""
+        self.x, self.y = other.x, other.y
+
     def to_tuple(self) -> typing.Tuple[int, int]:
         return self.x, self.y
 

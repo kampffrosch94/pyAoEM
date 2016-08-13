@@ -23,7 +23,7 @@ canvas = res.create_graphic(0, 0, res.WINDOW_W, res.WINDOW_H)
 controlled_entity = None
 
 
-class Input(object):
+class Input:
     """Component for Player controlled entities.
     Handles game.Act Events."""
 
@@ -36,6 +36,15 @@ class Input(object):
         controlled_entity = self.entity
         while not input_.handle_event():
             pass
+
+
+class BoundPosition:
+    """The Position of the Entity witht this component is a copy of the Position
+    this Component is attached to."""
+
+    def __init__(self, attached_to: ecs.Entity):
+        self.attached_to = attached_to
+        self.priority = 0
 
 
 # render code and System
@@ -62,6 +71,18 @@ def update_graphic_pos(g: res.Graphic, mp: util.Position):
         g.y = map_.TILE_HEIGHT * (mp.y - map_.current_map.root_pos.y)
         return True
     return False
+
+
+class BoundPositionSystem(ecs.System):
+    def __init__(self):
+        super().__init__([BoundPosition, util.Position])
+
+    def process(self, entities: List[ecs.Entity]):
+        for e in entities:
+            binding = e.get(BoundPosition)  # type: BoundPosition
+            bound_pos = binding.attached_to.get(util.Position)
+            e.get(util.Position).update(bound_pos)
+
 
 
 class EntityRenderSystem(ecs.System):
@@ -131,7 +152,7 @@ def render_turn_order(es_in_to: List[ecs.Entity]):
 
 
 def render():
-    world = _world
+    world = _world  # type: ecs.World
 
     map_.current_map.update()
     battle_log.update()
@@ -142,6 +163,7 @@ def render():
     map_.current_map.render()
     battle_log.render()
 
+    world.invoke_system(BoundPositionSystem)
     world.invoke_system(EntityRenderSystem)
     world.invoke_system(HealthRenderSystem)
     render_turn_order(world.get_system_entities(game.TurnOrderSystem))
