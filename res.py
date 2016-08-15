@@ -122,9 +122,10 @@ class Graphic(object):
 
     def __repr__(self):
         if self.texture_name is not None:
-            return self.texture_name
+            return self.texture_name + "; z=%s" % self.z
         else:
-            return "Pos: (%s,%s) W: %s H: %s" % (self.x, self.y, self.w, self.h)
+            return "Pos: (%s,%s) W: %s H: %s Z: %s" % (
+                self.x, self.y, self.w, self.h, self.z)
 
 
 def _load_texture(texture_name):
