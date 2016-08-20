@@ -89,6 +89,18 @@ class Offensive:
         return "dmg: %s" % self.dmg
 
 
+class Defense:
+    def __init__(self, defense: int):
+        self.defense = defense
+        self.priority = 1
+
+    def take_damage(self, event: TakeDamage):
+        event.amount -= self.defense
+
+    def __repr__(self):
+        return "def: %s" % self.defense
+
+
 class AI:
     """Component for AI controlled entities."""
 
@@ -96,7 +108,7 @@ class AI:
         self.entity = entity
         self.priority = 0
 
-    def act(self, event: Act):
+    def act(self, _: Act):
         import movement
         movement.ai_move(self.entity)
 
@@ -114,6 +126,19 @@ class Fatigue:
 
     def __eq__(self, other: 'Fatigue'):
         return self.value == other.value
+
+
+class Inventory:
+    def __init__(self):
+        self.items = []  # type: List[ecs.Entity]
+        self.priority = 10  # items come before intrinsics
+
+    def add_item(self, item: ecs.Entity):
+        self.items.append(item)
+
+    def take_damage(self, event: TakeDamage):
+        for item in self.items:
+            item.handle_event(event)
 
 
 # Systems

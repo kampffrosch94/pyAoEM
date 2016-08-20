@@ -2,7 +2,7 @@ import battle
 import ecs
 import res
 import util
-from game import (Health, Blocking, Offensive, Fatigue, Team, AI)
+from game import (Health, Blocking, Offensive, Fatigue, Team, AI, Inventory, Defense)
 
 world = None  # type: ecs.World
 
@@ -33,6 +33,11 @@ def create_player_creature(name, texture, pos, mhp, dmg):
     test_armour.set(g)
     test_armour.set(battle.BoundPosition(pc))
     test_armour.set(util.Position(0, 0))
+    test_armour.set(Defense(1))
+
+    inv = Inventory()
+    inv.add_item(test_armour)
+    pc.set(inv)
 
     return pc
 
