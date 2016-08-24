@@ -69,5 +69,11 @@
       "scaling": 0.7
     },
     "fatigue_cost": 500
+  },
+  "rush": {
+    "desc": "Move and attack the first target.",
+    "range": 4,
+    "fly": true,
+    "move": true
   }
 }

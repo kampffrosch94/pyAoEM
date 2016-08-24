@@ -23,6 +23,9 @@ class Position:
         self.y += direction.dy
         return self
 
+    def direction_to(self, target: 'Position') -> 'Direction':
+        return Direction(target.x - self.x, target.y - self.y)
+
     def copy(self):
         return Position(self.x, self.y)
 

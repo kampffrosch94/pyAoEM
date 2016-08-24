@@ -4,6 +4,7 @@ import game
 import map_
 import util as util
 import ecs
+import movement
 
 from typing import Callable, List, Dict
 
@@ -188,6 +189,21 @@ class DmgEffect(Effect):
                 e.handle_event(game.TakeDamage(dmg_ev))
 
 
+class MoveEffect(Effect):
+    def __init__(self, effect_data):
+        pass
+
+    def fire(self, tmap, user: ecs.Entity, relevant_entities,
+             target_poss: List[util.Position]):
+        user_pos = user.get(util.Position)  # type: util.Position
+        for t_pos in target_poss:
+            d = user_pos.direction_to(t_pos)
+            movement.attack_or_move(user, d)
+
+    def __repr__(self):
+        return "%s" % self.__class__.__name__
+
+
 class FatigueCostEffect(Effect):
     """Effect which makes the user pay Fatigue for the used Ability"""
 
@@ -212,6 +228,8 @@ def _parse_effects(ability_data: Dict[str, object]
         elif name == "dmg":
             assert isinstance(effect_data, dict)
             effects.append(DmgEffect(effect_data))
+        elif name == "move":
+            effects.append(MoveEffect(effect_data))
         elif name == "fatigue_cost":
             assert isinstance(effect_data, int)
             effects.append(FatigueCostEffect(effect_data))
