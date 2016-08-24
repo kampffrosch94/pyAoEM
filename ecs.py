@@ -1,4 +1,6 @@
 import uuid
+import map_
+from typing import Optional
 
 """Entity Component System"""
 
@@ -132,6 +134,8 @@ class World(object):
 
         self.alive = True
         self.main_loop = None
+
+        self.map = None  # type: Optional[map_.TileMap]
 
     def remove_entity(self, entity):
         """Removes an Entity from the World, including all its data."""

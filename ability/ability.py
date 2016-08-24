@@ -76,7 +76,7 @@ def _fly_target_f(tmap: map_.TileMap,
                   ) -> List[util.Position]:
     line = user_pos.line_to(goal_pos)
     line_to_first_blocking = []
-    entity_dict = map_.pos_entity_dict(relevant_entities)
+    entity_dict = game.pos_entity_dict(relevant_entities)
     for pos in line[1:]:
         line_to_first_blocking.append(pos)
         if tmap.is_wall(pos) or (

@@ -2,7 +2,7 @@ import ecs
 import res
 import battle_log
 import util
-from typing import List
+from typing import List, Iterable, Dict, Tuple
 
 
 # simple components
@@ -199,3 +199,16 @@ def kill(entity):
 def game_over(victory):
     import game_over
     game_over.activate(victory)
+
+
+# util
+def pos_entity_dict(entities: Iterable[ecs.Entity]) \
+        -> Dict[Tuple[int, int], ecs.Entity]:
+    """Turns list of entities into dict: pos->entity"""
+    result = {}  # type: Dict[Tuple[int, int], ecs.Entity]
+    for e in entities:
+        pos = e.get(util.Position).to_tuple()
+        if pos in result:
+            raise ValueError("Multiple entities with same pos.")
+        result[pos] = e
+    return result

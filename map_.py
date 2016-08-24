@@ -1,10 +1,10 @@
-import res
-import dungeon_gen
-import util
-import game
-import ecs
-from typing import Iterable, Dict, Tuple
+from typing import Iterable
 
+import dungeon_gen
+import res
+import util
+
+# map display constants
 MAP_WIDTH = 20
 MAP_HEIGHT = 15
 TILE_HEIGHT = 32
@@ -17,18 +17,6 @@ default_floor = res.load_graphic("cobble_blood1")
 default_wall = res.load_graphic("lair0")
 
 
-def pos_entity_dict(entities: Iterable[ecs.Entity]) \
-        -> Dict[Tuple[int, int], ecs.Entity]:
-    """Turns list of entities into dict: pos->entity"""
-    result = {}  # type: Dict[Tuple[int, int], ecs.Entity]
-    for e in entities:
-        pos = e.get(util.Position).to_tuple()
-        if pos in result:
-            raise ValueError("Multiple entities with same pos.")
-        result[pos] = e
-    return result
-
-
 class TileMap(object):
     """A map which holds tiles.
 
@@ -36,7 +24,7 @@ class TileMap(object):
     self.tiles is a 2D grid which contains
     texturenumbers for self.textures """
 
-    def __init__(self, w, h, wall_chance):
+    def __init__(self, w, h, wall_chance=42):
         self.w = w
         self.h = h
         g_map = dungeon_gen.checked_cellular_automaton(w, h, wall_chance)

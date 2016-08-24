@@ -1,5 +1,4 @@
-import typing
-from typing import List
+from typing import List, Tuple
 
 
 class Position:
@@ -33,7 +32,7 @@ class Position:
         """Copies Coordinates from other Position into this one."""
         self.x, self.y = other.x, other.y
 
-    def to_tuple(self) -> typing.Tuple[int, int]:
+    def to_tuple(self) -> Tuple[int, int]:
         return self.x, self.y
 
     def distance(self, other: 'Position') -> int:
@@ -91,8 +90,8 @@ class Rectangle:
                 self.y <= pos.y < self.ye)
 
 
-def _bresenham(start: typing.Tuple[int, int], end: typing.Tuple[int, int]
-               ) -> typing.List[typing.Tuple[int, int]]:
+def _bresenham(start: Tuple[int, int], end: Tuple[int, int]
+               ) -> List[Tuple[int, int]]:
     """Bresenham's Line Algorithm
     Produces a list of tuples from start and end
 
