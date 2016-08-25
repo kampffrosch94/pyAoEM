@@ -11,7 +11,6 @@ TILE_HEIGHT = 32
 TILE_WIDTH = 32
 dungeon_gen.seed()
 
-current_map = None  # type: TileMap
 map_graphic = res.create_graphic(0, 0, 640, 480)
 default_floor = res.load_graphic("cobble_blood1")
 default_wall = res.load_graphic("lair0")

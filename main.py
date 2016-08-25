@@ -18,7 +18,7 @@ world.add_system(game.BlockingSystem())
 
 world.add_system(battle.EntityRenderSystem())
 world.add_system(game.TurnOrderSystem())
-world.add_system(battle.HealthRenderSystem())
+world.add_system(battle.HealthRenderSystem(world))
 world.add_system(battle.BoundPositionSystem())
 
 factory.world = world
@@ -47,10 +47,10 @@ for i in range(enemy_number):
 
 map_w,map_h = 20,15
 wall_chance = 42
-map_.current_map = map_.TileMap(map_w,map_h,wall_chance)
+world.map = map_.TileMap(map_w,map_h,wall_chance)
 
 #place the actors TODO make this a function
-pos_list = [x for x in map_.current_map.wall_map]
+pos_list = [x for x in world.map.wall_map]
 pos_list.sort(key=(lambda pos: pos[0] * map_w + pos[1]))
 for pos in pos_list:
     if len(pcs) == 0:

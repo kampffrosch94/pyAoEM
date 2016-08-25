@@ -16,7 +16,7 @@ def get_blocker_at_pos(world: ecs.World, pos: util.Position) -> ecs.Entity:
 
 
 def pos_is_free(world: ecs.World, pos: util.Position) -> bool:
-    if map_.current_map.is_wall(pos):
+    if world.map.is_wall(pos):
         return False
     target = get_blocker_at_pos(world, pos)
     if target is not None:
@@ -26,10 +26,11 @@ def pos_is_free(world: ecs.World, pos: util.Position) -> bool:
 
 def attack_or_move(entity: ecs.Entity, direction: util.Direction) -> bool:
     """returns True on success, False on failure"""
+    world = entity.world
     pos = entity.get(util.Position)
     new_pos = pos.copy()
     new_pos.move(direction)
-    if map_.current_map.is_wall(new_pos):
+    if world.map.is_wall(new_pos):
         return False
     target = get_blocker_at_pos(entity.world, new_pos)
     if target is None:  # move
@@ -57,12 +58,12 @@ def ai_move(entity: ecs.Entity) -> None:
         if not e.get(game.Team) == entity.get(game.Team):
             enemy_pos.append(e.get(util.Position).to_tuple())
 
-    d_map = map_.current_map.djikstra_map(enemy_pos)
+    d_map = world.map.djikstra_map(enemy_pos)
     pos = entity.get(util.Position).to_tuple()
     d_map[pos] += 1  # don't stand around if you can help it
     goal_pos = pos
     # neighbors doesn't include walls
-    for n_pos in map_.current_map.neighbors(pos):
+    for n_pos in world.map.neighbors(pos):
         if d_map[goal_pos] > d_map[n_pos]:
             if pos_is_free(world, n_pos):
                 goal_pos = n_pos

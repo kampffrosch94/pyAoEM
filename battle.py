@@ -14,6 +14,8 @@ import movement
 import res
 import util
 
+_world = None  # type: Optional[ecs.World]
+
 # the canvas for the scene
 
 canvas = res.create_graphic(0, 0, res.WINDOW_W, res.WINDOW_H)
@@ -49,9 +51,9 @@ class BoundPosition:
 
 # render code and System
 def render_at_pos(graphic: res.Graphic, pos):
-    if map_.current_map.is_visible(pos):
-        graphic.x = map_.TILE_WIDTH * (pos.x - map_.current_map.root_pos.x)
-        graphic.y = map_.TILE_HEIGHT * (pos.y - map_.current_map.root_pos.y)
+    if _world.map.is_visible(pos):
+        graphic.x = map_.TILE_WIDTH * (pos.x - _world.map.root_pos.x)
+        graphic.y = map_.TILE_HEIGHT * (pos.y - _world.map.root_pos.y)
         graphic.render()
 
 
@@ -66,9 +68,9 @@ def update_entity_graphic_pos(e):
 def update_graphic_pos(g: res.Graphic, mp: util.Position):
     """Updates Graphic.(x,y) according to map_pos
     returns True if graphic is visible else False"""
-    if map_.current_map.is_visible(mp):
-        g.x = map_.TILE_WIDTH * (mp.x - map_.current_map.root_pos.x)
-        g.y = map_.TILE_HEIGHT * (mp.y - map_.current_map.root_pos.y)
+    if _world.map.is_visible(mp):
+        g.x = map_.TILE_WIDTH * (mp.x - _world.map.root_pos.x)
+        g.y = map_.TILE_HEIGHT * (mp.y - _world.map.root_pos.y)
         return True
     return False
 
@@ -109,13 +111,15 @@ class EntityRenderSystem(ecs.System):
 class HealthRenderSystem(ecs.System):
     """Renders the health of actors on the screen."""
 
-    def __init__(self):
+    def __init__(self, world: ecs.World):
         super().__init__([res.Graphic, util.Position, game.Health, game.Fatigue])
+        self._world = world
 
-    def process(self, entities):
+    def process(self, entities: List[ecs.Entity]):
+        _map = self._world.map
         for e in entities:
             mp = e.get(util.Position)
-            if map_.current_map.is_visible(mp):
+            if _map.is_visible(mp):
                 hc = e.get(game.Health)
                 g = e.get(res.Graphic)
                 if hc.hp < hc.max_hp:
@@ -135,7 +139,7 @@ def render_turn_order(es_in_to: List[ecs.Entity]):
     """render_entities must be run before this to update graphic positions"""
     # place green cursor around controlled pc
     current_actor = es_in_to[0]
-    if map_.current_map.is_visible(current_actor.get(util.Position)):
+    if _world.map.is_visible(current_actor.get(util.Position)):
         if current_actor.get(game.Team).team_name == "player_team":
             g = current_actor.get(res.Graphic)
             g.render_other_texture("cursor_green")
@@ -143,7 +147,7 @@ def render_turn_order(es_in_to: List[ecs.Entity]):
     # TODO cache turnorder graphic
     for i in range(1, min(len(es_in_to), 10)):  # next 9 in turnorder
         actor = es_in_to[i]
-        if map_.current_map.is_visible(actor.get(util.Position)):
+        if _world.map.is_visible(actor.get(util.Position)):
             g = actor.get(res.Graphic)  # type: res.Graphic
             tg = res.create_text_graphic(str(i))
             tg.x, tg.y = g.x, g.y
@@ -154,13 +158,13 @@ def render_turn_order(es_in_to: List[ecs.Entity]):
 def render():
     world = _world  # type: ecs.World
 
-    map_.current_map.update()
+    world.map.update()
     battle_log.update()
 
     canvas.make_render_target()
 
     res.render_clear()
-    map_.current_map.render()
+    world.map.render()
     battle_log.render()
 
     world.invoke_system(BoundPositionSystem)
@@ -186,7 +190,7 @@ def player_move_dir_f(x, y):
 
 def map_move_dir_f(x, y):
     def f():
-        map_.current_map.root_pos.move(util.Direction(x, y))
+        _world.map.root_pos.move(util.Direction(x, y))
         render()
 
     return f
@@ -241,7 +245,7 @@ def cursor(target_f: Optional[Callable] = None,
         render_at_pos(g, pos)
 
         if target_f is not None:
-            for p in target_f(map_.current_map,
+            for p in target_f(_world.map,
                               relevant_entities,
                               start,
                               pos):
@@ -289,7 +293,7 @@ def choose_ability():
     current_actor = actors[0]
 
     # TODO tmp animation block -> proper handling
-    target_poss = ab.target(map_.current_map, actors,
+    target_poss = ab.target(_world.map, actors,
                             current_actor.get(util.Position),
                             target_pos)
     ability_graphic = res.load_graphic("ab_fire_bolt")
@@ -299,7 +303,7 @@ def choose_ability():
     res.render_present()
     time.sleep(0.3)
 
-    ab.fire(map_.current_map, actors, current_actor, target_pos)
+    ab.fire(_world.map, actors, current_actor, target_pos)
     render()
     return True  # end turn after using ability
 
@@ -308,7 +312,7 @@ def choose_ability():
 def regen_map():
     map_w, map_h = 20, 15
     wall_chance = 42
-    map_.current_map = map_.TileMap(map_w, map_h, wall_chance)
+    _world.map = map_.TileMap(map_w, map_h, wall_chance)
     render()
 
 
@@ -360,9 +364,6 @@ def bind_keys():
     input_.add_handler(look, sdl2.SDLK_COMMA)
 
     input_.add_handler(choose_ability, sdl2.SDLK_a)
-
-
-_world = None
 
 
 def activate(world):
