@@ -182,10 +182,15 @@ def render():
 
 # Keybindings
 
+def entity_move_and_pay_fatigue(e: ecs.Entity, d):
+    e.handle_event(game.PayFatigue(100))
+    return movement.attack_or_move(e, d)
+
 
 def player_move_dir_f(x, y):
     d = util.Direction(x, y)
-    return lambda: movement.attack_or_move(controlled_entity, d)
+    # lazy evaluation of controlled_entity
+    return lambda: entity_move_and_pay_fatigue(controlled_entity, d)
 
 
 def map_move_dir_f(x, y):

@@ -3,7 +3,6 @@ import operator
 import battle_log
 import ecs
 import game
-import map_
 import util
 
 
@@ -36,7 +35,6 @@ def attack_or_move(entity: ecs.Entity, direction: util.Direction) -> bool:
     if target is None:  # move
         mp = entity.get(util.Position)
         mp.move(direction)
-        entity.handle_event(game.PayFatigue(100))
         return True
     elif target.has(game.Health) and not entity.get(game.Team) == target.get(game.Team):
         battle_log.add_msg("%s hits %s." % (entity.name, target.name))
@@ -44,7 +42,6 @@ def attack_or_move(entity: ecs.Entity, direction: util.Direction) -> bool:
         entity.handle_event(deal_dmg_event)
         take_dmg_event = game.TakeDamage(deal_dmg_event)
         target.handle_event(take_dmg_event)
-        entity.handle_event(game.PayFatigue(100))
         return True
     return False
 
@@ -74,9 +71,8 @@ def ai_move(entity: ecs.Entity) -> None:
 
     if goal_pos == pos:
         print("%s waits because it doesn't want to move." % entity.name)
-        entity.handle_event(game.PayFatigue(100))
     else:
         d = tuple(map(operator.sub, goal_pos, pos))
         if not attack_or_move(entity, util.Direction(*d)):
             print("%s waits because it can't move." % entity.name)
-            entity.handle_event(game.PayFatigue(100))
+    entity.handle_event(game.PayFatigue(100))

@@ -74,6 +74,7 @@
     "desc": "Move and attack the first target.",
     "range": 4,
     "fly": true,
-    "move": true
+    "move": true,
+    "fatigue_cost": 150
   }
 }
