@@ -25,7 +25,7 @@ canvas = res.create_graphic(0, 0, res.WINDOW_W, res.WINDOW_H)
 controlled_entity = None
 
 
-class Input:
+class Input(game.Component):
     """Component for Player controlled entities.
     Handles game.Act Events."""
 

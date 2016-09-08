@@ -1,8 +1,12 @@
 import uuid
+import logging
+
 import map_
 from typing import Optional
 
 """Entity Component System"""
+
+event_logger = logging.getLogger("Event")
 
 
 class Entity(object):
@@ -23,6 +27,8 @@ class Entity(object):
         return result
 
     def __repr__(self):
+        if hasattr(self, "name"):
+            return "Entity(%s)" % self.name
         return "Entity(id = %r)" % self.id
 
     def __iter__(self):
@@ -45,9 +51,12 @@ class Entity(object):
             yield c
 
     def handle_event(self, event):
+        event_logger.debug("%r handles %s" % (self, event))
         h_name = event.handler_name
         for c in self.event_handlers(event):
+            event_logger.debug("component: %r handles %s" % (c, event))
             getattr(c, h_name)(event)
+        event_logger.debug("result: %s" % event)
 
     def __getattr__(self, name):
         """Gets the component data related to the Entity."""
@@ -57,8 +66,8 @@ class Entity(object):
             return self.world
         if (not name in self.world.componenttypes) or (
                 not self in self.world.components[name]):
-            raise AttributeError("object '%r' has no attribute '%r'" % \
-                                 (self, name))
+            raise AttributeError("entity '%r' has no attribute '%r'" % \
+                                 (self.id, name))
         return self.world.components[name][self]
 
     def __setattr__(self, name, value):

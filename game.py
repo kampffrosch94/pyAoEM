@@ -23,40 +23,51 @@ class Team:
 
 
 # Events
+class Event:
+    def __repr__(self):
+        if hasattr(self, "amount"):
+            return "%s(amount=%s)" % (self.__class__.__name__, self.amount)
+        return "%s()" % self.__class__.__name__
 
-class TakeDamage:
+
+class TakeDamage(Event):
     def __init__(self, deal_dmg_event):
         self.amount = deal_dmg_event.amount
         self.handler_name = "take_damage"
 
 
-class DealDamage:
+class DealDamage(Event):
     def __init__(self, amount=0):
         self.amount = amount
         self.handler_name = "deal_damage"
 
 
-class GetHealed:
+class GetHealed(Event):
     def __init__(self, amount):
         self.amount = amount
         self.handler_name = "get_healed"
 
 
-class Act:
+class Act(Event):
     """"Event which says the entity should act."""
+
     def __init__(self):
         self.handler_name = "act"
 
 
-class PayFatigue:
+class PayFatigue(Event):
     def __init__(self, amount: int):
         self.amount = amount
         self.handler_name = "pay_fatigue"
 
 
 # Eventhandling components
+class Component:
+    def __repr__(self):
+        return "%s()" % self.__class__.__name__
 
-class Health:
+
+class Health(Component):
     def __init__(self, entity, max_hp):
         self.entity = entity
         self.max_hp = max_hp
@@ -74,10 +85,10 @@ class Health:
             self.hp = self.max_hp
 
     def __repr__(self):
-        return "%s/%s" % (self.hp, self.max_hp)
+        return "%s(%s/%s)" % (self.__class__.__name__, self.hp, self.max_hp)
 
 
-class Offensive:
+class Offensive(Component):
     def __init__(self, dmg):
         self.dmg = dmg
         self.priority = 0
@@ -86,10 +97,10 @@ class Offensive:
         event.amount += self.dmg
 
     def __repr__(self):
-        return "dmg: %s" % self.dmg
+        return "%s(dmg: %s)" % (self.__class__.__name__, self.dmg)
 
 
-class Defense:
+class Defense(Component):
     def __init__(self, defense: int):
         self.defense = defense
         self.priority = 1
@@ -98,10 +109,10 @@ class Defense:
         event.amount -= self.defense
 
     def __repr__(self):
-        return "def: %s" % self.defense
+        return "%s(%s)" % (self.__class__.__name__, self.defense)
 
 
-class AI:
+class AI(Component):
     """Component for AI controlled entities."""
 
     def __init__(self, entity):
@@ -113,7 +124,7 @@ class AI:
         movement.ai_move(self.entity)
 
 
-class Fatigue:
+class Fatigue(Component):
     def __init__(self, value=0):
         self.value = value
         self.priority = 0
@@ -122,13 +133,13 @@ class Fatigue:
         self.value += event.amount
 
     def __repr__(self):
-        return "%s" % self.value
+        return "%s(%s)" % (self.__class__.__name__, self.value)
 
     def __eq__(self, other: 'Fatigue'):
         return self.value == other.value
 
 
-class Inventory:
+class Inventory(Component):
     def __init__(self):
         self.items = []  # type: List[ecs.Entity]
         self.priority = 10  # items come before intrinsics
@@ -158,6 +169,7 @@ class TurnOrderSystem(ecs.System):
     """Orders all the entities which can act in TurnOrder
     the actual turn is executed from the battle.main_loop() in
     active_take_turn()"""
+
     def __init__(self):
         ecs.System.__init__(self, [Fatigue, Team])
 

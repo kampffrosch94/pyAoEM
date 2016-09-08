@@ -9,3 +9,4 @@ dist
 sdl2/
 .idea/*
 .mypy*
+logs/*
