@@ -77,7 +77,10 @@ class Health(Component):
     def take_damage(self, event: TakeDamage):
         self.hp -= event.amount
         if self.hp <= 0:
+            event.amount = abs(self.hp)
             kill(self.entity)
+        else:
+            event.amount = 0
 
     def get_healed(self, event: GetHealed):
         self.hp += event.amount
