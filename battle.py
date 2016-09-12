@@ -86,7 +86,6 @@ class BoundPositionSystem(ecs.System):
             e.get(util.Position).update(bound_pos)
 
 
-
 class EntityRenderSystem(ecs.System):
     """Renders enitities on the screen.
     Converts their MapPos into an appropriate Grapic.(x,y)"""
@@ -112,7 +111,8 @@ class HealthRenderSystem(ecs.System):
     """Renders the health of actors on the screen."""
 
     def __init__(self, world: ecs.World):
-        super().__init__([res.Graphic, util.Position, game.Health, game.Fatigue])
+        super().__init__(
+            [res.Graphic, util.Position, game.Health, game.Fatigue])
         self._world = world
 
     def process(self, entities: List[ecs.Entity]):
@@ -183,8 +183,10 @@ def render():
 # Keybindings
 
 def entity_move_and_pay_fatigue(e: ecs.Entity, d):
-    e.handle_event(game.PayFatigue(100))
-    return movement.attack_or_move(e, d)
+    result = movement.attack_or_move(e, d)
+    if result:
+        e.handle_event(game.PayFatigue(100))
+    return result
 
 
 def player_move_dir_f(x, y):

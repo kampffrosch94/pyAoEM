@@ -1,5 +1,8 @@
 """Holds and Renders the Messagelog in battles."""
 import res
+import logging
+
+msg_logger = logging.getLogger("BattleLog")
 
 messages = []
 
@@ -7,12 +10,15 @@ graphic = res.create_graphic(x=0, y=480, w=640, h=160)
 
 dirty = False
 
+
 def add_msg(msg):
+    msg_logger.debug(msg)
     global dirty
     messages.append(msg)
     if len(messages) > 9:
         del messages[0]
     dirty = True
+
 
 def update():
     global dirty
@@ -28,6 +34,7 @@ def update():
             g.destroy()
         res.reset_render_target()
         dirty = False
+
 
 def render():
     graphic.render()

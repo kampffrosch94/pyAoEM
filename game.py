@@ -3,6 +3,9 @@ import res
 import battle_log
 import util
 from typing import List, Iterable, Dict, Tuple
+import logging
+
+turn_order_logger = logging.getLogger("TurnOrder")
 
 
 # simple components
@@ -184,8 +187,8 @@ class TurnOrderSystem(ecs.System):
 def active_take_turn(turn_order: List[ecs.Entity]):
     """Lets the actor first in the turnorder act."""
     actor = turn_order[0]
-    # TODO debuglog this
-    # print("%s turn" % turn_order[0].name)
+
+    turn_order_logger.debug("%r turn" % turn_order[0].name)
 
     # only costly actions end the turn
     start_fatigue = actor.get(Fatigue).value
