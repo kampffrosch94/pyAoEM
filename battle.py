@@ -3,7 +3,6 @@ from typing import Callable, Optional, List
 
 import sdl2
 
-import ability
 import battle_log
 import ecs
 import game
@@ -284,14 +283,15 @@ def look():
 def choose_ability():
     m_head = "Abilities."
     # TODO use abilities of current actor
-    m_choices = list(ability.abilities.keys())
+    abilities = controlled_entity.get(game.Abilities).container
+    m_choices = [a.name for a in abilities]
     m = menu.ChoiceMenu(200, 150, 300, 200, m_head, m_choices, cancel=True)
     choice = m.choose()
     bind_keys()
     render()
     if choice is None:
         return False  # dont end turn if selection was cancelled
-    ab = ability.abilities[m_choices[choice]]
+    ab = abilities[choice]
 
     actors = _world.get_system_entities(game.TurnOrderSystem)
     target_pos = cursor(ab.target, actors, ab.range_)

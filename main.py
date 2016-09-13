@@ -1,5 +1,5 @@
-import random
 import logging
+import random
 
 import battle
 import battle_log
@@ -11,6 +11,7 @@ import map_
 import movement
 import start
 import util
+import ability
 
 logging.basicConfig(filename="logs/main.log", level=logging.DEBUG, filemode="w")
 
@@ -29,6 +30,9 @@ player_number = 3  # random.randint(1, 3)
 enemy_number = random.randint(5, 8)
 pcs = []
 enemies = []
+
+abils = list(ability.abilities.values())
+
 for i in range(player_number):
     player_char = factory.create_player_creature(
         name="Player " + str(i + 1),
@@ -36,6 +40,15 @@ for i in range(player_number):
         pos=(2, 2),
         mhp=10,
         dmg=2)
+
+    abc = player_char.get(game.Abilities)  # type: game.Abilities
+    ab_count = random.randint(1, len(abils))
+    picks = set()
+    for x in range(ab_count):
+        picks.add(random.randint(0, len(abils) - 1))
+    for p in picks:
+        abc.add(abils[p])
+
     pcs.append(player_char)
 
 for i in range(enemy_number):

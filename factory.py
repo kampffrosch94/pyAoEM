@@ -2,7 +2,8 @@ import battle
 import ecs
 import res
 import util
-from game import (Health, Blocking, Offensive, Fatigue, Team, AI, Inventory, Defense)
+from game import (Health, Blocking, Offensive, Fatigue, Team, AI, Inventory,
+                  Defense, Abilities)
 
 world = None  # type: ecs.World
 
@@ -19,6 +20,7 @@ def create_creature(name, texture, pos, mhp, dmg):
     creature.set(Health(creature, mhp))
     creature.set(Offensive(dmg))
     creature.set(Fatigue())
+    creature.set(Abilities())
     return creature
 
 

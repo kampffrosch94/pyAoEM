@@ -2,6 +2,7 @@ import ecs
 import res
 import battle_log
 import util
+import ability
 from typing import List, Iterable, Dict, Tuple
 import logging
 
@@ -68,6 +69,14 @@ class PayFatigue(Event):
 class Component:
     def __repr__(self):
         return "%s()" % self.__class__.__name__
+
+
+class Abilities(Component):
+    def __init__(self):
+        self.container = []  # type: List[ability.Ability]
+
+    def add(self, ab: ability.Ability):
+        self.container.append(ab)
 
 
 class Health(Component):
