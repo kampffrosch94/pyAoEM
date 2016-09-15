@@ -1,10 +1,11 @@
+import logging
+from typing import List, Iterable, Dict, Tuple
+
+import ability
+import battle_log
 import ecs
 import res
-import battle_log
 import util
-import ability
-from typing import List, Iterable, Dict, Tuple
-import logging
 
 turn_order_logger = logging.getLogger("TurnOrder")
 
@@ -125,18 +126,6 @@ class Defense(Component):
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.defense)
-
-
-class AI(Component):
-    """Component for AI controlled entities."""
-
-    def __init__(self, entity):
-        self.entity = entity
-        self.priority = 0
-
-    def act(self, _: Act):
-        import movement
-        movement.ai_move(self.entity)
 
 
 class Fatigue(Component):

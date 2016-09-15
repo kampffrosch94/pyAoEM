@@ -2,8 +2,9 @@ import battle
 import ecs
 import res
 import util
-from game import (Health, Blocking, Offensive, Fatigue, Team, AI, Inventory,
+from game import (Health, Blocking, Offensive, Fatigue, Team, Inventory,
                   Defense, Abilities)
+from ai import AI
 
 world = None  # type: ecs.World
 
