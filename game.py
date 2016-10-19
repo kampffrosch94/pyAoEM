@@ -1,5 +1,5 @@
 import logging
-from typing import List, Iterable, Dict, Tuple
+from typing import List, Iterable, Dict, Tuple, Iterator
 
 import ability
 import battle_log
@@ -228,3 +228,11 @@ def pos_entity_dict(entities: Iterable[ecs.Entity]) \
             raise ValueError("Multiple entities with same pos.")
         result[pos] = e
     return result
+
+
+def compute_enemies(entity: ecs.Entity) -> Iterator[ecs.Entity]:
+    world = entity.world
+    acting_es = world.get_system_entities(TurnOrderSystem)
+    for e in acting_es:
+        if not e.get(Team) == entity.get(Team):
+            yield e

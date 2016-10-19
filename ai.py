@@ -10,22 +10,21 @@ import movement
 class AI(Component):
     """Component for AI controlled entities."""
 
-    def __init__(self, entity):
+    def __init__(self, entity: ecs.Entity):
         self.entity = entity
         self.priority = 0
 
     def act(self, _: Act):
+        # TODO decide wether to activate an ability or move
         ai_move(self.entity)
 
 
 def ai_move(entity: ecs.Entity) -> None:
     world = entity.world
     team = entity.get(game.Team)
-    acting_es = world.get_system_entities(game.TurnOrderSystem)
-    enemy_pos = []
-    for e in acting_es:
-        if not e.get(game.Team) == entity.get(game.Team):
-            enemy_pos.append(e.get(util.Position).to_tuple())
+
+    enemy_pos = [e.get(util.Position).to_tuple() for e in
+                 game.compute_enemies(entity)]
 
     d_map = world.map.djikstra_map(enemy_pos)
     pos = entity.get(util.Position).to_tuple()
