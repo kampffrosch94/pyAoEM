@@ -26,6 +26,14 @@ class Ability:
         assert len(effects) is not 0
         self._effects = effects
 
+    def __repr__(self):
+        return "\n %s : %s\n Range: %s\n Targeting_f: %s\n Effects: \n   %s" % (
+            self.__class__.__name__,
+            self.name,
+            self.range_,
+            self.target,
+            self._effects)
+
     def fire(self,
              tmap: map_.TileMap,
              relevant_entities: List[ecs.Entity],
@@ -40,13 +48,15 @@ class Ability:
             # from the list while it is iterated over
             effect.fire(tmap, user, relevant_entities[:], target_poss)
 
-    def __repr__(self):
-        return "\n %s : %s\n Range: %s\n Targeting_f: %s\n Effects: \n   %s" % (
-            self.__class__.__name__,
-            self.name,
-            self.range_,
-            self.target,
-            self._effects)
+    def in_range(self, tmap: map_.TileMap, relevant_entities: List[ecs.Entity],
+                 user_pos: util.Position, goal_pos: util.Position):
+        if user_pos.distance(goal_pos) <= self.range_:
+            target_poss = self.target(tmap, relevant_entities,
+                                      user_pos,
+                                      goal_pos)
+            if goal_pos in target_poss:
+                return True
+        return False
 
 
 # noinspection PyUnusedLocal
@@ -81,7 +91,7 @@ def _fly_target_f(tmap: map_.TileMap,
         line_to_first_blocking.append(pos)
         if tmap.is_wall(pos) or (
                         pos in entity_dict and entity_dict[pos].has(
-                    game.Blocking)):
+                            game.Blocking)):
             break
     return line_to_first_blocking
 

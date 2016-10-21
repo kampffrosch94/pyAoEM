@@ -60,5 +60,6 @@ class TileMap(object):
 
         res.reset_render_target()
 
-    def render(self):
+    @staticmethod
+    def render():
         map_graphic.render()

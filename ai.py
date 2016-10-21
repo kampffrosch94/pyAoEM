@@ -15,8 +15,19 @@ class AI(Component):
         self.priority = 0
 
     def act(self, _: Act):
+        e = self.entity
+        world = e.world
+        e_pos = e.get(util.Position)
         # TODO decide wether to activate an ability or move
-        ai_move(self.entity)
+        abilities = e.get(game.Abilities).container
+        blocking_es = world.get_system_entities(game.BlockingSystem)
+        enemies = game.compute_enemies(e)
+        for g_pos, enemy in game.pos_entity_dict(enemies).items():
+            for ability in abilities:
+                if ability.in_range(world.map, blocking_es, e_pos, g_pos):
+                    ability.fire(world.map, blocking_es, e, g_pos)
+                    return
+        ai_move(e)
 
 
 def ai_move(entity: ecs.Entity) -> None:

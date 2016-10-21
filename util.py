@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Iterator
 
 
 class Position:
@@ -60,6 +60,10 @@ class Position:
             circle_list.append(Position(x, y))
 
         return circle_list
+
+    def area_around(self, radius: int) -> Iterator['Position']:
+        for i in range(1, radius + 1):
+            yield from self.circle(i)
 
     def neighbors(self):
         """Returns the 8 surrounding Positions of this Position."""

@@ -219,11 +219,11 @@ def game_over(victory):
 
 # util
 def pos_entity_dict(entities: Iterable[ecs.Entity]) \
-        -> Dict[Tuple[int, int], ecs.Entity]:
+        -> Dict[util.Position, ecs.Entity]:
     """Turns list of entities into dict: pos->entity"""
-    result = {}  # type: Dict[Tuple[int, int], ecs.Entity]
+    result = {}  # type: Dict[util.Position, ecs.Entity]
     for e in entities:
-        pos = e.get(util.Position).to_tuple()
+        pos = e.get(util.Position)
         if pos in result:
             raise ValueError("Multiple entities with same pos.")
         result[pos] = e

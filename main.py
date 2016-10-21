@@ -58,6 +58,8 @@ for i in range(enemy_number):
         pos=(15, 10),
         mhp=5,
         dmg=2)
+    abe = enemy.get(game.Abilities)
+    abe.add(ability.abilities["throw stone"])
     enemies.append(enemy)
 
 map_w, map_h = 20, 15
