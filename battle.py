@@ -3,6 +3,7 @@ from typing import Callable, Optional, List
 
 import sdl2
 
+import animation
 import battle_log
 import ecs
 import game
@@ -64,7 +65,7 @@ def update_entity_graphic_pos(e):
     return update_graphic_pos(g, mp)
 
 
-def update_graphic_pos(g: res.Graphic, mp: util.Position):
+def update_graphic_pos(g: res.Graphic, mp: util.Position):  # TODO move to map
     """Updates Graphic.(x,y) according to map_pos
     returns True if graphic is visible else False"""
     if _world.map.is_visible(mp):
@@ -154,7 +155,13 @@ def render_turn_order(es_in_to: List[ecs.Entity]):
             tg.destroy()
 
 
-def render():
+def render_animation(ani: animation.Animation):
+    for pos in ani.positions:
+        update_graphic_pos(ani.graphic, pos)
+        ani.graphic.render()
+
+
+def update():
     world = _world  # type: ecs.World
 
     world.map.update()
@@ -175,6 +182,11 @@ def render():
 
     res.reset_render_target()
 
+    canvas.render()
+    res.render_present()  # TODO: might be wrong usage
+
+
+def render():
     canvas.render()
     res.render_present()
 
@@ -304,11 +316,8 @@ def choose_ability():
                             current_actor.get(util.Position),
                             target_pos)
     ability_graphic = res.load_graphic("ab_fire_bolt")
-    for pos in target_poss:
-        update_graphic_pos(ability_graphic, pos)
-        ability_graphic.render()
-    res.render_present()
-    time.sleep(0.3)
+    _world.animation_q.append(
+        animation.Animation(ability_graphic, target_poss[:]))
 
     ab.fire(_world.map, actors, current_actor, target_pos)
     render()
@@ -382,5 +391,17 @@ def activate(world):
 
 def main_loop():
     _world.invoke_system(game.TurnOrderSystem)
-    render()
+    update()
+    if len(_world.animation_q) > 0:
+        canvas.make_render_target()
+        for ani in _world.animation_q:
+            render_animation(ani)
+        res.reset_render_target()
+        render()
+        time.sleep(0.3)
+        _world.animation_q.clear()
+        update()
+        render()
+    else:
+        render()
     game.active_take_turn(_world.get_system_entities(game.TurnOrderSystem))

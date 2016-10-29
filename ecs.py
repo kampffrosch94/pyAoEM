@@ -1,5 +1,6 @@
 import uuid
 import logging
+import animation
 
 import map_
 from typing import Optional
@@ -145,6 +146,7 @@ class World(object):
         self.main_loop = None
 
         self.map = None  # type: Optional[map_.TileMap]
+        self.animation_q = []  # type: List[animation.Animation]
 
     def remove_entity(self, entity):
         """Removes an Entity from the World, including all its data."""
