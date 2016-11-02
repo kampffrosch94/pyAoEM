@@ -17,7 +17,8 @@
     "dmg": {
       "base": 2,
       "scaling": 0.7
-    }
+    },
+    "animation": "ab_fire_bolt"
   },
   "flamethrower": {
     "desc": "Roasts anything in it's path.",
@@ -26,7 +27,8 @@
     "dmg": {
       "base": 3
     },
-    "fatigue_cost": 200
+    "fatigue_cost": 200,
+    "animation": "ab_fire_bolt"
   },
   "hand of flame": {
     "desc": "Let flames burst forth in an arc.",
@@ -34,7 +36,8 @@
     "spread": 1,
     "dmg": {
       "base": 3
-    }
+    },
+    "animation": "ab_fire_bolt"
   },
   "flash_smog": {
     "desc": "A quickly dissipating smog. Damages the lungs.",
@@ -68,7 +71,8 @@
       "base": 2,
       "scaling": 0.7
     },
-    "fatigue_cost": 500
+    "fatigue_cost": 500,
+    "animation": "ab_fire_bolt"
   },
   "rush": {
     "desc": "Move and attack the first target.",

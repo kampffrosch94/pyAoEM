@@ -8,7 +8,7 @@ import movement
 import res
 import animation
 
-from typing import Callable, List, Dict
+from typing import Callable, List, Dict, Optional
 
 
 class Ability:
@@ -21,13 +21,14 @@ class Ability:
                       util.Position,
                       util.Position],
                      List[util.Position]],
-                 effects: List['Effect']) -> None:
+                 effects: List['Effect'],
+                 animation_g: Optional[res.Graphic]) -> None:
         self.name = name
         self.range_ = range_
         self.target = targeting_f
         assert len(effects) is not 0
         self._effects = effects
-        self.graphic = res.load_graphic("todo")
+        self.animation_g = animation_g or res.load_graphic("todo")
 
     def __repr__(self):
         return "\n %s : %s\n Range: %s\n Targeting_f: %s\n Effects: \n   %s" % (
@@ -52,7 +53,7 @@ class Ability:
             effect.fire(tmap, user, relevant_entities[:], target_poss)
 
         user.world.animation_q.append(
-            animation.Animation(self.graphic, target_poss))
+            animation.Animation(self.animation_g, target_poss))
 
     def in_range(self, tmap: map_.TileMap, relevant_entities: List[ecs.Entity],
                  user_pos: util.Position, goal_pos: util.Position):
@@ -265,7 +266,13 @@ def _parse_abilities(abilities_data: Dict[str, Dict[str, object]]
 
         # find out which effects (plural) the ability has
         effects = _parse_effects(ability_data)
-        parsed_abilities[name] = Ability(name, range_, targeting_f, effects)
+
+        animation_g = None
+        if "animation" in ability_data:
+            animation_g = res.load_graphic(ability_data["animation"])
+
+        parsed_abilities[name] = Ability(name, range_, targeting_f, effects,
+                                         animation_g)
 
     return parsed_abilities
 
