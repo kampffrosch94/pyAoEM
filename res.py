@@ -2,7 +2,7 @@ import sdl2
 import sdl2.sdlimage as sdlimage
 import sdl2.sdlttf as sdlttf
 import atexit
-from typing import Tuple
+from typing import Tuple, Dict, ByteString, AnyStr
 
 WINDOW_W = 640
 WINDOW_H = 640
@@ -37,9 +37,10 @@ img_paths = {
     "cursor": b"gfx/cursor.png",
     "ray": b"gfx/ray.png",
     "ab_fire_bolt": b"gfx/abilities/bolt04.png",
+    "ab_throw_stone": b"gfx/abilities/stone0.png",
     "armour_gold_dragon": b"gfx/item/armour/dragonarm_gold.png",
     "todo": b"gfx/todo.png",
-}
+}  # type: Dict[AnyStr, ByteString]
 
 loaded_textures = {}  # type: Dict[str, sdl2.SDL_Texture]
 loaded_textures_properties = {}  # type: Dict[str, Tuple[int, int, int, int]]

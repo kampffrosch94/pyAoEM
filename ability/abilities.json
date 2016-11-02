@@ -7,7 +7,8 @@
       "base": 1,
       "scaling": 1
     },
-    "fatigue_cost": 100
+    "fatigue_cost": 100,
+    "animation": "ab_throw_stone"
   },
   "fireball": {
     "desc": "Hits first target in the way and explodes.",
