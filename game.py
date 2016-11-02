@@ -204,18 +204,6 @@ def kill(entity):
     entity.get(res.Graphic).corpsify()
     battle_log.add_msg("%s dies." % entity.name)
 
-    # check game over
-    entities = entity.world.get_system_entities(TurnOrderSystem)
-    if all(entities[0].get(Team) == e.get(Team) for e in entities):
-        game_over(entities[0].get(Team).team_name == "player_team")
-
-
-# transitions
-# TODO make a proper game_over screen and cleanup
-def game_over(victory):
-    import game_over
-    game_over.activate(victory)
-
 
 # util
 def pos_entity_dict(entities: Iterable[ecs.Entity]) \

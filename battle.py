@@ -13,6 +13,7 @@ import menu
 import movement
 import res
 import util
+import game_over
 
 _world = None  # type: Optional[ecs.World]
 
@@ -397,3 +398,9 @@ def main_loop():
     else:
         render()
     game.active_take_turn(_world.get_system_entities(game.TurnOrderSystem))
+
+    # check game over
+    entities = _world.get_system_entities(game.TurnOrderSystem)
+    if all(entities[0].get(game.Team) == e.get(game.Team) for e in entities):
+        game_over.activate(
+            entities[0].get(game.Team).team_name == "player_team")
