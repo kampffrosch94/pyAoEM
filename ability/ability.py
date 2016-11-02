@@ -5,6 +5,8 @@ import map_
 import util as util
 import ecs
 import movement
+import res
+import animation
 
 from typing import Callable, List, Dict
 
@@ -25,6 +27,7 @@ class Ability:
         self.target = targeting_f
         assert len(effects) is not 0
         self._effects = effects
+        self.graphic = res.load_graphic("todo")
 
     def __repr__(self):
         return "\n %s : %s\n Range: %s\n Targeting_f: %s\n Effects: \n   %s" % (
@@ -47,6 +50,9 @@ class Ability:
             # send copy of relevant_entities, else one dies and vanishes
             # from the list while it is iterated over
             effect.fire(tmap, user, relevant_entities[:], target_poss)
+
+        user.world.animation_q.append(
+            animation.Animation(self.graphic, target_poss))
 
     def in_range(self, tmap: map_.TileMap, relevant_entities: List[ecs.Entity],
                  user_pos: util.Position, goal_pos: util.Position):
@@ -91,7 +97,7 @@ def _fly_target_f(tmap: map_.TileMap,
         line_to_first_blocking.append(pos)
         if tmap.is_wall(pos) or (
                         pos in entity_dict and entity_dict[pos].has(
-                            game.Blocking)):
+                    game.Blocking)):
             break
     return line_to_first_blocking
 

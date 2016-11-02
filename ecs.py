@@ -13,7 +13,7 @@ event_logger = logging.getLogger("Event")
 class Entity(object):
     def __init__(self, world):
         self.id = hash(uuid.uuid4())
-        self.world = world
+        self.world = world  # type: World
         world.entities.append(self)
 
     def __hash__(self):

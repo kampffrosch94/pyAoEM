@@ -1,10 +1,8 @@
 import operator
 
-import animation
 import ecs
 import game
 import movement
-import res
 import util
 from game import Component, Act
 
@@ -27,12 +25,6 @@ class AI(Component):
         for g_pos, enemy in game.pos_entity_dict(enemies).items():
             for ability in abilities:
                 if ability.in_range(world.map, blocking_es, e_pos, g_pos):
-                    # ghetto animation
-                    ability_graphic = res.load_graphic("ab_fire_bolt")
-                    ab_poss = ability.target(world.map, blocking_es, e_pos,
-                                             g_pos)
-                    world.animation_q.append(
-                        animation.Animation(ability_graphic, ab_poss))
                     ability.fire(world.map, blocking_es, e, g_pos)
                     return
         ai_move(e)

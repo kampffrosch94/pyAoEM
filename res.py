@@ -38,6 +38,7 @@ img_paths = {
     "ray": b"gfx/ray.png",
     "ab_fire_bolt": b"gfx/abilities/bolt04.png",
     "armour_gold_dragon": b"gfx/item/armour/dragonarm_gold.png",
+    "todo": b"gfx/todo.png",
 }
 
 loaded_textures = {}  # type: Dict[str, sdl2.SDL_Texture]

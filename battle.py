@@ -311,14 +311,6 @@ def choose_ability():
         return False  # dont end turn if cursor() was cancelled
     current_actor = actors[0]
 
-    # TODO tmp animation block -> proper handling
-    target_poss = ab.target(_world.map, actors,
-                            current_actor.get(util.Position),
-                            target_pos)
-    ability_graphic = res.load_graphic("ab_fire_bolt")
-    _world.animation_q.append(
-        animation.Animation(ability_graphic, target_poss[:]))
-
     ab.fire(_world.map, actors, current_actor, target_pos)
     render()
     return True  # end turn after using ability
