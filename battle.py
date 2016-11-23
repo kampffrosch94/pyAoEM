@@ -384,7 +384,6 @@ def activate(world):
 
 def main_loop():
     _world.invoke_system(game.TurnOrderSystem)
-    update()
     if len(_world.animation_q) > 0:
         canvas.make_render_target()
         for ani in _world.animation_q:
@@ -396,6 +395,7 @@ def main_loop():
         update()
         render()
     else:
+        update()
         render()
     game.active_take_turn(_world.get_system_entities(game.TurnOrderSystem))
 
