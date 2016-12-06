@@ -176,15 +176,13 @@ class BlockingSystem(ecs.System):
 
 
 class TurnOrderSystem(ecs.System):
-    """Orders all the entities which can act in TurnOrder
-    the actual turn is executed from the battle.main_loop() in
-    active_take_turn()"""
+    """Holds entities which can take a turn."""
 
     def __init__(self):
         ecs.System.__init__(self, [Fatigue, Team])
 
     def process(self, entities):
-        entities.sort(key=(lambda e: e.get(Fatigue).value))
+        raise NotImplementedError("This should not be used.")
 
 
 class DeathSystem(ecs.System):
@@ -195,7 +193,7 @@ class DeathSystem(ecs.System):
 
     def process(self, entities):
         game_logger.debug("Killing: %s" % entities)
-        for entity in entities[:]:  # copy cause we modify
+        for entity in entities:
             entity.delete(Blocking)
             entity.delete(Fatigue)
             entity.get(res.Graphic).corpsify()
@@ -203,10 +201,11 @@ class DeathSystem(ecs.System):
 
 
 # transformations
-def active_take_turn(turn_order: List[ecs.Entity]):
+def active_take_turn(world: ecs.World):
     """Lets the actor first in the turnorder act."""
+    turn_order = world.get_system_entities(TurnOrderSystem)
+    turn_order.sort(key=(lambda e: e.get(Fatigue).value))
     actor = turn_order[0]
-    world = actor.world
 
     turn_order_logger.debug("%r turn" % turn_order[0].name)
 
@@ -220,7 +219,7 @@ def active_take_turn(turn_order: List[ecs.Entity]):
 
     turn_order_logger.debug("%s turn done" % actor)
 
-    # move actor to the end of the turnorder lis
+    # move actor to the end of the turnorder list
     try:
         turn_order.remove(actor)
         turn_order.append(actor)

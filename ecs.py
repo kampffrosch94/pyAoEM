@@ -13,7 +13,7 @@ ecs_logger = logging.getLogger("ECS")
 ecs_logger.disabled = True
 
 
-class Entity(object):
+class Entity:
     def __init__(self, world):
         self.id = hash(uuid.uuid4())
         self.world = world  # type: World
@@ -207,7 +207,7 @@ class World(object):
         se = self.system_entities[key]
         ecs_logger.debug(se)
         if s.active:
-            s.process(se)
+            s.process(se[:])  # copy to prevent modification bugs
 
     def end(self):
         self.alive = False
@@ -224,7 +224,7 @@ class World(object):
                 system.destroy()
 
 
-class System(object):
+class System:
     """System which runs the code in a world.
 
     componenttypes is a list of components an entity must have to

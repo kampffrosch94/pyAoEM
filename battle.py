@@ -387,7 +387,6 @@ def activate(world):
 
 def main_loop():
     logger.debug("Enter main_loop")
-    _world.invoke_system(game.TurnOrderSystem)
     if len(_world.animation_q) > 0:
         canvas.make_render_target()
         for ani in _world.animation_q:
@@ -401,7 +400,7 @@ def main_loop():
     else:
         update()
         render()
-    game.active_take_turn(_world.get_system_entities(game.TurnOrderSystem))
+    game.active_take_turn(_world)
 
     # check game over
     entities = _world.get_system_entities(game.TurnOrderSystem)
