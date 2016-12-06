@@ -9,6 +9,9 @@ from typing import Optional
 
 event_logger = logging.getLogger("Event")
 
+ecs_logger = logging.getLogger("ECS")
+ecs_logger.disabled = True
+
 
 class Entity(object):
     def __init__(self, world):
@@ -67,8 +70,12 @@ class Entity(object):
             return self.world
         if (not name in self.world.componenttypes) or (
                 not self in self.world.components[name]):
-            raise AttributeError("entity '%r' has no attribute '%r'" % \
-                                 (self.id, name))
+            if name != "name":
+                entity_name = self.name
+            else:
+                entity_name = self.id
+            raise AttributeError("entity %r has no attribute %r" %
+                                 (entity_name, name))
         return self.world.components[name][self]
 
     def __setattr__(self, name, value):
@@ -94,15 +101,17 @@ class Entity(object):
             raise AttributeError("'%s' cannot be deleted.", name)
         if not self in self.world.components[name]:
             raise AttributeError("Entity '%r' has no attribute '%s'" % \
-                                 (self, name))
+                                 (self.id, name))
 
         c = self.world.components[name][self]
 
         system_keys = self.world.find_entity_systems_wct(self, name)
         for sk in system_keys:
             self.world.system_entities[sk].remove(self)
+            ecs_logger.debug("Deleted %s from %s" % (self.id, sk))
 
         del self.world.components[name][self]
+        ecs_logger.debug("Deleted %s from %s" % (name, self.id))
 
     def set(self, attribute):
         self.__setattr__(attribute.__class__.__name__, attribute)
@@ -176,9 +185,9 @@ class World(object):
     def find_system_entities(self, system):
         typerestriction = system.componenttypes
 
-        def condition(typerestriction, entity):
+        def condition(type_restr, entity):
             ecs = [ec for ec in entity]  # all component_ts of entity
-            return typerestriction.issubset(ecs)
+            return type_restr.issubset(ecs)
 
         return [e for e in self.entities if condition(typerestriction, e)]
 
@@ -195,8 +204,10 @@ class World(object):
     def invoke_system(self, systemclass):
         key = systemclass.__name__
         s = self.systems[key]
+        se = self.system_entities[key]
+        ecs_logger.debug(se)
         if s.active:
-            s.process(self.system_entities[key])
+            s.process(se)
 
     def end(self):
         self.alive = False

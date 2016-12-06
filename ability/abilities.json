@@ -69,7 +69,7 @@
     "range": 5,
     "radius": 2,
     "dmg": {
-      "base": 2,
+      "base": 200,
       "scaling": 0.7
     },
     "fatigue_cost": 500,

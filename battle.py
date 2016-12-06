@@ -1,5 +1,6 @@
 import time
 from typing import Callable, Optional, List
+import logging
 
 import sdl2
 
@@ -7,13 +8,15 @@ import animation
 import battle_log
 import ecs
 import game
+import game_over
 import input_
 import map_
 import menu
 import movement
 import res
 import util
-import game_over
+
+logger = logging.getLogger("Battle")
 
 _world = None  # type: Optional[ecs.World]
 
@@ -383,6 +386,7 @@ def activate(world):
 
 
 def main_loop():
+    logger.debug("Enter main_loop")
     _world.invoke_system(game.TurnOrderSystem)
     if len(_world.animation_q) > 0:
         canvas.make_render_target()

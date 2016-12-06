@@ -7,6 +7,7 @@ import ecs
 import res
 import util
 
+game_logger = logging.getLogger("Game")
 turn_order_logger = logging.getLogger("TurnOrder")
 
 
@@ -25,6 +26,11 @@ class Team:
 
     def __repr__(self):
         return self.team_name
+
+
+class Dead:
+    """Marker for actors that got killed."""
+    pass
 
 
 # Events
@@ -181,28 +187,50 @@ class TurnOrderSystem(ecs.System):
         entities.sort(key=(lambda e: e.get(Fatigue).value))
 
 
+class DeathSystem(ecs.System):
+    """Processes killed entities"""
+
+    def __init__(self):
+        ecs.System.__init__(self, [Dead, Blocking, Fatigue])
+
+    def process(self, entities):
+        game_logger.debug("Killing: %s" % entities)
+        for entity in entities[:]:  # copy cause we modify
+            entity.delete(Blocking)
+            entity.delete(Fatigue)
+            entity.get(res.Graphic).corpsify()
+            battle_log.add_msg("%s dies." % entity.name)
+
+
 # transformations
 def active_take_turn(turn_order: List[ecs.Entity]):
     """Lets the actor first in the turnorder act."""
     actor = turn_order[0]
+    world = actor.world
 
     turn_order_logger.debug("%r turn" % turn_order[0].name)
 
     # only costly actions end the turn
     start_fatigue = actor.get(Fatigue).value
-    while start_fatigue == actor.get(Fatigue).value and actor.world.alive:
+    while (not actor.has(Dead)) and start_fatigue == actor.get(
+            Fatigue).value and actor.world.alive:
+        turn_order_logger.debug("%r acts" % turn_order[0].name)
         actor.handle_event(Act())
+        world.invoke_system(DeathSystem)  # clean up killed actors
+
+    turn_order_logger.debug("%s turn done" % actor)
 
     # move actor to the end of the turnorder lis
-    del turn_order[0]
-    turn_order.append(actor)
+    try:
+        turn_order.remove(actor)
+        turn_order.append(actor)
+    except ValueError:
+        # if actor is not in turnorder anymore, do nothing
+        pass
 
 
 def kill(entity):
-    entity.delete(Blocking)
-    entity.delete(Fatigue)
-    entity.get(res.Graphic).corpsify()
-    battle_log.add_msg("%s dies." % entity.name)
+    entity.set(Dead())
 
 
 # util

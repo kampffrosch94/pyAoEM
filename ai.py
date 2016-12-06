@@ -1,10 +1,13 @@
 import operator
+import logging
 
 import ecs
 import game
 import movement
 import util
 from game import Component, Act
+
+logger = logging.getLogger("AI")
 
 
 class AI(Component):
@@ -16,6 +19,7 @@ class AI(Component):
 
     def act(self, _: Act):
         e = self.entity
+        logger.debug("%s is thinking." % e)
         world = e.world  # type: ecs.World
         e_pos = e.get(util.Position)
         # TODO decide wether to activate an ability or move

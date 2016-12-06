@@ -23,10 +23,11 @@ world.add_system(battle.EntityRenderSystem())
 world.add_system(game.TurnOrderSystem())
 world.add_system(battle.HealthRenderSystem(world))
 world.add_system(battle.BoundPositionSystem())
+world.add_system(game.DeathSystem())
 
 factory.world = world
 
-player_number = 3  # random.randint(1, 3)
+player_number = 1  # random.randint(1, 3)
 enemy_number = random.randint(5, 8)
 pcs = []
 enemies = []
@@ -46,7 +47,8 @@ for i in range(player_number):
     picks = set()
     for x in range(ab_count):
         picks.add(random.randint(0, len(abils) - 1))
-    for p in picks:
+    #for p in picks:
+    for p in range(len(abils)):
         abc.add(abils[p])
 
     pcs.append(player_char)
