@@ -1,6 +1,6 @@
+import logging
 import time
 from typing import Callable, Optional, List
-import logging
 
 import sdl2
 
@@ -15,6 +15,7 @@ import menu
 import movement
 import res
 import util
+from game import BoundPositionSystem
 
 logger = logging.getLogger("Battle")
 
@@ -44,15 +45,6 @@ class Input(game.Component):
             pass
 
 
-class BoundPosition:
-    """The Position of the Entity witht this component is a copy of the Position
-    this Component is attached to."""
-
-    def __init__(self, attached_to: ecs.Entity):
-        self.attached_to = attached_to
-        self.priority = 0
-
-
 # render code and System
 def render_at_pos(graphic: res.Graphic, pos):
     if _world.map.is_visible(pos):
@@ -77,17 +69,6 @@ def update_graphic_pos(g: res.Graphic, mp: util.Position):  # TODO move to map
         g.y = map_.TILE_HEIGHT * (mp.y - _world.map.root_pos.y)
         return True
     return False
-
-
-class BoundPositionSystem(ecs.System):
-    def __init__(self):
-        super().__init__([BoundPosition, util.Position])
-
-    def process(self, entities: List[ecs.Entity]):
-        for e in entities:
-            binding = e.get(BoundPosition)  # type: BoundPosition
-            bound_pos = binding.attached_to.get(util.Position)
-            e.get(util.Position).update(bound_pos)
 
 
 class EntityRenderSystem(ecs.System):

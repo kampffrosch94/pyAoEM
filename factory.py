@@ -1,5 +1,6 @@
 import battle
 import ecs
+import game
 import res
 import util
 from game import (Health, Blocking, Offensive, Fatigue, Team, Inventory,
@@ -34,7 +35,7 @@ def create_player_creature(name, texture, pos, mhp, dmg):
     g = res.load_graphic("armour_gold_dragon")
     g.z = 1
     test_armour.set(g)
-    test_armour.set(battle.BoundPosition(pc))
+    test_armour.set(game.BoundPosition(pc))
     test_armour.set(util.Position(0, 0))
     test_armour.set(Defense(1))
 

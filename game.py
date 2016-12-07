@@ -72,6 +72,15 @@ class PayFatigue(Event):
         self.handler_name = "pay_fatigue"
 
 
+class BoundPosition:
+    """The Position of the Entity witht this component is a copy of the Position
+    this Component is attached to."""
+
+    def __init__(self, attached_to: ecs.Entity):
+        self.attached_to = attached_to
+        self.priority = 0
+
+
 # Eventhandling components
 class Component:
     def __repr__(self):
@@ -183,6 +192,17 @@ class TurnOrderSystem(ecs.System):
 
     def process(self, entities):
         raise NotImplementedError("This should not be used.")
+
+
+class BoundPositionSystem(ecs.System):
+    def __init__(self):
+        super().__init__([BoundPosition, util.Position])
+
+    def process(self, entities: List[ecs.Entity]):
+        for e in entities:
+            binding = e.get(BoundPosition)  # type: BoundPosition
+            bound_pos = binding.attached_to.get(util.Position)
+            e.get(util.Position).update(bound_pos)
 
 
 class DeathSystem(ecs.System):
