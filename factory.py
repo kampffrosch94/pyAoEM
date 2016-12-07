@@ -50,4 +50,5 @@ def create_ai_creature(name, texture, pos, mhp, dmg):
     ac = create_creature(name, texture, pos, mhp, dmg)
     ac.set(Team("team monster"))
     ac.set(AI(ac))
+    ac.set(game.Loot(100))
     return ac

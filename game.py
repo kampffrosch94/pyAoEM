@@ -28,7 +28,7 @@ class Team:
         return self.team_name
 
 
-class Dead:
+class DeadTag:
     """Marker for actors that got killed."""
     pass
 
@@ -43,6 +43,16 @@ class BoundPosition:
 
     def __repr__(self):
         return "%s" % self.attached_to.identifier
+
+
+class Loot:
+    """Gold that is gained after battle if this creature is killed."""
+
+    def __init__(self, gold: int):
+        self.gold = gold
+
+    def __repr__(self):
+        return "%s gold" % self.gold
 
 
 # Events
@@ -212,7 +222,7 @@ class DeathSystem(ecs.System):
     """Processes killed entities"""
 
     def __init__(self):
-        ecs.System.__init__(self, [Dead, Blocking, Fatigue])
+        ecs.System.__init__(self, [DeadTag, Blocking, Fatigue])
 
     def process(self, entities):
         game_logger.debug("Killing: %s" % entities)
@@ -221,6 +231,21 @@ class DeathSystem(ecs.System):
             entity.delete(Fatigue)
             entity.get(res.Graphic).corpsify()
             battle_log.add_msg("%s dies." % entity.name)
+
+
+class LootSystem(ecs.System):
+    """Sums up gained gold after battle."""
+
+    def __init__(self):
+        ecs.System.__init__(self, [DeadTag, Loot])
+
+    def process(self, entities):
+        gold_gained = 0
+        for entity in entities:
+            l = entity.get(Loot)  # type: Loot
+            gold_gained += l.gold
+            entity.delete(Loot)
+        game_logger.debug("Gained %s gold" % gold_gained)
 
 
 # transformations
@@ -234,7 +259,7 @@ def active_take_turn(world: ecs.World):
 
     # only costly actions end the turn
     start_fatigue = actor.get(Fatigue).value
-    while (not actor.has(Dead)) and start_fatigue == actor.get(
+    while (not actor.has(DeadTag)) and start_fatigue == actor.get(
             Fatigue).value and actor.world.alive:
         turn_order_logger.debug("%r acts" % turn_order[0].name)
         actor.handle_event(Act())
@@ -252,7 +277,7 @@ def active_take_turn(world: ecs.World):
 
 
 def kill(entity):
-    entity.set(Dead())
+    entity.set(DeadTag())
 
 
 # util

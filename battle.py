@@ -386,5 +386,7 @@ def main_loop():
     # check game over
     entities = _world.get_system_entities(game.TurnOrderSystem)
     if all(entities[0].get(game.Team) == e.get(game.Team) for e in entities):
-        game_over.activate(
-            entities[0].get(game.Team).team_name == "player_team")
+        won = entities[0].get(game.Team).team_name == "player_team"
+        if won:
+            _world.invoke_system(game.LootSystem)
+        game_over.activate(won)
