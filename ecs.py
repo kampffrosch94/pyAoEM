@@ -139,6 +139,13 @@ class Entity:
         """Removes the Entity from the world it belongs to."""
         self.world.remove_entity(self)
 
+    @property
+    def identifier(self):
+        if hasattr(self, "name"):
+            return self.name
+        else:
+            return self.id
+
 
 class World(object):
     def __init__(self):

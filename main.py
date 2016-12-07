@@ -27,7 +27,7 @@ world.add_system(game.DeathSystem())
 
 factory.world = world
 
-player_number = 1  # random.randint(1, 3)
+player_number = 3  # random.randint(1, 3)
 enemy_number = random.randint(5, 8)
 pcs = []
 enemies = []

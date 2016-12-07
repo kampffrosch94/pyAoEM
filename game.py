@@ -33,6 +33,18 @@ class Dead:
     pass
 
 
+class BoundPosition:
+    """The Position of the Entity witht this component is a copy of the Position
+    this Component is attached to."""
+
+    def __init__(self, attached_to: ecs.Entity):
+        self.attached_to = attached_to
+        self.priority = 0
+
+    def __repr__(self):
+        return "%s" % self.attached_to.identifier
+
+
 # Events
 class Event:
     def __repr__(self):
@@ -70,15 +82,6 @@ class PayFatigue(Event):
     def __init__(self, amount: int):
         self.amount = amount
         self.handler_name = "pay_fatigue"
-
-
-class BoundPosition:
-    """The Position of the Entity witht this component is a copy of the Position
-    this Component is attached to."""
-
-    def __init__(self, attached_to: ecs.Entity):
-        self.attached_to = attached_to
-        self.priority = 0
 
 
 # Eventhandling components
