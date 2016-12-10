@@ -389,4 +389,4 @@ def main_loop():
         won = entities[0].get(game.Team).team_name == "player_team"
         if won:
             _world.invoke_system(game.LootSystem)
-        game_over.activate(won)
+        game_over.activate(won, _world)

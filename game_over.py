@@ -2,6 +2,7 @@ import sdl2
 import res
 import input_
 import battle
+import ecs
 
 title = None
 choice = res.create_text_graphic(
@@ -22,10 +23,11 @@ def render():
     res.render_present()
 
 
-def activate(won):
+def activate(won, world: ecs.World):
     global title
     if won:
-        text = "You win a glorious victory!"
+        text = ("You win a glorious victory!\n"
+                "You earned %s gold.") % world.base.gold
     else:
         text = "You lose."
     title = res.create_text_graphic(
