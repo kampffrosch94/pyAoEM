@@ -1,14 +1,14 @@
-import json
+from typing import Callable, List, Dict, Optional
 
+import yaml
+
+import animation
+import ecs
 import game
 import map_
-import util as util
-import ecs
 import movement
 import res
-import animation
-
-from typing import Callable, List, Dict, Optional
+import util as util
 
 
 class Ability:
@@ -277,8 +277,8 @@ def _parse_abilities(abilities_data: Dict[str, Dict[str, object]]
     return parsed_abilities
 
 
-with open("ability/abilities.json", "r") as f:
-    _abilities_data = json.load(f)
+with open("ability/abilities.yaml", "r") as f:
+    _abilities_data = yaml.load(f)
 
 abilities = _parse_abilities(_abilities_data)
 
