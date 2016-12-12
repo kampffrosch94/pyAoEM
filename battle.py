@@ -1,3 +1,4 @@
+import enum
 import logging
 import time
 from typing import Callable, Optional, List
@@ -15,6 +16,7 @@ import menu
 import movement
 import res
 import util
+import base.scene
 from game import BoundPositionSystem
 
 logger = logging.getLogger("Battle")
@@ -279,7 +281,6 @@ def look():
 
 def choose_ability():
     m_head = "Abilities."
-    # TODO use abilities of current actor
     abilities = controlled_entity.get(game.Abilities).container
     m_choices = [a.name for a in abilities]
     m = menu.ChoiceMenu(200, 150, 300, 200, m_head, m_choices, cancel=True)
@@ -366,6 +367,25 @@ def activate(world):
     bind_keys()
 
 
+class BattleStatus(enum.Enum):
+    not_finished = 1
+    won = 2
+    lost = 3
+
+
+def check_battle_status(world: ecs.World) -> BattleStatus:
+    actors = world.get_system_entities(game.TurnOrderSystem)
+    # all actors are on the same team -> battle finished
+    if all(actors[0].get(game.Team) == e.get(game.Team) for e in actors):
+        won = actors[0].get(game.Team).team_name == "player_team"
+        if won:
+            return BattleStatus.won
+        else:
+            return BattleStatus.lost
+
+    return BattleStatus.not_finished
+
+
 def main_loop():
     logger.debug("Enter main_loop")
     if len(_world.animation_q) > 0:
@@ -384,9 +404,8 @@ def main_loop():
     game.active_take_turn(_world)
 
     # check game over
-    entities = _world.get_system_entities(game.TurnOrderSystem)
-    if all(entities[0].get(game.Team) == e.get(game.Team) for e in entities):
-        won = entities[0].get(game.Team).team_name == "player_team"
-        if won:
-            _world.invoke_system(game.LootSystem)
-        game_over.activate(won, _world)
+    status = check_battle_status(_world)
+    if status is BattleStatus.lost:
+        game_over.activate(False, _world)
+    elif status is BattleStatus.won:
+        base.scene.activate(_world)

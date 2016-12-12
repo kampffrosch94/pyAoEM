@@ -3,7 +3,7 @@ from typing import List, Iterable, Dict, Tuple, Iterator
 
 import ability
 import battle_log
-import base
+from base.data import BaseInfo
 import ecs
 import res
 import util
@@ -237,7 +237,7 @@ class DeathSystem(ecs.System):
 class LootSystem(ecs.System):
     """Sums up gained gold after battle."""
 
-    def __init__(self, base_info: base.BaseInfo):
+    def __init__(self, base_info: BaseInfo):
         ecs.System.__init__(self, [DeadTag, Loot])
         self.base = base_info
 

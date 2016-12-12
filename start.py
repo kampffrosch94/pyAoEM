@@ -8,17 +8,20 @@ title = res.create_text_graphic(
     x=200, y=150)
 
 choice = res.create_text_graphic(
-    "a) Fight against the GIANT newts of Evil Mountain.\n"+
+    "a) Fight against the GIANT newts of Evil Mountain.\n" +
     "b) Flee in terror. (Quit.)",
     x=100, y=300)
 
+
 def quit_():
     input_.quit_handler()
+
 
 def to_battle():
     print("Switch to battlescene.")
     import battle
     battle.activate(world)
+
 
 def render():
     res.render_clear()
@@ -26,14 +29,17 @@ def render():
     choice.render()
     res.render_present()
 
+
 def main_loop():
     render()
     input_.handle_event()
 
+
 world = None
 
+
 def activate(w):
-    global world 
+    global world
     world = w
 
     input_.clear_handlers()

@@ -95,7 +95,9 @@ def end_world():
 
 input_.quit_handler = end_world
 
-start.activate(world)
+#start.activate(world)
+import base.scene
+base.scene.activate(world)
 
 
 def main():
