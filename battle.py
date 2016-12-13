@@ -282,14 +282,14 @@ def look():
 def choose_ability():
     m_head = "Abilities."
     abilities = controlled_entity.get(game.Abilities).container
-    m_choices = [a.name for a in abilities]
+    m_choices = [(a.name, a) for a in abilities]
     m = menu.ChoiceMenu(200, 150, 300, 200, m_head, m_choices, cancel=True)
     choice = m.choose()
     bind_keys()
     render()
     if choice is None:
         return False  # dont end turn if selection was cancelled
-    ab = abilities[choice]
+    ab = choice
 
     actors = _world.get_system_entities(game.TurnOrderSystem)
     target_pos = cursor(ab.target, actors, ab.range_)

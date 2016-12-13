@@ -29,7 +29,7 @@ world.add_system(game.LootSystem(world.base))
 factory.world = world
 
 player_number = 3  # random.randint(1, 3)
-enemy_number = random.randint(5, 8)
+enemy_number = 0  # random.randint(5, 8)
 pcs = []
 enemies = []
 
@@ -48,7 +48,7 @@ for i in range(player_number):
     picks = set()
     for x in range(ab_count):
         picks.add(random.randint(0, len(abils) - 1))
-    #for p in picks:
+    # for p in picks:
     for p in range(len(abils)):
         abc.add(abils[p])
 
@@ -95,8 +95,9 @@ def end_world():
 
 input_.quit_handler = end_world
 
-#start.activate(world)
+# start.activate(world)
 import base.scene
+
 base.scene.activate(world)
 
 

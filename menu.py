@@ -14,7 +14,8 @@ _CHOICE_CHARS = ["a", "b", "c", "d", "e", "f", "g"]
 
 
 class ChoiceMenu:
-    def __init__(self, x, y, w, h, header, choices, cancel=False):
+    def __init__(self, x, y, w, h, header, choices, cancel=False, cancel_result=None):
+        """The choices are a list of Pairs(choice_text, value)"""
         if len(choices) > len(_CHOICE_KEYS):
             raise NotImplementedError("Not enough keys for this many choices")
         if len(choices) < 1:
@@ -24,24 +25,28 @@ class ChoiceMenu:
         self.header = res.create_text_graphic(header, 20, 20,
                                               max_width=w - 20)
         choice_text = ""
+        self.choice_values = []
         i = 0
-        for c in choices:
-            choice_text += _CHOICE_CHARS[i] + ") " + c + "\n"
+        for ct, cv in choices:
+            choice_text += _CHOICE_CHARS[i] + ") " + ct + "\n"
+            self.choice_values.append(cv)
             i += 1
-        self.choices = res.create_text_graphic(choice_text, 20, 50,
-                                               max_width=w - 20)
+        self.choice_g = res.create_text_graphic(choice_text, 20, 50,
+                                                max_width=w - 20)
         self.choice_count = i
         self.cancel = cancel
+        self.cancel_result = cancel_result
 
     def bind_keys(self):
         input_.clear_handlers()
         for i in range(self.choice_count):
-            f = (lambda i=i: i)
-            input_.add_handler(f, _CHOICE_KEYS[i])
+            v = self.choice_values[i]
+            input_.add_handler(lambda: v, _CHOICE_KEYS[i])
         if self.cancel is True:
-            input_.add_handler(lambda: None, sdl2.SDLK_ESCAPE)
+            input_.add_handler(lambda: self.cancel_result, sdl2.SDLK_ESCAPE)
 
     def choose(self):
+        """Returns the value of the chosen Choice."""
         self.update()
         self.render()
         self.bind_keys()
@@ -51,7 +56,7 @@ class ChoiceMenu:
         self.graphic.make_render_target()
         res.render_clear()
         self.header.render()
-        self.choices.render()
+        self.choice_g.render()
         res.reset_render_target()
 
     def render(self):

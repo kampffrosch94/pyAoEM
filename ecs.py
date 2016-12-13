@@ -4,7 +4,7 @@ import animation
 import base.data
 
 import map_
-from typing import Optional
+from typing import Optional, List
 
 """Entity Component System"""
 
@@ -201,7 +201,7 @@ class World(object):
 
         return [e for e in self.entities if condition(typerestriction, e)]
 
-    def get_system_entities(self, system_class):
+    def get_system_entities(self, system_class) -> List[Entity]:
         key = system_class.__name__
         return self.system_entities[key]
 
