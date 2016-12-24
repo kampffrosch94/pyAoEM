@@ -101,6 +101,9 @@ import base.scene
 base.scene.activate(world)
 
 
+# start gold
+world.base.gold = 1000
+
 def main():
     battle_log.add_msg("Welcome to AoEM.")
     while world.alive:

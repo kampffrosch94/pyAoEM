@@ -41,7 +41,7 @@ class ChoiceMenu:
         input_.clear_handlers()
         for i in range(self.choice_count):
             v = self.choice_values[i]
-            input_.add_handler(lambda: v, _CHOICE_KEYS[i])
+            input_.add_handler(lambda x=v: x, _CHOICE_KEYS[i])
         if self.cancel is True:
             input_.add_handler(lambda: self.cancel_result, sdl2.SDLK_ESCAPE)
 

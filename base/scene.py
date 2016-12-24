@@ -12,12 +12,61 @@ def activate(world: ecs.World):
     world.main_loop = main_loop
 
 
-def main_loop():
+def actor_loop(actor: ecs.Entity):
+    def do_at_cost(cost: int, action):
+        if _world.base.gold >= cost:
+            action()
+            _world.base.gold -= cost
+
+    def inc_dmg():
+        actor.get(game.Offensive).dmg += 1
+
+    dmg = actor.get(game.Offensive).dmg
+
+    def inc_hp():
+        h = actor.get(game.Health)  # type: game.Health
+        h.max_hp += 1
+        h.hp += 1
+
+    max_hp = actor.get(game.Health).max_hp
+
+    header = "%s (You have %s gold.)" % (actor.name, _world.base.gold)
+    choices = [
+        ("Increase DMG for %sg: %s->%s" % (dmg * 100, dmg, dmg + 1),
+         lambda: do_at_cost(dmg * 100, inc_dmg)),
+        ("Increase HP for %sg: %s->%s" % (max_hp * 100, max_hp, max_hp + 1),
+         lambda: do_at_cost(max_hp * 100, inc_hp)),
+    ]
+
+    def back():
+        global current_loop
+        current_loop = start_loop
+
+    m = menu.ChoiceMenu(150, 170, 400, 200, header, choices, cancel=True,
+                        cancel_result=back)
+    res.render_clear()
+    m.choose()()
+
+
+def start_loop():
     pcs = _world.get_system_entities(game.TurnOrderSystem)
     header = "You have %s gold." % _world.base.gold
     choices = []
-    choices.extend([(pc.name, lambda: None) for pc in pcs])
+    choices.extend([(pc.name, pc) for pc in pcs])
     m = menu.ChoiceMenu(200, 170, 200, 200, header, choices, cancel=True,
-                        cancel_result=lambda: _world.end())
+                        cancel_result=None)
     res.render_clear()
-    m.choose()()
+    chosen_actor = m.choose()
+    if chosen_actor is not None:
+        global current_loop
+        current_loop = lambda: actor_loop(chosen_actor)
+    else:
+        _world.end()
+
+
+# we exchange the loop depending on which menu we are in
+current_loop = start_loop
+
+
+def main_loop():
+    current_loop()
