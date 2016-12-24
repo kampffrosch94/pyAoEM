@@ -15,6 +15,7 @@ class Ability:
     def __init__(self,
                  name: str,
                  range_: int,
+                 unlock_cost: int,
                  targeting_f: Callable[
                      [map_.TileMap,
                       List[ecs.Entity],
@@ -29,6 +30,7 @@ class Ability:
         assert len(effects) is not 0
         self._effects = effects
         self.animation_g = animation_g or res.load_graphic("todo")
+        self.unlock_cost = unlock_cost
 
     def __repr__(self):
         return "\n %s : %s\n Range: %s\n Targeting_f: %s\n Effects: \n   %s" % (
@@ -271,7 +273,9 @@ def _parse_abilities(abilities_data: Dict[str, Dict[str, object]]
         if "animation" in ability_data:
             animation_g = res.load_graphic(ability_data["animation"])
 
-        parsed_abilities[name] = Ability(name, range_, targeting_f, effects,
+        unlock_cost = ability_data['unlock_cost']
+
+        parsed_abilities[name] = Ability(name, range_, unlock_cost, targeting_f, effects,
                                          animation_g)
 
     return parsed_abilities

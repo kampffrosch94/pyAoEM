@@ -43,15 +43,6 @@ for i in range(player_number):
         mhp=10,
         dmg=2)
 
-    abc = player_char.get(game.Abilities)  # type: game.Abilities
-    ab_count = random.randint(1, len(abils))
-    picks = set()
-    for x in range(ab_count):
-        picks.add(random.randint(0, len(abils) - 1))
-    # for p in picks:
-    for p in range(len(abils)):
-        abc.add(abils[p])
-
     pcs.append(player_char)
 
 for i in range(enemy_number):

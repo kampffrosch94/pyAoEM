@@ -2,6 +2,7 @@ import ecs
 import menu
 import res
 import game
+import ability
 
 _world = None  # type: ecs.World
 
@@ -12,12 +13,37 @@ def activate(world: ecs.World):
     world.main_loop = main_loop
 
 
-def actor_loop(actor: ecs.Entity):
-    def do_at_cost(cost: int, action):
-        if _world.base.gold >= cost:
-            action()
-            _world.base.gold -= cost
+def do_at_cost(cost: int, action):
+    if _world.base.gold >= cost:
+        action()
+        _world.base.gold -= cost
 
+
+def ab_buy_loop(actor: ecs.Entity):
+    header = "%s (You have %s gold.)" % (actor.name, _world.base.gold)
+
+    abs = actor.get(game.Abilities)  # type: game.Abilities
+
+    def add_ability(ab: ability.Ability):
+        abs.add(ab)
+
+    choices = [
+        (a.name + " (%s g)" % a.unlock_cost,
+         lambda x=a: do_at_cost(x.unlock_cost, lambda: add_ability(x)))
+        for a in ability.abilities.values() if a not in abs.container
+        ]
+
+    def back():
+        global current_loop
+        current_loop = lambda: actor_loop(actor)
+
+    m = menu.ChoiceMenu(150, 170, 400, 200, header, choices, cancel=True,
+                        cancel_result=back)
+    res.render_clear()
+    m.choose()()
+
+
+def actor_loop(actor: ecs.Entity):
     def inc_dmg():
         actor.get(game.Offensive).dmg += 1
 
@@ -30,12 +56,18 @@ def actor_loop(actor: ecs.Entity):
 
     max_hp = actor.get(game.Health).max_hp
 
+    def switch_to_ab_selection():
+        global current_loop
+        current_loop = lambda: ab_buy_loop(actor)
+
     header = "%s (You have %s gold.)" % (actor.name, _world.base.gold)
     choices = [
         ("Increase DMG for %sg: %s->%s" % (dmg * 100, dmg, dmg + 1),
          lambda: do_at_cost(dmg * 100, inc_dmg)),
-        ("Increase HP for %sg: %s->%s" % (max_hp * 100, max_hp, max_hp + 1),
-         lambda: do_at_cost(max_hp * 100, inc_hp)),
+        ("Increase HP for %sg: %s->%s" % (max_hp * 25, max_hp, max_hp + 1),
+         lambda: do_at_cost(max_hp * 25, inc_hp)),
+        ("Buy abilites.",
+         switch_to_ab_selection),
     ]
 
     def back():

@@ -7,6 +7,7 @@ fireball:
   fly: true
   radius: 1
   range: 5
+  unlock_cost: 3000
 flamethrower:
   animation: ab_fire_bolt
   desc: Roasts anything in it's path.
@@ -15,12 +16,14 @@ flamethrower:
   fatigue_cost: 200
   line: true
   range: 5
+  unlock_cost: 3000
 flash_smog:
   desc: A quickly dissipating smog. Damages the lungs.
   dmg:
     base: 3
   flood_fill: 9
   range: 7
+  unlock_cost: 3000
 hand of flame:
   animation: ab_fire_bolt
   desc: Let flames burst forth in an arc.
@@ -28,6 +31,7 @@ hand of flame:
     base: 3
   range: 2
   spread: 1
+  unlock_cost: 3000
 punishment:
   animation: ab_fire_bolt
   desc: Big AoE
@@ -37,12 +41,14 @@ punishment:
   fatigue_cost: 500
   radius: 2
   range: 5
+  unlock_cost: 5000
 rush:
   desc: Move and attack the first target.
   fatigue_cost: 150
   fly: true
   move: true
   range: 4
+  unlock_cost: 500
 simple heal:
   desc: Heal somebody. Smite Targeting
   fatigue_cost: 200
@@ -50,6 +56,7 @@ simple heal:
     base: 3
     scaling: 0.5
   range: 4
+  unlock_cost: 500
 throw stone:
   animation: ab_throw_stone
   desc: Hits first target in the way.
@@ -59,8 +66,10 @@ throw stone:
   fatigue_cost: 100
   fly: true
   range: 7
+  unlock_cost: 1000
 whirlwind:
   blast: 1
   desc: Spin and hit everyone around you.
   dmg:
     scaling: 1
+  unlock_cost: 1000
