@@ -260,6 +260,12 @@ def active_take_turn(world: ecs.World):
 
     turn_order_logger.debug("%r turn" % turn_order[0].name)
 
+    passed_time = actor.get(Fatigue).value
+    # subtract the fatigue of the current actors from all actors
+    for a in turn_order:
+        f = a.get(Fatigue) # type: Fatigue
+        f.value -= passed_time
+
     # only costly actions end the turn
     start_fatigue = actor.get(Fatigue).value
     while (not actor.has(DeadTag)) and start_fatigue == actor.get(

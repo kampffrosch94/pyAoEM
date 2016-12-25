@@ -25,8 +25,7 @@ def render():
 
 def activate(world: ecs.World):
     global title
-    text = ("You win a glorious victory!\n"
-            "You earned %s gold.") % world.base.gold
+    text = "You die a horrible death!"
     title = res.create_text_graphic(
         text,
         x=100, y=150)
