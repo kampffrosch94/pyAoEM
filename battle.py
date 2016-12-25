@@ -363,7 +363,28 @@ def bind_keys():
 
 
 def separate_teams():
-    pass
+    """Playerchars to the left, rest to the right"""
+    world = _world
+    actors = world.find_entities_with_components([game.Team])
+    pcs = [a for a in actors if a.get(game.Team).team_name == "player_team"]
+    enemies = [a for a in actors if a.get(game.Team).team_name != "player_team"]
+    pos_list = [x for x in world.map.wall_map]
+    pos_list.sort(key=(lambda p: p[0] * world.map.w + p[1]))
+    for pos in pos_list:
+        if len(pcs) == 0:
+            break
+        if movement.pos_is_free(world, pos):
+            e = pcs.pop()
+            mp = e.get(util.Position)
+            mp.x, mp.y = pos
+    pos_list.reverse()
+    for pos in pos_list:
+        if len(enemies) == 0:
+            break
+        if movement.pos_is_free(world, pos):
+            e = enemies.pop()
+            mp = e.get(util.Position)
+            mp.x, mp.y = pos
 
 
 def after_battle_cleanup():
@@ -390,6 +411,7 @@ def activate(world):
     _world = world
     world.main_loop = main_loop
     bind_keys()
+    separate_teams()
 
 
 class BattleStatus(enum.Enum):

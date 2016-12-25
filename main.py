@@ -60,25 +60,6 @@ map_w, map_h = 20, 15
 wall_chance = 42
 world.map = map_.TileMap(map_w, map_h, wall_chance)
 
-# place the actors TODO make this a function
-pos_list = [x for x in world.map.wall_map]
-pos_list.sort(key=(lambda pos: pos[0] * map_w + pos[1]))
-for pos in pos_list:
-    if len(pcs) == 0:
-        break
-    if movement.pos_is_free(world, pos):
-        e = pcs.pop()
-        mp = e.get(util.Position)
-        mp.x, mp.y = pos
-pos_list.reverse()
-for pos in pos_list:
-    if len(enemies) == 0:
-        break
-    if movement.pos_is_free(world, pos):
-        e = enemies.pop()
-        mp = e.get(util.Position)
-        mp.x, mp.y = pos
-
 
 def end_world():
     world.end()
@@ -88,9 +69,9 @@ input_.quit_handler = end_world
 
 start.activate(world)
 
-
 # start gold
 world.base.gold = 1000
+
 
 def main():
     battle_log.add_msg("Welcome to AoEM.")
