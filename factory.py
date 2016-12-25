@@ -5,7 +5,7 @@ import res
 import util
 from game import (Health, Blocking, Offensive, Fatigue, Team, Inventory,
                   Defense, Abilities)
-from ai import AI
+from ai import AI, Idler
 
 world = None  # type: ecs.World
 
@@ -50,5 +50,13 @@ def create_ai_creature(name, texture, pos, mhp, dmg):
     ac = create_creature(name, texture, pos, mhp, dmg)
     ac.set(Team("team monster"))
     ac.set(AI(ac))
+    ac.set(game.Loot(100))
+    return ac
+
+
+def create_idler(name, texture, pos, mhp, dmg):
+    ac = create_creature(name, texture, pos, mhp, dmg)
+    ac.set(Team("team monster"))
+    ac.set(Idler(ac))
     ac.set(game.Loot(100))
     return ac

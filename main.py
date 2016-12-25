@@ -29,7 +29,7 @@ world.add_system(game.LootSystem(world.base))
 factory.world = world
 
 player_number = 3  # random.randint(1, 3)
-enemy_number = 0  # random.randint(5, 8)
+enemy_number = 5  # random.randint(5, 8)
 pcs = []
 enemies = []
 
@@ -86,10 +86,7 @@ def end_world():
 
 input_.quit_handler = end_world
 
-# start.activate(world)
-import base.scene
-
-base.scene.activate(world)
+start.activate(world)
 
 
 # start gold

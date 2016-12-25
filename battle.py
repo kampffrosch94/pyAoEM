@@ -282,6 +282,8 @@ def look():
 def choose_ability():
     m_head = "Abilities."
     abilities = controlled_entity.get(game.Abilities).container
+    if len(abilities) < 1:
+        return
     m_choices = [(a.name, a) for a in abilities]
     m = menu.ChoiceMenu(200, 150, 300, 200, m_head, m_choices, cancel=True)
     choice = m.choose()
@@ -360,6 +362,11 @@ def bind_keys():
     input_.add_handler(choose_ability, sdl2.SDLK_a)
 
 
+def after_battle_cleanup():
+    """Battle is finished -> clean up blood, corpses & heal injuries."""
+    pass
+
+
 def activate(world):
     global _world
     _world = world
@@ -399,13 +406,14 @@ def main_loop():
         update()
         render()
     else:
-        update()
-        render()
-    game.active_take_turn(_world)
-
-    # check game over
-    status = check_battle_status(_world)
-    if status is BattleStatus.lost:
-        game_over.activate(False, _world)
-    elif status is BattleStatus.won:
-        base.scene.activate(_world)
+        # check game over
+        status = check_battle_status(_world)
+        if status is BattleStatus.lost:
+            game_over.activate(_world)
+        elif status is BattleStatus.won:
+            _world.invoke_system(game.LootSystem)
+            base.scene.activate(_world)
+        elif status is BattleStatus.not_finished:
+            update()
+            render()
+            game.active_take_turn(_world)

@@ -3,6 +3,7 @@ import menu
 import res
 import game
 import ability
+import factory
 
 _world = None  # type: ecs.World
 
@@ -85,6 +86,7 @@ def start_loop():
     header = "You have %s gold." % _world.base.gold
     choices = []
     choices.extend([(pc.name, pc) for pc in pcs])
+    choices.extend([("To arms! The enemy approaches.", None)])
     m = menu.ChoiceMenu(200, 170, 200, 200, header, choices, cancel=True,
                         cancel_result=None)
     res.render_clear()
@@ -93,7 +95,14 @@ def start_loop():
         global current_loop
         current_loop = lambda: actor_loop(chosen_actor)
     else:
-        _world.end()
+        factory.create_idler(
+            name="giant newt idler",
+            texture="newt",
+            pos=(5, 5),
+            mhp=5,
+            dmg=2)
+        import battle
+        battle.activate(_world)
 
 
 # we exchange the loop depending on which menu we are in

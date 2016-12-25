@@ -62,3 +62,14 @@ def ai_move(entity: ecs.Entity) -> None:
         if not movement.attack_or_move(entity, util.Direction(*d)):
             print("%s waits because it can't move." % entity.name)
     entity.handle_event(game.PayFatigue(100))
+
+
+class Idler(Component):
+    """Component for AI controlled entities."""
+
+    def __init__(self, entity: ecs.Entity):
+        self.entity = entity
+        self.priority = 0
+
+    def act(self, _: Act):
+        self.entity.handle_event(game.PayFatigue(100))

@@ -23,13 +23,10 @@ def render():
     res.render_present()
 
 
-def activate(won, world: ecs.World):
+def activate(world: ecs.World):
     global title
-    if won:
-        text = ("You win a glorious victory!\n"
-                "You earned %s gold.") % world.base.gold
-    else:
-        text = "You lose."
+    text = ("You win a glorious victory!\n"
+            "You earned %s gold.") % world.base.gold
     title = res.create_text_graphic(
         text,
         x=100, y=150)
