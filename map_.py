@@ -26,10 +26,19 @@ class TileMap(object):
     def __init__(self, w, h, wall_chance=42):
         self.w = w
         self.h = h
-        g_map = dungeon_gen.checked_cellular_automaton(w, h, wall_chance)
+        self.wall_chance = wall_chance
+        g_map = dungeon_gen.checked_cellular_automaton(self.w, self.h,
+                                                       self.wall_chance)
         self.wall_map = g_map
         self.tiles = g_map  # needs more variety
         self.tile_graphics = [default_floor, default_wall]
+        self.root_pos = util.Position(0, 0)
+
+    def regen(self):
+        g_map = dungeon_gen.checked_cellular_automaton(self.w, self.h,
+                                                       self.wall_chance)
+        self.wall_map = g_map
+        self.tiles = g_map  # needs more variety
         self.root_pos = util.Position(0, 0)
 
     def is_wall(self, pos):

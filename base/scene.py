@@ -95,7 +95,7 @@ def start_loop():
         global current_loop
         current_loop = lambda: actor_loop(chosen_actor)
     else:
-        factory.create_idler(
+        factory.create_ai_creature(
             name="giant newt idler",
             texture="newt",
             pos=(5, 5),

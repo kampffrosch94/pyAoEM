@@ -406,10 +406,11 @@ def after_battle_cleanup():
         h.hp = h.max_hp
 
 
-def activate(world):
+def activate(world: ecs.World):
     global _world
     _world = world
     world.main_loop = main_loop
+    world.map.regen()
     bind_keys()
     separate_teams()
 
