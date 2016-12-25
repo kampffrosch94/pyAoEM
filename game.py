@@ -1,12 +1,11 @@
 import logging
-from typing import List, Iterable, Dict, Tuple, Iterator
+from typing import List, Iterable, Dict, Iterator
 
-import ability
 import battle_log
-from base.data import BaseInfo
 import ecs
 import res
 import util
+from base.data import BaseInfo
 
 game_logger = logging.getLogger("Game")
 turn_order_logger = logging.getLogger("TurnOrder")
@@ -99,14 +98,6 @@ class PayFatigue(Event):
 class Component:
     def __repr__(self):
         return "%s()" % self.__class__.__name__
-
-
-class Abilities(Component):
-    def __init__(self):
-        self.container = []  # type: List[ability.Ability]
-
-    def add(self, ab: ability.Ability):
-        self.container.append(ab)
 
 
 class Health(Component):

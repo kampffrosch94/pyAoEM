@@ -2,6 +2,7 @@ from typing import Callable, List, Dict, Optional
 
 import yaml
 
+import ability
 import animation
 import ecs
 import game
@@ -9,6 +10,7 @@ import map_
 import movement
 import res
 import util as util
+from game import Component
 
 
 class Ability:
@@ -290,3 +292,11 @@ abilities = _parse_abilities(_abilities_data)
 import pprint
 
 pprint.pprint(abilities)
+
+
+class Abilities(Component):
+    def __init__(self):
+        self.container = []  # type: List[ability.Ability]
+
+    def add(self, ab: Ability):
+        self.container.append(ab)

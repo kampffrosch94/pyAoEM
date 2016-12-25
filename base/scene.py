@@ -1,3 +1,4 @@
+import ability.ability
 import ecs
 import menu
 import res
@@ -23,7 +24,7 @@ def do_at_cost(cost: int, action):
 def ab_buy_loop(actor: ecs.Entity):
     header = "%s (You have %s gold.)" % (actor.name, _world.base.gold)
 
-    abs = actor.get(game.Abilities)  # type: game.Abilities
+    abs = actor.get(ability.Abilities)  # type: import ability.ability
 
     def add_ability(ab: ability.Ability):
         abs.add(ab)
@@ -95,12 +96,6 @@ def start_loop():
         global current_loop
         current_loop = lambda: actor_loop(chosen_actor)
     else:
-        factory.create_ai_creature(
-            name="giant newt idler",
-            texture="newt",
-            pos=(5, 5),
-            mhp=5,
-            dmg=2)
         import battle
         battle.activate(_world)
 

@@ -5,11 +5,14 @@ from typing import Callable, Optional, List
 
 import sdl2
 
+import ability
+import ability.ability
 import animation
 import battle_log
 import ecs
 import game
 import game_over
+import factory
 import input_
 import map_
 import menu
@@ -210,7 +213,7 @@ def wait():
 
 def cursor(target_f: Optional[Callable] = None,
            relevant_entities: Optional[ecs.Entity] = None,
-           max_range=float("inf")) -> util.Position:
+           max_range=float("inf")) -> Optional[util.Position]:
     """returns Position selected with the cursor or None if cancelled"""
     start = controlled_entity.get(util.Position)  # type: util.Position
     pos = start.copy()
@@ -281,7 +284,7 @@ def look():
 
 def choose_ability():
     m_head = "Abilities."
-    abilities = controlled_entity.get(game.Abilities).container
+    abilities = controlled_entity.get(ability.ability.Abilities).container
     if len(abilities) < 1:
         return
     m_choices = [(a.name, a) for a in abilities]
@@ -405,13 +408,30 @@ def after_battle_cleanup():
         h = e.get(game.Health)  # type: game.Health
         h.hp = h.max_hp
 
+    # reset fatigue
+    fatigued = _world.find_entities_with_components([game.Fatigue])
+    for e in fatigued:
+        f = e.get(game.Fatigue)  # type: game.Fatigue
+        f.value = 0
+
 
 def activate(world: ecs.World):
     global _world
     _world = world
     world.main_loop = main_loop
     world.map.regen()
+
     bind_keys()
+
+    for i in range(5):
+        c = factory.create_ai_creature(
+            name="giant newt idler",
+            texture="newt",
+            pos=(5, 5),
+            mhp=5,
+            dmg=2)
+        abe = c.get(ability.ability.Abilities)
+        abe.add(ability.abilities["rush"])
     separate_teams()
 
 

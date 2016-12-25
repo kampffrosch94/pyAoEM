@@ -4,7 +4,8 @@ import game
 import res
 import util
 from game import (Health, Blocking, Offensive, Fatigue, Team, Inventory,
-                  Defense, Abilities)
+                  Defense)
+from ability import Abilities
 from ai import AI, Idler
 
 world = None  # type: ecs.World

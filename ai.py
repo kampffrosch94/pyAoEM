@@ -1,6 +1,7 @@
 import operator
 import logging
 
+import ability
 import ecs
 import game
 import movement
@@ -23,13 +24,13 @@ class AI(Component):
         world = e.world  # type: ecs.World
         e_pos = e.get(util.Position)
         # TODO decide wether to activate an ability or move
-        abilities = e.get(game.Abilities).container
+        abilities = e.get(ability.Abilities).container
         blocking_es = world.get_system_entities(game.BlockingSystem)
         enemies = game.compute_enemies(e)
         for g_pos, enemy in game.pos_entity_dict(enemies).items():
-            for ability in abilities:
-                if ability.in_range(world.map, blocking_es, e_pos, g_pos):
-                    ability.fire(world.map, blocking_es, e, g_pos)
+            for ab in abilities:
+                if ab.in_range(world.map, blocking_es, e_pos, g_pos):
+                    ab.fire(world.map, blocking_es, e, g_pos)
                     return
         ai_move(e)
 

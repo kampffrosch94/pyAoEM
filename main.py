@@ -1,6 +1,7 @@
 import logging
 import random
 
+import ability.ability
 import battle
 import battle_log
 import ecs
@@ -8,13 +9,11 @@ import factory
 import game
 import input_
 import map_
-import movement
 import start
-import util
-import ability
 
 logging.basicConfig(filename="logs/main.log", level=logging.DEBUG, filemode="w")
 
+# init
 world = ecs.World()
 
 world.add_system(game.BlockingSystem())
@@ -28,38 +27,6 @@ world.add_system(game.LootSystem(world.base))
 
 factory.world = world
 
-player_number = 3  # random.randint(1, 3)
-enemy_number = 5  # random.randint(5, 8)
-pcs = []
-enemies = []
-
-abils = list(ability.abilities.values())
-
-for i in range(player_number):
-    player_char = factory.create_player_creature(
-        name="Player " + str(i + 1),
-        texture="human_m",
-        pos=(2, 2),
-        mhp=10,
-        dmg=5)  # 2 seems alright
-
-    pcs.append(player_char)
-
-for i in range(enemy_number):
-    enemy = factory.create_ai_creature(
-        name="giant newt " + str(i + 1),
-        texture="newt",
-        pos=(15, 10),
-        mhp=5,
-        dmg=2)
-    abe = enemy.get(game.Abilities)
-    abe.add(ability.abilities["rush"])
-    enemies.append(enemy)
-
-map_w, map_h = 20, 15
-wall_chance = 42
-world.map = map_.TileMap(map_w, map_h, wall_chance)
-
 
 def end_world():
     world.end()
@@ -67,10 +34,24 @@ def end_world():
 
 input_.quit_handler = end_world
 
-start.activate(world)
+# new game data
+player_number = 3  # random.randint(1, 3)
 
-# start gold
-world.base.gold = 1000
+for i in range(player_number):
+    player_char = factory.create_player_creature(
+        name="Player " + str(i + 1),
+        texture="human_m",
+        pos=(2, 2),
+        mhp=10,
+        dmg=2)  # 2 seems alright
+
+map_w, map_h = 20, 15
+wall_chance = 42
+world.map = map_.TileMap(map_w, map_h, wall_chance)
+
+world.base.gold = 1000  # start gold
+
+start.activate(world)  # init first scene
 
 
 def main():
