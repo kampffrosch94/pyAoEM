@@ -88,7 +88,7 @@ def start_loop():
     choices = []
     choices.extend([(pc.name, pc) for pc in pcs])
     choices.extend([("To arms! The enemy approaches.", None)])
-    m = menu.ChoiceMenu(200, 170, 200, 200, header, choices, cancel=True,
+    m = menu.ChoiceMenu(150, 170, 400, 200, header, choices, cancel=True,
                         cancel_result=None)
     res.render_clear()
     chosen_actor = m.choose()

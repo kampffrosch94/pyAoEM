@@ -271,6 +271,8 @@ def active_take_turn(world: ecs.World):
     try:
         turn_order.remove(actor)
         turn_order.append(actor)
+        # later calls rely on the turnorder to be sorted
+        turn_order.sort(key=(lambda e: e.get(Fatigue).value))
     except ValueError:
         # if actor is not in turnorder anymore, do nothing
         pass

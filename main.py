@@ -35,15 +35,16 @@ def end_world():
 input_.quit_handler = end_world
 
 # new game data
-player_number = 3  # random.randint(1, 3)
 
-for i in range(player_number):
-    player_char = factory.create_player_creature(
-        name="Player " + str(i + 1),
-        texture="human_m",
-        pos=(2, 2),
-        mhp=10,
-        dmg=2)  # 2 seems alright
+create_player = lambda s: factory.create_player_creature(
+    name=s,
+    texture="human_m",
+    pos=(2, 2),
+    mhp=10,
+    dmg=2)  # 2 seems alright
+create_player("Jim")
+create_player("John")
+create_player("Jack")
 
 map_w, map_h = 20, 15
 wall_chance = 42
