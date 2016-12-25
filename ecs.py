@@ -200,10 +200,6 @@ class World(object):
             -> List[Entity]:
         def condition(type_restr, entity):
             ac_ts = [ec for ec in entity]  # all component_types of entity
-            t = type(ac_ts[0])
-            x = type(list(type_restr)[0])
-            print(t)
-            print(x)
             return type_restr.issubset(ac_ts)
 
         return [e for e in self.entities if condition(typerestriction, e)]

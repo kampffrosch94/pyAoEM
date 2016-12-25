@@ -378,6 +378,12 @@ def after_battle_cleanup():
         # delete the dead guy
         dead.remove()
 
+    # heal the battered and bruised
+    healables = _world.find_entities_with_components([game.Health])
+    for e in healables:
+        h = e.get(game.Health)  # type: game.Health
+        h.hp = h.max_hp
+
 
 def activate(world):
     global _world
