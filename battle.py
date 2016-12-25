@@ -309,9 +309,8 @@ def choose_ability():
 
 # Debug keybindings
 def regen_map():
-    map_w, map_h = 20, 15
-    wall_chance = 42
-    _world.map = map_.TileMap(map_w, map_h, wall_chance)
+    _world.map.regen()
+    update()
     render()
 
 
