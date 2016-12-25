@@ -362,9 +362,21 @@ def bind_keys():
     input_.add_handler(choose_ability, sdl2.SDLK_a)
 
 
+def separate_teams():
+    pass
+
+
 def after_battle_cleanup():
     """Battle is finished -> clean up blood, corpses & heal injuries."""
-    pass
+    deads = _world.find_entities_with_components([game.DeadTag])
+    for dead in deads:
+        # clean up inventory
+        if dead.has(game.Inventory):
+            i = dead.get(game.Inventory)  # type: game.Inventory
+            for item in i.items:
+                item.remove()
+        # delete the dead guy
+        dead.remove()
 
 
 def activate(world):
@@ -412,6 +424,7 @@ def main_loop():
             game_over.activate(_world)
         elif status is BattleStatus.won:
             _world.invoke_system(game.LootSystem)
+            after_battle_cleanup()
             base.scene.activate(_world)
         elif status is BattleStatus.not_finished:
             update()

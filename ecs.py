@@ -4,7 +4,7 @@ import animation
 import base.data
 
 import map_
-from typing import Optional, List
+from typing import Optional, List, Set
 
 """Entity Component System"""
 
@@ -79,7 +79,7 @@ class Entity:
                                  (entity_name, name))
         return self.world.components[name][self]
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value):
         """Sets the component data related to the Entity."""
         if name in ("id", "world"):
             object.__setattr__(self, name, value)
@@ -101,7 +101,7 @@ class Entity:
         if name in ("id", "world"):
             raise AttributeError("'%s' cannot be deleted.", name)
         if not self in self.world.components[name]:
-            raise AttributeError("Entity '%r' has no attribute '%s'" % \
+            raise AttributeError("Entity '%r' has no attribute '%s'" %
                                  (self.id, name))
 
         c = self.world.components[name][self]
@@ -194,18 +194,30 @@ class World(object):
 
     def find_system_entities(self, system):
         typerestriction = system.componenttypes
+        return self.find_entities_with_components_str(typerestriction)
 
+    def find_entities_with_components_str(self, typerestriction: Set[str]) \
+            -> List[Entity]:
         def condition(type_restr, entity):
-            ecs = [ec for ec in entity]  # all component_ts of entity
-            return type_restr.issubset(ecs)
+            ac_ts = [ec for ec in entity]  # all component_types of entity
+            t = type(ac_ts[0])
+            x = type(list(type_restr)[0])
+            print(t)
+            print(x)
+            return type_restr.issubset(ac_ts)
 
         return [e for e in self.entities if condition(typerestriction, e)]
+
+    def find_entities_with_components(self, classes: List[object]) \
+            -> List[Entity]:
+        return self.find_entities_with_components_str(
+            {c.__name__ for c in classes})
 
     def get_system_entities(self, system_class) -> List[Entity]:
         key = system_class.__name__
         return self.system_entities[key]
 
-    def find_entity_systems_wct(self, entity, ct):
+    def find_entity_systems_wct(self, entity, ct: str):
         ecs = [ec for ec in entity]  # all component_ts of entity
         return [key for key in self.systems
                 if (ct in self.systems[key].componenttypes) and
@@ -248,7 +260,8 @@ class System:
     def __init__(self, componentclasses=None):
         if componentclasses is None:
             componentclasses = []
-        self.componenttypes = set(c.__name__ for c in componentclasses)
+        self.componenttypes = set(
+            c.__name__ for c in componentclasses)  # type: Set[str]
         self.active = True
 
     def process(self, entities):

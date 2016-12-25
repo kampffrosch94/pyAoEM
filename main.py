@@ -41,7 +41,7 @@ for i in range(player_number):
         texture="human_m",
         pos=(2, 2),
         mhp=10,
-        dmg=2)
+        dmg=5)  # 2 seems alright
 
     pcs.append(player_char)
 
