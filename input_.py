@@ -42,5 +42,7 @@ def handle_event():
         elif event.type == sdl2.SDL_KEYDOWN:
             key = event.key.keysym.sym
             mod = event.key.keysym.mod
+            if mod == sdl2.KMOD_NUM:  # numlock ignorieren
+                mod = sdl2.KMOD_NONE
             if (key, mod) in key_handlers:
                 return key_handlers[(key, mod)]()
