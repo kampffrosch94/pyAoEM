@@ -1,6 +1,6 @@
 import sdl2
 import res
-import input_
+from input_ import InputHandler
 
 _CHOICE_KEYS = [sdl2.SDLK_a,
                 sdl2.SDLK_b,
@@ -14,7 +14,8 @@ _CHOICE_CHARS = ["a", "b", "c", "d", "e", "f", "g"]
 
 
 class ChoiceMenu:
-    def __init__(self, x, y, w, h, header, choices, cancel=False, cancel_result=None):
+    def __init__(self, x, y, w, h, header, choices, cancel=False,
+                 cancel_result=None):
         """The choices are a list of Pairs(choice_text, value)"""
         if len(choices) > len(_CHOICE_KEYS):
             raise NotImplementedError("Not enough keys for this many choices")
@@ -34,23 +35,22 @@ class ChoiceMenu:
         self.choice_g = res.create_text_graphic(choice_text, 20, 50,
                                                 max_width=w - 20)
         self.choice_count = i
-        self.cancel = cancel
         self.cancel_result = cancel_result
 
-    def bind_keys(self):
-        input_.clear_handlers()
+        # bind keys of input handler
+        self.input_handler = InputHandler()
         for i in range(self.choice_count):
             v = self.choice_values[i]
-            input_.add_handler(lambda x=v: x, _CHOICE_KEYS[i])
-        if self.cancel is True:
-            input_.add_handler(lambda: self.cancel_result, sdl2.SDLK_ESCAPE)
+            self.input_handler.add_handler(lambda x=v: x, _CHOICE_KEYS[i])
+        if cancel is True:
+            self.input_handler.add_handler(lambda: self.cancel_result,
+                                           sdl2.SDLK_ESCAPE)
 
     def choose(self):
         """Returns the value of the chosen Choice."""
         self.update()
         self.render()
-        self.bind_keys()
-        return input_.handle_event()
+        return self.input_handler.handle_event()
 
     def update(self):
         self.graphic.make_render_target()

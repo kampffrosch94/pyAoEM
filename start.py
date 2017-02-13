@@ -1,7 +1,8 @@
 """The startmenu"""
 import sdl2
 import res
-import input_
+from input_ import InputHandler
+import ecs
 
 title = res.create_text_graphic(
     "Attack on Evil Mountain\n--Unfinished Business--\n\n",
@@ -12,9 +13,9 @@ choice = res.create_text_graphic(
     "b) Flee in terror. (Quit.)",
     x=100, y=300)
 
+input_handler = InputHandler()
 
-def quit_():
-    input_.quit_handler()
+
 
 
 def to_battle():
@@ -32,18 +33,21 @@ def render():
 
 def main_loop():
     render()
-    input_.handle_event()
+    input_handler.handle_event()
 
 
 world = None
 
 
-def activate(w):
+def activate(w: ecs.World):
     global world
     world = w
 
-    input_.clear_handlers()
-    input_.add_handler(to_battle, sdl2.SDLK_a)
-    input_.add_handler(quit_, sdl2.SDLK_b)
+    def quit_():
+        w.end()
+
+    input_handler.quit_handler = quit
+    input_handler.add_handler(to_battle, sdl2.SDLK_a)
+    input_handler.add_handler(quit_, sdl2.SDLK_b)
     render()
     world.main_loop = main_loop

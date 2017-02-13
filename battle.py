@@ -13,7 +13,7 @@ import ecs
 import game
 import game_over
 import factory
-import input_
+from input_ import InputHandler
 import map_
 import menu
 import movement
@@ -34,6 +34,8 @@ canvas = res.create_graphic(0, 0, res.WINDOW_W, res.WINDOW_H)
 
 controlled_entity = None
 
+input_handler = InputHandler()
+
 
 class Input(game.Component):
     """Component for Player controlled entities.
@@ -46,7 +48,7 @@ class Input(game.Component):
     def act(self, _):
         global controlled_entity
         controlled_entity = self.entity
-        while not input_.handle_event():
+        while not input_handler.handle_event():
             pass
 
 
@@ -235,17 +237,17 @@ def cursor(target_f: Optional[Callable] = None,
     def cancel():
         return True
 
-    input_.clear_handlers()
-    input_.add_handler(cancel, sdl2.SDLK_ESCAPE)
-    input_.add_handler(stop_with_target, sdl2.SDLK_RETURN)
-    input_.add_handler(move_dir_f(-1, 0), sdl2.SDLK_h)
-    input_.add_handler(move_dir_f(+1, 0), sdl2.SDLK_l)
-    input_.add_handler(move_dir_f(0, -1), sdl2.SDLK_k)
-    input_.add_handler(move_dir_f(0, +1), sdl2.SDLK_j)
-    input_.add_handler(move_dir_f(+1, -1), sdl2.SDLK_u)
-    input_.add_handler(move_dir_f(+1, +1), sdl2.SDLK_n)
-    input_.add_handler(move_dir_f(-1, -1), sdl2.SDLK_z)
-    input_.add_handler(move_dir_f(-1, +1), sdl2.SDLK_b)
+    input_handler.clear_handlers()
+    input_handler.add_handler(cancel, sdl2.SDLK_ESCAPE)
+    input_handler.add_handler(stop_with_target, sdl2.SDLK_RETURN)
+    input_handler.add_handler(move_dir_f(-1, 0), sdl2.SDLK_h)
+    input_handler.add_handler(move_dir_f(+1, 0), sdl2.SDLK_l)
+    input_handler.add_handler(move_dir_f(0, -1), sdl2.SDLK_k)
+    input_handler.add_handler(move_dir_f(0, +1), sdl2.SDLK_j)
+    input_handler.add_handler(move_dir_f(+1, -1), sdl2.SDLK_u)
+    input_handler.add_handler(move_dir_f(+1, +1), sdl2.SDLK_n)
+    input_handler.add_handler(move_dir_f(-1, -1), sdl2.SDLK_z)
+    input_handler.add_handler(move_dir_f(-1, +1), sdl2.SDLK_b)
 
     is_cancelled = None
     while is_cancelled is None:
@@ -260,7 +262,7 @@ def cursor(target_f: Optional[Callable] = None,
                 render_at_pos(trail_g, p)
 
         res.render_present()
-        is_cancelled = input_.handle_event()
+        is_cancelled = input_handler.handle_event()
 
     render()
     bind_keys()
@@ -315,7 +317,7 @@ def regen_map():
 
 
 def quit_():
-    input_.quit_handler()
+    _world.end()
     return True
 
 
@@ -338,30 +340,30 @@ def go_interpreter():
 # Activation
 
 def bind_keys():
-    input_.clear_handlers()
+    input_handler.clear_handlers()
 
-    input_.add_handler(quit_, sdl2.SDLK_q)
-    input_.add_handler(go_interpreter, sdl2.SDLK_y)
+    input_handler.add_handler(quit_, sdl2.SDLK_q)
+    input_handler.add_handler(go_interpreter, sdl2.SDLK_y)
 
-    input_.add_handler(map_move_dir_f(-1, 0), sdl2.SDLK_h, sdl2.KMOD_SHIFT)
-    input_.add_handler(map_move_dir_f(+1, 0), sdl2.SDLK_l, sdl2.KMOD_SHIFT)
-    input_.add_handler(map_move_dir_f(0, -1), sdl2.SDLK_k, sdl2.KMOD_SHIFT)
-    input_.add_handler(map_move_dir_f(0, +1), sdl2.SDLK_j, sdl2.KMOD_SHIFT)
+    input_handler.add_handler(map_move_dir_f(-1, 0), sdl2.SDLK_h, sdl2.KMOD_SHIFT)
+    input_handler.add_handler(map_move_dir_f(+1, 0), sdl2.SDLK_l, sdl2.KMOD_SHIFT)
+    input_handler.add_handler(map_move_dir_f(0, -1), sdl2.SDLK_k, sdl2.KMOD_SHIFT)
+    input_handler.add_handler(map_move_dir_f(0, +1), sdl2.SDLK_j, sdl2.KMOD_SHIFT)
 
-    input_.add_handler(regen_map, sdl2.SDLK_F1)
+    input_handler.add_handler(regen_map, sdl2.SDLK_F1)
 
-    input_.add_handler(player_move_dir_f(-1, 0), sdl2.SDLK_h)
-    input_.add_handler(player_move_dir_f(+1, 0), sdl2.SDLK_l)
-    input_.add_handler(player_move_dir_f(0, -1), sdl2.SDLK_k)
-    input_.add_handler(player_move_dir_f(0, +1), sdl2.SDLK_j)
-    input_.add_handler(player_move_dir_f(+1, -1), sdl2.SDLK_u)
-    input_.add_handler(player_move_dir_f(+1, +1), sdl2.SDLK_n)
-    input_.add_handler(player_move_dir_f(-1, -1), sdl2.SDLK_z)
-    input_.add_handler(player_move_dir_f(-1, +1), sdl2.SDLK_b)
-    input_.add_handler(wait, sdl2.SDLK_PERIOD)
-    input_.add_handler(look, sdl2.SDLK_COMMA)
+    input_handler.add_handler(player_move_dir_f(-1, 0), sdl2.SDLK_h)
+    input_handler.add_handler(player_move_dir_f(+1, 0), sdl2.SDLK_l)
+    input_handler.add_handler(player_move_dir_f(0, -1), sdl2.SDLK_k)
+    input_handler.add_handler(player_move_dir_f(0, +1), sdl2.SDLK_j)
+    input_handler.add_handler(player_move_dir_f(+1, -1), sdl2.SDLK_u)
+    input_handler.add_handler(player_move_dir_f(+1, +1), sdl2.SDLK_n)
+    input_handler.add_handler(player_move_dir_f(-1, -1), sdl2.SDLK_z)
+    input_handler.add_handler(player_move_dir_f(-1, +1), sdl2.SDLK_b)
+    input_handler.add_handler(wait, sdl2.SDLK_PERIOD)
+    input_handler.add_handler(look, sdl2.SDLK_COMMA)
 
-    input_.add_handler(choose_ability, sdl2.SDLK_a)
+    input_handler.add_handler(choose_ability, sdl2.SDLK_a)
 
 
 def separate_teams():

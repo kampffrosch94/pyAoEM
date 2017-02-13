@@ -1,19 +1,19 @@
 import sdl2
 import res
-import input_
-import battle
+from input_ import InputHandler
 import ecs
 
 title = None
+_world = None  # type: ecs.World
+input_handler = InputHandler()
+
 choice = res.create_text_graphic(
     "a) Alright. (Quit.)",
     x=100, y=200)
 
 
 def quit_():
-    # TODO proper fix for hangup after not turnending action kills last foe
-    battle.bind_keys()  # this makes it possible to spent last action
-    input_.quit_handler()
+    _world.end()
 
 
 def render():
@@ -24,12 +24,12 @@ def render():
 
 
 def activate(world: ecs.World):
-    global title
+    global title, _world
+    _world = world
     text = "You die a horrible death!"
     title = res.create_text_graphic(
         text,
         x=100, y=150)
-    input_.clear_handlers()
-    input_.add_handler(quit_, sdl2.SDLK_a)
+    input_handler.add_handler(quit_, sdl2.SDLK_a)
     render()
-    input_.handle_event()
+    input_handler.handle_event()
