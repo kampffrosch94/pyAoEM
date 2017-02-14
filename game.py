@@ -1,6 +1,8 @@
 import logging
 from typing import List, Iterable, Dict, Iterator
 
+import attr
+
 import battle_log
 import ecs
 import res
@@ -12,20 +14,15 @@ turn_order_logger = logging.getLogger("TurnOrder")
 
 
 # simple components
+@attr.s
 class Blocking:
     """Only one blocking entity can be at a map_pos."""
     pass
 
 
+@attr.s
 class Team:
-    def __init__(self, team_name):
-        self.team_name = team_name
-
-    def __eq__(self, other):
-        return self.team_name == other.team_name
-
-    def __repr__(self):
-        return self.team_name
+    team_name = attr.ib()  # type: str
 
 
 class DeadTag:
@@ -39,20 +36,15 @@ class BoundPosition:
 
     def __init__(self, attached_to: ecs.Entity):
         self.attached_to = attached_to
-        self.priority = 0
 
     def __repr__(self):
         return "%s" % self.attached_to.identifier
 
 
+@attr.s
 class Loot:
     """Gold that is gained after battle if this creature is killed."""
-
-    def __init__(self, gold: int):
-        self.gold = gold
-
-    def __repr__(self):
-        return "%s gold" % self.gold
+    gold = attr.ib()  # type: int
 
 
 # Events
@@ -176,6 +168,8 @@ class Inventory(Component):
             item.handle_event(event)
 
 
+
+
 # Systems
 
 class BlockingSystem(ecs.System):
@@ -254,7 +248,7 @@ def active_take_turn(world: ecs.World):
     passed_time = actor.get(Fatigue).value
     # subtract the fatigue of the current actors from all actors
     for a in turn_order:
-        f = a.get(Fatigue) # type: Fatigue
+        f = a.get(Fatigue)  # type: Fatigue
         f.value -= passed_time
 
     # only costly actions end the turn
