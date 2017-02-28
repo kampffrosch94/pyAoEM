@@ -168,8 +168,6 @@ class Inventory(Component):
             item.handle_event(event)
 
 
-
-
 # Systems
 
 class BlockingSystem(ecs.System):
@@ -289,7 +287,9 @@ def pos_entity_dict(entities: Iterable[ecs.Entity]) \
     return result
 
 
+# noinspection PyTypeChecker
 def compute_enemies(entity: ecs.Entity) -> Iterator[ecs.Entity]:
+    """Yields all enemies of the given entity in the TurnOrderSystem."""
     world = entity.world
     acting_es = world.get_system_entities(TurnOrderSystem)
     for e in acting_es:

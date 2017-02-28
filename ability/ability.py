@@ -9,7 +9,7 @@ import game
 import map_
 import movement
 import res
-import util as util
+import util
 from game import Component
 
 
