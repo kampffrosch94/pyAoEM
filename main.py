@@ -1,7 +1,7 @@
 import logging
 import random
 
-import ability.ability
+import ability
 import battle
 import battle_log
 import ecs
@@ -42,7 +42,9 @@ create_player = lambda s: factory.create_player_creature(
     pos=(2, 2),
     mhp=10,
     dmg=2)  # 2 seems alright
-create_player("Jim")
+e = create_player("Jim")
+abs = e.get(ability.Abilities)  # type: ability.Abilities
+abs.add(ability.abilities["throw stone"])
 create_player("John")
 create_player("Jack")
 

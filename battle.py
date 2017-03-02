@@ -7,6 +7,7 @@ import sdl2
 
 import ability
 import ability.ability
+import action
 import animation
 import battle_log
 import ecs
@@ -302,9 +303,8 @@ def choose_ability():
     target_pos = cursor(ab.target, actors, ab.range_)
     if target_pos is None:
         return False  # dont end turn if cursor() was cancelled
-    current_actor = actors[0]
-
-    ab.fire(_world.map, actors, current_actor, target_pos)
+    act = action.StandardAction(controlled_entity, ab, target_pos)
+    act.execute()
     render()
     return True  # end turn after using ability
 
