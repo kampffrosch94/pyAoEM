@@ -38,7 +38,8 @@ class InputHandler:
             elif event.type == sdl2.SDL_KEYDOWN:
                 key = event.key.keysym.sym
                 mod = event.key.keysym.mod
-                if mod == sdl2.KMOD_NUM:  # numlock ignorieren
-                    mod = sdl2.KMOD_NONE
+                if mod in (sdl2.KMOD_NUM, sdl2.KMOD_NUM + sdl2.KMOD_LSHIFT,
+                           sdl2.KMOD_NUM + sdl2.KMOD_RSHIFT):  # ignore numlock
+                    mod -= sdl2.KMOD_NUM
                 if (key, mod) in self.key_handlers:
                     return self.key_handlers[(key, mod)]()
