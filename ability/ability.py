@@ -275,9 +275,10 @@ def _parse_abilities(abilities_data: Dict[str, Dict[str, object]]
         if "animation" in ability_data:
             animation_g = res.load_graphic(ability_data["animation"])
 
-        unlock_cost = ability_data['unlock_cost']
+        unlock_cost = ability_data['unlock_cost']  # type: int
 
-        parsed_abilities[name] = Ability(name, range_, unlock_cost, targeting_f, effects,
+        parsed_abilities[name] = Ability(name, range_, unlock_cost, targeting_f,
+                                         effects,
                                          animation_g)
 
     return parsed_abilities
@@ -287,11 +288,6 @@ with open("ability/abilities.yaml", "r") as f:
     _abilities_data = yaml.load(f)
 
 abilities = _parse_abilities(_abilities_data)
-
-# TODO remove debug code or better log this
-import pprint
-
-pprint.pprint(abilities)
 
 
 class Abilities(Component):
