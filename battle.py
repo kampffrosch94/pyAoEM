@@ -31,9 +31,8 @@ _world = None  # type: Optional[ecs.World]
 
 canvas = res.create_graphic(0, 0, res.WINDOW_W, res.WINDOW_H)
 
-# Components
 
-controlled_entity = None  # type: Optional[ecs.Entity]
+# Components
 
 
 class Input(game.Component):
@@ -46,8 +45,6 @@ class Input(game.Component):
         self.handler = Input.create_key_handler(entity)
 
     def act(self, _):
-        global controlled_entity
-        controlled_entity = self.entity
         while not self.handler.handle_event()():
             pass
 
@@ -68,16 +65,16 @@ class Input(game.Component):
 
         handler.add_handler(regen_map, sdl2.SDLK_F1)
 
-        handler.add_handler(player_move_dir_f(-1, 0), sdl2.SDLK_h)
-        handler.add_handler(player_move_dir_f(+1, 0), sdl2.SDLK_l)
-        handler.add_handler(player_move_dir_f(0, -1), sdl2.SDLK_k)
-        handler.add_handler(player_move_dir_f(0, +1), sdl2.SDLK_j)
-        handler.add_handler(player_move_dir_f(+1, -1), sdl2.SDLK_u)
-        handler.add_handler(player_move_dir_f(+1, +1), sdl2.SDLK_n)
-        handler.add_handler(player_move_dir_f(-1, -1), sdl2.SDLK_z)
-        handler.add_handler(player_move_dir_f(-1, +1), sdl2.SDLK_b)
-        handler.add_handler(wait, sdl2.SDLK_PERIOD)
-        handler.add_handler(look, sdl2.SDLK_COMMA)
+        handler.add_handler(entity_move_dir_f(entity, -1, 0), sdl2.SDLK_h)
+        handler.add_handler(entity_move_dir_f(entity, +1, 0), sdl2.SDLK_l)
+        handler.add_handler(entity_move_dir_f(entity, 0, -1), sdl2.SDLK_k)
+        handler.add_handler(entity_move_dir_f(entity, 0, +1), sdl2.SDLK_j)
+        handler.add_handler(entity_move_dir_f(entity, +1, -1), sdl2.SDLK_u)
+        handler.add_handler(entity_move_dir_f(entity, +1, +1), sdl2.SDLK_n)
+        handler.add_handler(entity_move_dir_f(entity, -1, -1), sdl2.SDLK_z)
+        handler.add_handler(entity_move_dir_f(entity, -1, +1), sdl2.SDLK_b)
+        handler.add_handler(lambda e=entity: wait(e), sdl2.SDLK_PERIOD)
+        handler.add_handler(lambda e=entity: look(e), sdl2.SDLK_COMMA)
 
         handler.add_handler(lambda e=entity: choose_ability(e), sdl2.SDLK_a)
         return handler
@@ -223,10 +220,10 @@ def entity_move_and_pay_fatigue(e: ecs.Entity, d):
     return result
 
 
-def player_move_dir_f(x, y):
+def entity_move_dir_f(e, x, y):
     d = util.Direction(x, y)
     # lazy evaluation of controlled_entity
-    return lambda: entity_move_and_pay_fatigue(controlled_entity, d)
+    return lambda: entity_move_and_pay_fatigue(e, d)
 
 
 def map_move_dir_f(x, y):
@@ -238,18 +235,17 @@ def map_move_dir_f(x, y):
     return f
 
 
-def wait():
-    controlled_entity.handle_event(game.PayFatigue(100))
+def wait(e: ecs.Entity):
+    e.handle_event(game.PayFatigue(100))
     return True
 
 
 # Sub_scenes
 
-def cursor(target_f: Optional[Callable] = None,
+def cursor(start: util.Position, target_f: Optional[Callable] = None,
            relevant_entities: Optional[List[ecs.Entity]] = None,
            max_range=float("inf")) -> Optional[util.Position]:
     """returns Position selected with the cursor or None if cancelled"""
-    start = controlled_entity.get(util.Position)  # type: util.Position
     pos = start.copy()
     g = res.load_graphic("cursor")
 
@@ -304,8 +300,8 @@ def cursor(target_f: Optional[Callable] = None,
         return pos
 
 
-def look():
-    pos = cursor()
+def look(e: ecs.Entity):
+    pos = cursor(e.get(util.Position))
     if pos is None:
         return
     print("Endpos is: %s" % pos)
@@ -329,10 +325,11 @@ def choose_ability(user):
     ab = choice
 
     actors = _world.get_system_entities(game.TurnOrderSystem)
-    target_pos = cursor(ab.target, actors, ab.range_)
+    user_pos = user.get(util.Position)
+    target_pos = cursor(user_pos, ab.target, actors, ab.range_)
     if target_pos is None:
         return False  # dont end turn if cursor() was cancelled
-    act = action.StandardAction(controlled_entity, ab, target_pos)
+    act = action.StandardAction(user, ab, target_pos)
     act.execute()
     render()
     return True  # end turn after using ability
