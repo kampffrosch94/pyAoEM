@@ -32,4 +32,4 @@ def activate(world: ecs.World):
         x=100, y=150)
     input_handler.add_handler(quit_, sdl2.SDLK_a)
     render()
-    input_handler.handle_event()
+    input_handler.handle_event()()

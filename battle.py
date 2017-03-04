@@ -9,19 +9,19 @@ import ability
 import ability.ability
 import action
 import animation
+import base.scene
 import battle_log
 import ecs
+import factory
 import game
 import game_over
-import factory
-from input_ import InputHandler
 import map_
 import menu
 import movement
 import res
 import util
-import base.scene
 from game import BoundPositionSystem
+from input_ import InputHandler
 
 logger = logging.getLogger("Battle")
 
@@ -33,9 +33,7 @@ canvas = res.create_graphic(0, 0, res.WINDOW_W, res.WINDOW_H)
 
 # Components
 
-controlled_entity = None
-
-input_handler = InputHandler()
+controlled_entity = None  # type: Optional[ecs.Entity]
 
 
 class Input(game.Component):
@@ -45,12 +43,44 @@ class Input(game.Component):
     def __init__(self, entity):
         self.entity = entity
         self.priority = 0
+        self.handler = Input.create_key_handler(entity)
 
     def act(self, _):
         global controlled_entity
         controlled_entity = self.entity
-        while not input_handler.handle_event():
+        while not self.handler.handle_event()():
             pass
+
+    @staticmethod
+    def create_key_handler(entity):
+        handler = InputHandler()
+        handler.add_handler(quit_, sdl2.SDLK_q)
+        handler.add_handler(go_interpreter, sdl2.SDLK_y)
+
+        handler.add_handler(map_move_dir_f(-1, 0), sdl2.SDLK_h,
+                            sdl2.KMOD_SHIFT)
+        handler.add_handler(map_move_dir_f(+1, 0), sdl2.SDLK_l,
+                            sdl2.KMOD_SHIFT)
+        handler.add_handler(map_move_dir_f(0, -1), sdl2.SDLK_k,
+                            sdl2.KMOD_SHIFT)
+        handler.add_handler(map_move_dir_f(0, +1), sdl2.SDLK_j,
+                            sdl2.KMOD_SHIFT)
+
+        handler.add_handler(regen_map, sdl2.SDLK_F1)
+
+        handler.add_handler(player_move_dir_f(-1, 0), sdl2.SDLK_h)
+        handler.add_handler(player_move_dir_f(+1, 0), sdl2.SDLK_l)
+        handler.add_handler(player_move_dir_f(0, -1), sdl2.SDLK_k)
+        handler.add_handler(player_move_dir_f(0, +1), sdl2.SDLK_j)
+        handler.add_handler(player_move_dir_f(+1, -1), sdl2.SDLK_u)
+        handler.add_handler(player_move_dir_f(+1, +1), sdl2.SDLK_n)
+        handler.add_handler(player_move_dir_f(-1, -1), sdl2.SDLK_z)
+        handler.add_handler(player_move_dir_f(-1, +1), sdl2.SDLK_b)
+        handler.add_handler(wait, sdl2.SDLK_PERIOD)
+        handler.add_handler(look, sdl2.SDLK_COMMA)
+
+        handler.add_handler(lambda e=entity: choose_ability(e), sdl2.SDLK_a)
+        return handler
 
 
 # render code and System
@@ -202,6 +232,7 @@ def player_move_dir_f(x, y):
 def map_move_dir_f(x, y):
     def f():
         _world.map.root_pos.move(util.Direction(x, y))
+        update()
         render()
 
     return f
@@ -215,7 +246,7 @@ def wait():
 # Sub_scenes
 
 def cursor(target_f: Optional[Callable] = None,
-           relevant_entities: Optional[ecs.Entity] = None,
+           relevant_entities: Optional[List[ecs.Entity]] = None,
            max_range=float("inf")) -> Optional[util.Position]:
     """returns Position selected with the cursor or None if cancelled"""
     start = controlled_entity.get(util.Position)  # type: util.Position
@@ -238,17 +269,17 @@ def cursor(target_f: Optional[Callable] = None,
     def cancel():
         return True
 
-    input_handler.clear_handlers()
-    input_handler.add_handler(cancel, sdl2.SDLK_ESCAPE)
-    input_handler.add_handler(stop_with_target, sdl2.SDLK_RETURN)
-    input_handler.add_handler(move_dir_f(-1, 0), sdl2.SDLK_h)
-    input_handler.add_handler(move_dir_f(+1, 0), sdl2.SDLK_l)
-    input_handler.add_handler(move_dir_f(0, -1), sdl2.SDLK_k)
-    input_handler.add_handler(move_dir_f(0, +1), sdl2.SDLK_j)
-    input_handler.add_handler(move_dir_f(+1, -1), sdl2.SDLK_u)
-    input_handler.add_handler(move_dir_f(+1, +1), sdl2.SDLK_n)
-    input_handler.add_handler(move_dir_f(-1, -1), sdl2.SDLK_z)
-    input_handler.add_handler(move_dir_f(-1, +1), sdl2.SDLK_b)
+    cursor_handler = InputHandler()
+    cursor_handler.add_handler(cancel, sdl2.SDLK_ESCAPE)
+    cursor_handler.add_handler(stop_with_target, sdl2.SDLK_RETURN)
+    cursor_handler.add_handler(move_dir_f(-1, 0), sdl2.SDLK_h)
+    cursor_handler.add_handler(move_dir_f(+1, 0), sdl2.SDLK_l)
+    cursor_handler.add_handler(move_dir_f(0, -1), sdl2.SDLK_k)
+    cursor_handler.add_handler(move_dir_f(0, +1), sdl2.SDLK_j)
+    cursor_handler.add_handler(move_dir_f(+1, -1), sdl2.SDLK_u)
+    cursor_handler.add_handler(move_dir_f(+1, +1), sdl2.SDLK_n)
+    cursor_handler.add_handler(move_dir_f(-1, -1), sdl2.SDLK_z)
+    cursor_handler.add_handler(move_dir_f(-1, +1), sdl2.SDLK_b)
 
     is_cancelled = None
     while is_cancelled is None:
@@ -263,10 +294,9 @@ def cursor(target_f: Optional[Callable] = None,
                 render_at_pos(trail_g, p)
 
         res.render_present()
-        is_cancelled = input_handler.handle_event()
+        is_cancelled = cursor_handler.handle_event()()
 
     render()
-    bind_keys()
 
     if is_cancelled:
         return None
@@ -285,15 +315,14 @@ def look():
                 print(str(e))
 
 
-def choose_ability():
+def choose_ability(user):
     m_head = "Abilities."
-    abilities = controlled_entity.get(ability.ability.Abilities).container
+    abilities = user.get(ability.ability.Abilities).container
     if len(abilities) < 1:
         return
     m_choices = [(a.name, a) for a in abilities]
     m = menu.ChoiceMenu(200, 150, 300, 200, m_head, m_choices, cancel=True)
     choice = m.choose()
-    bind_keys()
     render()
     if choice is None:
         return False  # dont end turn if selection was cancelled
@@ -338,33 +367,6 @@ def go_interpreter():
 
 
 # Activation
-
-def bind_keys():
-    input_handler.clear_handlers()
-
-    input_handler.add_handler(quit_, sdl2.SDLK_q)
-    input_handler.add_handler(go_interpreter, sdl2.SDLK_y)
-
-    input_handler.add_handler(map_move_dir_f(-1, 0), sdl2.SDLK_h, sdl2.KMOD_SHIFT)
-    input_handler.add_handler(map_move_dir_f(+1, 0), sdl2.SDLK_l, sdl2.KMOD_SHIFT)
-    input_handler.add_handler(map_move_dir_f(0, -1), sdl2.SDLK_k, sdl2.KMOD_SHIFT)
-    input_handler.add_handler(map_move_dir_f(0, +1), sdl2.SDLK_j, sdl2.KMOD_SHIFT)
-
-    input_handler.add_handler(regen_map, sdl2.SDLK_F1)
-
-    input_handler.add_handler(player_move_dir_f(-1, 0), sdl2.SDLK_h)
-    input_handler.add_handler(player_move_dir_f(+1, 0), sdl2.SDLK_l)
-    input_handler.add_handler(player_move_dir_f(0, -1), sdl2.SDLK_k)
-    input_handler.add_handler(player_move_dir_f(0, +1), sdl2.SDLK_j)
-    input_handler.add_handler(player_move_dir_f(+1, -1), sdl2.SDLK_u)
-    input_handler.add_handler(player_move_dir_f(+1, +1), sdl2.SDLK_n)
-    input_handler.add_handler(player_move_dir_f(-1, -1), sdl2.SDLK_z)
-    input_handler.add_handler(player_move_dir_f(-1, +1), sdl2.SDLK_b)
-    input_handler.add_handler(wait, sdl2.SDLK_PERIOD)
-    input_handler.add_handler(look, sdl2.SDLK_COMMA)
-
-    input_handler.add_handler(choose_ability, sdl2.SDLK_a)
-
 
 def separate_teams():
     """Playerchars to the left, rest to the right"""
@@ -421,8 +423,6 @@ def activate(world: ecs.World):
     _world = world
     world.main_loop = main_loop
     world.map.regen()
-
-    bind_keys()
 
     for i in range(5):
         c = factory.create_ai_creature(

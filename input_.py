@@ -1,6 +1,5 @@
 import ctypes
 import sdl2
-from typing import Callable
 
 
 def _missing_quit():
@@ -9,7 +8,7 @@ def _missing_quit():
 
 class InputHandler:
     def __init__(self):
-        self.key_handlers = {}  # type: Dict[str, Callable]
+        self.key_handlers = {}
         self.quit_handler = _missing_quit
 
     def clear_handlers(self):
@@ -27,7 +26,7 @@ class InputHandler:
 
     def handle_event(self):
         """Busywait until SDL_Event in keyhandlers is received.
-        Then the event_handler is invoked and it's returnvalue returned"""
+        Then the corresponding value is returned."""
         event = sdl2.SDL_Event()
         while True:
             if sdl2.SDL_WaitEvent(ctypes.byref(event)) == 0:
@@ -42,4 +41,4 @@ class InputHandler:
                            sdl2.KMOD_NUM + sdl2.KMOD_RSHIFT):  # ignore numlock
                     mod -= sdl2.KMOD_NUM
                 if (key, mod) in self.key_handlers:
-                    return self.key_handlers[(key, mod)]()
+                    return self.key_handlers[(key, mod)]

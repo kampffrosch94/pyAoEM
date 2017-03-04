@@ -16,8 +16,6 @@ choice = res.create_text_graphic(
 input_handler = InputHandler()
 
 
-
-
 def to_battle():
     print("Switch to battlescene.")
     import battle
@@ -33,7 +31,7 @@ def render():
 
 def main_loop():
     render()
-    input_handler.handle_event()
+    input_handler.handle_event()()
 
 
 world = None
